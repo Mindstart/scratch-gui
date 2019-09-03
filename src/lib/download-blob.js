@@ -11,7 +11,6 @@ export default (filename, blob) => {
     const url = window.URL.createObjectURL(blob);
     downloadLink.href = url;
     downloadLink.download = filename;
-    downloadLink.type = blob.type;
     downloadLink.click();
     window.URL.revokeObjectURL(url);
     document.body.removeChild(downloadLink);

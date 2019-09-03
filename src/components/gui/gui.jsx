@@ -11,6 +11,7 @@ import VM from 'scratch-vm';
 import Renderer from 'scratch-render';
 
 import Blocks from '../../containers/blocks.jsx';
+import ArduinoPanel from '../../containers/arduino-panel.jsx';
 import CostumeTab from '../../containers/costume-tab.jsx';
 import TargetPane from '../../containers/target-pane.jsx';
 import SoundTab from '../../containers/sound-tab.jsx';
@@ -64,12 +65,11 @@ const GUIComponent = props => {
         backdropLibraryVisible,
         backpackHost,
         backpackVisible,
+		backpackOptions,
         blocksTabVisible,
         cardsVisible,
-        canChangeLanguage,
         canCreateNew,
         canEditTitle,
-        canManageFiles,
         canRemix,
         canSave,
         canCreateCopy,
@@ -87,7 +87,6 @@ const GUIComponent = props => {
         isRtl,
         isShared,
         loading,
-        logo,
         renderLogin,
         onClickAccountNav,
         onCloseAccountNav,
@@ -116,12 +115,13 @@ const GUIComponent = props => {
         telemetryModalVisible,
         tipsLibraryVisible,
         vm,
+		toggleArduinoPanel,
         ...componentProps
     } = omit(props, 'dispatch');
-    if (children) {
+    /*if (children) {
         return <Box {...componentProps}>{children}</Box>;
     }
-
+   */
     const tabClassNames = {
         tabs: styles.tabs,
         tab: classNames(tabStyles.reactTabsTab, styles.tab),
@@ -205,18 +205,15 @@ const GUIComponent = props => {
                     authorId={authorId}
                     authorThumbnailUrl={authorThumbnailUrl}
                     authorUsername={authorUsername}
-                    canChangeLanguage={canChangeLanguage}
                     canCreateCopy={canCreateCopy}
                     canCreateNew={canCreateNew}
                     canEditTitle={canEditTitle}
-                    canManageFiles={canManageFiles}
                     canRemix={canRemix}
                     canSave={canSave}
                     canShare={canShare}
                     className={styles.menuBarPosition}
                     enableCommunity={enableCommunity}
                     isShared={isShared}
-                    logo={logo}
                     renderLogin={renderLogin}
                     showComingSoon={showComingSoon}
                     onClickAccountNav={onClickAccountNav}
@@ -229,6 +226,7 @@ const GUIComponent = props => {
                     onShare={onShare}
                     onToggleLoginOpen={onToggleLoginOpen}
                     onUpdateProjectTitle={onUpdateProjectTitle}
+					toggleArduinoPanel={toggleArduinoPanel}
                 />
                 <Box className={styles.bodyWrapper}>
                     <Box className={styles.flexWrapper}>
@@ -253,7 +251,7 @@ const GUIComponent = props => {
                                             id="gui.gui.codeTab"
                                         />
                                     </Tab>
-                                    <Tab
+                                    {/* <Tab
                                         className={tabClassNames.tab}
                                         onClick={onActivateCostumesTab}
                                     >
@@ -274,8 +272,8 @@ const GUIComponent = props => {
                                                 id="gui.gui.costumesTab"
                                             />
                                         )}
-                                    </Tab>
-                                    <Tab
+                                    </Tab> */}
+                                    {/* <Tab
                                         className={tabClassNames.tab}
                                         onClick={onActivateSoundsTab}
                                     >
@@ -288,20 +286,21 @@ const GUIComponent = props => {
                                             description="Button to get to the sounds panel"
                                             id="gui.gui.soundsTab"
                                         />
-                                    </Tab>
+                                    </Tab> */}
                                 </TabList>
                                 <TabPanel className={tabClassNames.tabPanel}>
                                     <Box className={styles.blocksWrapper}>
-                                        <Blocks
-                                            canUseCloud={canUseCloud}
-                                            grow={1}
-                                            isVisible={blocksTabVisible}
-                                            options={{
-                                                media: `${basePath}static/blocks-media/`
-                                            }}
-                                            stageSize={stageSize}
-                                            vm={vm}
-                                        />
+                                        {children[1]}													 
+                                        {/*<Blocks*/}
+                                            /*canUseCloud={canUseCloud}*/
+                                            {/*grow={1}*/}
+                                            {/*isVisible={blocksTabVisible}*/}
+                                            {/*options={{*/}
+                                                {/*media: `${basePath}static/blocks-media/`*/}
+                                            {/*}}*/}
+                                            {/*stageSize={stageSize}*/}
+                                            {/*vm={vm}*/}
+                                        {/*/>*/}
                                     </Box>
                                     <Box className={styles.extensionButtonContainer}>
                                         <button
@@ -327,8 +326,8 @@ const GUIComponent = props => {
                                     {soundsTabVisible ? <SoundTab vm={vm} /> : null}
                                 </TabPanel>
                             </Tabs>
-                            {backpackVisible ? (
-                                <Backpack host={backpackHost} />
+                            {backpackOptions.visible ? (
+                                <Backpack host={backpackOptions.host} />
                             ) : null}
                         </Box>
 
@@ -349,6 +348,7 @@ const GUIComponent = props => {
                     </Box>
                 </Box>
                 <DragLayer />
+                {toggleArduinoPanel ?(children[0]):null}
             </Box>
         );
     }}</MediaQuery>);
@@ -363,13 +363,15 @@ GUIComponent.propTypes = {
     backdropLibraryVisible: PropTypes.bool,
     backpackHost: PropTypes.string,
     backpackVisible: PropTypes.bool,
+	backpackOptions: PropTypes.shape({
+        host: PropTypes.string,
+        visible: PropTypes.bool
+    }),
     basePath: PropTypes.string,
     blocksTabVisible: PropTypes.bool,
-    canChangeLanguage: PropTypes.bool,
     canCreateCopy: PropTypes.bool,
     canCreateNew: PropTypes.bool,
     canEditTitle: PropTypes.bool,
-    canManageFiles: PropTypes.bool,
     canRemix: PropTypes.bool,
     canSave: PropTypes.bool,
     canShare: PropTypes.bool,
@@ -386,7 +388,6 @@ GUIComponent.propTypes = {
     isRtl: PropTypes.bool,
     isShared: PropTypes.bool,
     loading: PropTypes.bool,
-    logo: PropTypes.string,
     onActivateCostumesTab: PropTypes.func,
     onActivateSoundsTab: PropTypes.func,
     onActivateTab: PropTypes.func,
@@ -419,11 +420,14 @@ GUIComponent.propTypes = {
 GUIComponent.defaultProps = {
     backpackHost: null,
     backpackVisible: false,
+	backpackOptions: {
+        host: null,
+        visible: false
+    },
     basePath: './',
-    canChangeLanguage: true,
+	blocksProps: {},
     canCreateNew: false,
     canEditTitle: false,
-    canManageFiles: true,
     canRemix: false,
     canSave: false,
     canCreateCopy: false,
@@ -435,7 +439,8 @@ GUIComponent.defaultProps = {
     loading: false,
     onUpdateProjectTitle: () => {},
     showComingSoon: false,
-    stageSizeMode: STAGE_SIZE_MODES.large
+    stageSizeMode: STAGE_SIZE_MODES.large,
+	vm: new VM()
 };
 
 const mapStateToProps = state => ({

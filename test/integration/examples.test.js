@@ -4,13 +4,15 @@ import path from 'path';
 import SeleniumHelper from '../helpers/selenium-helper';
 
 const {
+    findByText,
     clickButton,
     clickText,
     clickXpath,
     findByXpath,
     getDriver,
     getLogs,
-    loadUri
+    loadUri,
+    waitUntilGone
 } = new SeleniumHelper();
 
 let driver;
@@ -26,9 +28,10 @@ describe('player example', () => {
         await driver.quit();
     });
 
-    test.skip('Player: load a project by ID', async () => {
+    test('Load a project by ID', async () => {
         const projectId = '96708228';
         await loadUri(`${uri}#${projectId}`);
+        await waitUntilGone(findByText('Loading'));
         await clickXpath('//img[@title="Go"]');
         await new Promise(resolve => setTimeout(resolve, 2000));
         await clickXpath('//img[@title="Stop"]');
@@ -56,7 +59,7 @@ describe('blocks example', () => {
         await driver.quit();
     });
 
-    test.skip('Blocks: load a project by ID', async () => {
+    test('Load a project by ID', async () => {
         const projectId = '96708228';
         await loadUri(`${uri}#${projectId}`);
         await new Promise(resolve => setTimeout(resolve, 2000));
@@ -75,8 +78,7 @@ describe('blocks example', () => {
         await expect(projectRequests).toEqual(['https://projects.scratch.mit.edu/96708228']);
     });
 
-    // skipping per https://github.com/LLK/scratch-gui/issues/4902 until we have better approach
-    test.skip('Change categories', async () => {
+    test('Change categories', async () => {
         await loadUri(`${uri}`);
         await clickText('Looks');
         await clickText('Sound');

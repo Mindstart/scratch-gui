@@ -9,7 +9,8 @@ const {
     getDriver,
     loadUri,
     rightClickText,
-    scope
+    scope,
+    waitUntilGone
 } = new SeleniumHelper();
 
 const uri = path.resolve(__dirname, '../../build/index.html');
@@ -77,6 +78,7 @@ describe('Menu bar settings', () => {
         await clickText('File');
         const input = await findByXpath('//input[@accept=".sb,.sb2,.sb3"]');
         await input.sendKeys(path.resolve(__dirname, '../fixtures/project1.sb3'));
+        await waitUntilGone(findByText('Loading'));
         // No replace alert since no changes were made
         await findByText('project1-sprite');
     });
@@ -93,6 +95,7 @@ describe('Menu bar settings', () => {
         await input.sendKeys(path.resolve(__dirname, '../fixtures/project1.sb3'));
         await driver.switchTo().alert()
             .accept();
+        await waitUntilGone(findByText('Loading'));
         await findByText('project1-sprite');
     });
 });

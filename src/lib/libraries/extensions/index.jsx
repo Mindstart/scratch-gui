@@ -41,10 +41,19 @@ import boostConnectionIconURL from './boost/boost-illustration.svg';
 import boostConnectionSmallIconURL from './boost/boost-small.svg';
 import boostConnectionTipIconURL from './boost/boost-button-illustration.svg';
 
+import ainobotIconURL from './ainobot/ainobot.png';
+import ainobotInsetIconURL from './ainobot/ainobot-small.svg';
+import ainobotConnectionIconURL from './ainobot/ainobot-illustration.svg';
+import ainobotConnectionSmallIconURL from './ainobot/ainobot-small.svg';
+
 import gdxforIconURL from './gdxfor/gdxfor.png';
 import gdxforInsetIconURL from './gdxfor/gdxfor-small.svg';
 import gdxforConnectionIconURL from './gdxfor/gdxfor-illustration.svg';
 import gdxforConnectionSmallIconURL from './gdxfor/gdxfor-small.svg';
+
+import sensorIconURL from './sensor/sensor.png';
+import sensorInsetIconURL from './sensor/sensor-small.svg';
+
 
 export default [
     {
@@ -56,6 +65,8 @@ export default [
             />
         ),
         extensionId: 'music',
+        disabled: false,
+        hidden: true,
         iconURL: musicIconURL,
         insetIconURL: musicInsetIconURL,
         description: (
@@ -76,6 +87,7 @@ export default [
             />
         ),
         extensionId: 'pen',
+        hidden: true,
         iconURL: penIconURL,
         insetIconURL: penInsetIconURL,
         description: (
@@ -96,6 +108,7 @@ export default [
             />
         ),
         extensionId: 'videoSensing',
+        hidden: true,
         iconURL: videoSensingIconURL,
         insetIconURL: videoSensingInsetIconURL,
         description: (
@@ -117,6 +130,7 @@ export default [
         ),
         extensionId: 'text2speech',
         collaborator: 'Amazon Web Services',
+        hidden: true,
         iconURL: text2speechIconURL,
         insetIconURL: text2speechInsetIconURL,
         description: (
@@ -139,6 +153,7 @@ export default [
         ),
         extensionId: 'translate',
         collaborator: 'Google',
+        hidden: true,
         iconURL: translateIconURL,
         insetIconURL: translateInsetIconURL,
         description: (
@@ -155,6 +170,7 @@ export default [
         name: 'Makey Makey',
         extensionId: 'makeymakey',
         collaborator: 'JoyLabz',
+        hidden: true,
         iconURL: makeymakeyIconURL,
         insetIconURL: makeymakeyInsetIconURL,
         description: (
@@ -181,6 +197,7 @@ export default [
         ),
         featured: true,
         disabled: false,
+        hidden: true,
         bluetoothRequired: true,
         internetConnectionRequired: true,
         launchPeripheralConnectionFlow: true,
@@ -212,6 +229,7 @@ export default [
         featured: true,
         disabled: false,
         bluetoothRequired: true,
+        hidden: true,
         internetConnectionRequired: true,
         launchPeripheralConnectionFlow: true,
         useAutoScan: false,
@@ -241,6 +259,7 @@ export default [
         ),
         featured: true,
         disabled: false,
+        hidden: true,
         bluetoothRequired: true,
         internetConnectionRequired: true,
         launchPeripheralConnectionFlow: true,
@@ -272,6 +291,7 @@ export default [
         ),
         featured: true,
         disabled: false,
+        hidden: true,
         bluetoothRequired: true,
         internetConnectionRequired: true,
         launchPeripheralConnectionFlow: true,
@@ -303,6 +323,7 @@ export default [
         ),
         featured: true,
         disabled: false,
+        hidden: true,
         bluetoothRequired: true,
         internetConnectionRequired: true,
         launchPeripheralConnectionFlow: true,
@@ -317,5 +338,49 @@ export default [
             />
         ),
         helpLink: 'https://scratch.mit.edu/vernier'
-    }
+    },
+	{
+        name: 'AinoBot',
+        extensionId: 'arduino',
+		collaborator: 'MindStart',
+        iconURL: ainobotIconURL,
+		insetIconURL: ainobotInsetIconURL,
+        description: (
+            <FormattedMessage
+                defaultMessage="Build robot and code."
+                description="Description for the 'Arduino UNO' extension"
+                id="gui.extension.arduino.description"
+            />
+        ),
+        featured: true,
+        disabled: false,
+		bluetoothRequired: true,
+        launchPeripheralConnectionFlow: true,
+        useAutoScan: false,
+        connectionIconURL: ainobotConnectionIconURL,
+        connectionSmallIconURL: ainobotConnectionSmallIconURL,
+        connectingMessage: (
+            <FormattedMessage
+                defaultMessage="Connecting..."
+                description="Message to help people connect to their Arduino. Must note the PIN should be 1234."
+                id="gui.extension.arduino.connectingMessage"
+            />
+        )
+    },
+	{
+        name: 'Sensor',
+        extensionId: 'sensor',
+		collaborator: 'MindStart',
+        iconURL: sensorIconURL,
+		insetIconURL: sensorInsetIconURL,
+        description: (
+            <FormattedMessage
+                defaultMessage="Sensors for building robot."
+                description="Description for the 'Arduino UNO' extension"
+                id="gui.extension.sensor.description"
+            />
+        ),
+        featured: true,
+        disabled: false
+    }	
 ];

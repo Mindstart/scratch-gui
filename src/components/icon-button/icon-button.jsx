@@ -5,19 +5,14 @@ import styles from './icon-button.css';
 
 const IconButton = ({
     img,
-    disabled,
     className,
     title,
     onClick
 }) => (
     <div
-        className={classNames(
-            styles.container,
-            className,
-            disabled ? styles.disabled : null
-        )}
+        className={classNames(styles.container, className)}
         role="button"
-        onClick={disabled ? null : onClick}
+        onClick={onClick}
     >
         <img
             className={styles.icon}
@@ -32,7 +27,6 @@ const IconButton = ({
 
 IconButton.propTypes = {
     className: PropTypes.string,
-    disabled: PropTypes.bool,
     img: PropTypes.string,
     onClick: PropTypes.func.isRequired,
     title: PropTypes.node.isRequired

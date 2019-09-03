@@ -58,7 +58,7 @@ MenuItem.propTypes = {
 
 
 const addDividerClassToFirstChild = (child, id) => (
-    child && React.cloneElement(child, {
+    React.cloneElement(child, {
         className: classNames(
             child.className,
             {[styles.menuSection]: id === 0}

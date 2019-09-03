@@ -85,6 +85,29 @@ describe('Sound Editor Container', () => {
         expect(component.props().playhead).toEqual(null);
     });
 
+    test('it sets the component props for trimming and submits to the vm', () => {
+        const wrapper = mountWithIntl(
+            <SoundEditor
+                soundIndex={soundIndex}
+                store={store}
+            />
+        );
+        let component = wrapper.find(SoundEditorComponent);
+
+        component.props().onActivateTrim();
+        wrapper.update();
+        component = wrapper.find(SoundEditorComponent);
+        expect(component.props().trimStart).not.toEqual(null);
+        expect(component.props().trimEnd).not.toEqual(null);
+
+        component.props().onActivateTrim();
+        wrapper.update();
+        component = wrapper.find(SoundEditorComponent);
+        expect(vm.updateSoundBuffer).toHaveBeenCalled();
+        expect(component.props().trimStart).toEqual(null);
+        expect(component.props().trimEnd).toEqual(null);
+    });
+
     test('it submits name changes to the vm', () => {
         const wrapper = mountWithIntl(
             <SoundEditor
@@ -215,8 +238,8 @@ describe('Sound Editor Container', () => {
         expect(component.prop('canRedo')).toEqual(false);
 
         // Submitting new samples should make it possible to undo
-        component.props().onFaster();
-        mockAudioEffects.instance._finishProcessing(soundBuffer);
+        component.props().onActivateTrim(); // Activate trimming
+        component.props().onActivateTrim(); // Submit new samples by calling again
         wrapper.update();
         component = wrapper.find(SoundEditorComponent);
         expect(component.prop('canUndo')).toEqual(true);
@@ -241,8 +264,8 @@ describe('Sound Editor Container', () => {
         wrapper.update();
         component = wrapper.find(SoundEditorComponent);
         expect(component.prop('canRedo')).toEqual(true);
-        component.props().onFaster();
-        mockAudioEffects.instance._finishProcessing(soundBuffer);
+        component.props().onActivateTrim(); // Activate trimming
+        component.props().onActivateTrim(); // Submit new samples by calling again
 
         wrapper.update();
         component = wrapper.find(SoundEditorComponent);
@@ -259,8 +282,8 @@ describe('Sound Editor Container', () => {
         let component = wrapper.find(SoundEditorComponent);
 
         // Set up an undoable state
-        component.props().onFaster();
-        mockAudioEffects.instance._finishProcessing(soundBuffer);
+        component.props().onActivateTrim(); // Activate trimming
+        component.props().onActivateTrim(); // Submit new samples by calling again
         wrapper.update();
         component = wrapper.find(SoundEditorComponent);
 

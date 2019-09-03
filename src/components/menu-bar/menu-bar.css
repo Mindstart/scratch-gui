@@ -40,12 +40,12 @@
     flex-grow: 1;
 }
 
-.scratch-logo {
+.ainoview-logo {
     height:  1.6rem;
     vertical-align: middle;
 }
 
-.scratch-logo.clickable {
+.ainoview-logo.clickable {
     cursor: pointer;
 }
 
@@ -125,6 +125,15 @@
     height: 34px;
 }
 
+.arduino-button {
+    background-color: $ui-white;
+    height: 34px;
+}
+
+.arduino-link {
+    color: $motion-primary;
+    text-decoration: none;
+}
 .divider {
     margin: 0 .5rem;
     height: 34px;

@@ -1,0 +1,53 @@
+@import "../../css/colors.css";
+@import "../../css/units.css";
+@import "../../css/z-index.css";
+
+
+.baud-select {
+    position: absolute;
+    width: 100px;
+    height: 28px;
+	top: 4px;
+    opacity: 1;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: .875rem;
+    color: $text-primary;
+    background: $ui-white;
+	margin-left: 5px;
+	visibility: none;
+}
+
+[dir="ltr"] .baud-select {
+    right: 0;
+}
+
+[dir="rtl"] .baud-select {
+    left: 0;
+}
+
+.baud-select option {
+    opacity: 1;
+}
+
+.baud-select:focus {
+    border: 1px solid white;
+}
+
+.button {
+	left: 10px;
+	height: 34px;
+	border-style:outset;
+	border-color:gray;
+	border-radius:5px;
+	color: #fff;
+	background-color: #ffa500;
+	box-shadow: 0 2px #999;
+}
+
+.button:hover {background-color: #f27f11}
+
+.button:active {
+  background-color: #f27f11;
+  box-shadow: 0 1px #666;
+  transform: translateY(1px);
+}

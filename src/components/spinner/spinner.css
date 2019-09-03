@@ -39,16 +39,6 @@
     height: .5rem;
 }
 
-.large {
-    width: 2.5rem;
-    height: 2.5rem;
-}
-
-.large::before, .large::after {
-    width: 2.5rem;
-    height: 2.5rem;
-}
-
 @keyframes spin {
   0% {
     transform: rotate(0deg);
@@ -80,11 +70,4 @@
 }
 .spinner.info::after {
     border-top-color: $ui-white;
-}
-
-.spinner.primary {
-    border-color: $motion-transparent;
-}
-.spinner.primary::after {
-    border-top-color: $motion-primary;
 }

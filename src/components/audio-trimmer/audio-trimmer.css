@@ -1,11 +1,10 @@
 @import "../../css/colors.css";
 
 $border-radius: 4px;
-$trim-handle-width: 30px;
-$trim-handle-height: 30px;
-$trim-handle-border: 3px;
+$trim-handle-width: 12px;
+$trim-handle-height: 14px;
 $stripe-size: 10px;
-$hover-scale: 1.25;
+$hover-scale: 2;
 
 .absolute {
     position: absolute;
@@ -16,10 +15,6 @@ $hover-scale: 1.25;
 
     /* Force the browser to paint separately to avoid composite cost with waveform */
     transform: translateZ(0);
-}
-
-.selector {
-    cursor: pointer;
 }
 
 .trim-background {
@@ -40,11 +35,6 @@ $hover-scale: 1.25;
     );
 }
 
-.selection-background {
-    background: $motion-primary;
-    opacity: 0.5;
-}
-
 .start-trim-background .trim-background-mask {
     border-top-left-radius: $border-radius;
     border-bottom-left-radius: $border-radius;
@@ -63,10 +53,6 @@ $hover-scale: 1.25;
     border: 1px solid $red-tertiary;
 }
 
-.selector .trim-line {
-    border: 1px solid $motion-tertiary;
-}
-
 .playhead-container {
     position: absolute;
     top: 0;
@@ -82,50 +68,31 @@ $hover-scale: 1.25;
         so that we can use transform: translateX() using percentages.
     */
     width: 100%;
-    height: 100%;
     border-left: 1px solid $motion-primary;
     border-top: none;
     border-bottom: none;
     border-right: none;
 }
 
-.right-handle {
-    transform: scaleX(-1);
+.start-trim-line {
+    right: 0;
 }
 
-.selector .left-handle {
-    left: -1px
-}
-
-.selector .right-handle {
-    right: -1px
-}
-
-.trimmer .left-handle {
-    right: -1px
-}
-
-.trimmer .right-handle {
-    left: -1px
+.end-trim-line {
+    left: 0;
 }
 
 .trim-handle {
     position: absolute;
+    left: calc(-$trim-handle-width / 2);
     width: $trim-handle-width;
     height: $trim-handle-height;
-    right: 0;
-    user-select: none;
-}
-
-.trimmer .trim-handle {
-    filter: hue-rotate(150deg);
 }
 
 .trim-handle img {
     position: absolute;
     width: $trim-handle-width;
     height: $trim-handle-height;
-    left: calc($trim-handle-border * 1.5);
 
     /* Make sure image dragging isn't triggered */
     user-select: none;
@@ -136,13 +103,22 @@ $hover-scale: 1.25;
 }
 
 .top-trim-handle {
-    top: calc(-$trim-handle-height + $trim-handle-border);
+    top: -$trim-handle-height;
 }
 
 .bottom-trim-handle {
-    bottom: calc(-$trim-handle-height + $trim-handle-border);
+    bottom: -$trim-handle-height;
 }
 
 .top-trim-handle img {
-    transform: scaleY(-1);
+    transform: rotate(180deg);
+}
+
+/* Increase handle size when anywhere on draggable area is hovered */
+.trim-background:hover img {
+    transform: scale($hover-scale);
+}
+
+.trim-background:hover .top-trim-handle img {
+    transform: rotate(180deg) scale($hover-scale);
 }

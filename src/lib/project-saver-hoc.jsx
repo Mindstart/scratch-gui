@@ -234,14 +234,9 @@ const ProjectSaverHOC = function (WrappedComponent) {
                         asset.dataFormat,
                         asset.data,
                         asset.assetId
-                    ).then(response => {
-                        // Asset servers respond with {status: ok} for successful POSTs
-                        if (response.status !== 'ok') {
-                            // Errors include a `code` property, e.g. "Forbidden"
-                            return Promise.reject(response.code);
-                        }
-                        asset.clean = true;
-                    })
+                    ).then(
+                        () => (asset.clean = true)
+                    )
                 )
             )
                 .then(() => this.props.onUpdateProjectData(projectId, savedVMState, requestParams))
@@ -348,7 +343,6 @@ const ProjectSaverHOC = function (WrappedComponent) {
     }
 
     ProjectSaverComponent.propTypes = {
-        autoSaveIntervalSecs: PropTypes.number.isRequired,
         autoSaveTimeoutId: PropTypes.number,
         canCreateNew: PropTypes.bool,
         canSave: PropTypes.bool,
@@ -364,16 +358,12 @@ const ProjectSaverHOC = function (WrappedComponent) {
         isShowingWithoutId: PropTypes.bool,
         isUpdating: PropTypes.bool,
         loadingState: PropTypes.oneOf(LoadingStates),
-        locale: PropTypes.string.isRequired,
         onAutoUpdateProject: PropTypes.func,
         onCreateProject: PropTypes.func,
         onCreatedProject: PropTypes.func,
         onProjectError: PropTypes.func,
         onProjectTelemetryEvent: PropTypes.func,
         onRemixing: PropTypes.func,
-        onSetProjectSaver: PropTypes.func.isRequired,
-        onSetProjectThumbnailer: PropTypes.func.isRequired,
-        onSetProjectUnchanged: PropTypes.func.isRequired,
         onShowAlert: PropTypes.func,
         onShowCopySuccessAlert: PropTypes.func,
         onShowCreatingCopyAlert: PropTypes.func,
@@ -387,7 +377,6 @@ const ProjectSaverHOC = function (WrappedComponent) {
         projectChanged: PropTypes.bool,
         reduxProjectId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
         reduxProjectTitle: PropTypes.string,
-        setAutoSaveTimeoutId: PropTypes.func.isRequired,
         vm: PropTypes.instanceOf(VM).isRequired
     };
     ProjectSaverComponent.defaultProps = {

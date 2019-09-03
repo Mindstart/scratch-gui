@@ -91,8 +91,7 @@ LoupeComponent.propTypes = {
         color: PropTypes.shape({
             r: PropTypes.number,
             g: PropTypes.number,
-            b: PropTypes.number,
-            a: PropTypes.number
+            b: PropTypes.number
         }),
         data: PropTypes.instanceOf(Uint8Array),
         width: PropTypes.number,

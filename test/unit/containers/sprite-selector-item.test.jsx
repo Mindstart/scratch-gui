@@ -4,7 +4,7 @@ import configureStore from 'redux-mock-store';
 import {Provider} from 'react-redux';
 
 import SpriteSelectorItem from '../../../src/containers/sprite-selector-item';
-import DeleteButton from '../../../src/components/delete-button/delete-button';
+import CloseButton from '../../../src/components/close-button/close-button';
 
 describe('SpriteSelectorItem Container', () => {
     const mockStore = configureStore();
@@ -52,7 +52,7 @@ describe('SpriteSelectorItem Container', () => {
 
     test('should delete the sprite', () => {
         const wrapper = mountWithIntl(getContainer());
-        wrapper.find(DeleteButton).simulate('click');
+        wrapper.find(CloseButton).simulate('click');
         expect(onDeleteButtonClick).toHaveBeenCalledWith(1337);
     });
 });

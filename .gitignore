@@ -10,10 +10,16 @@ npm-*
 /coverage
 
 # Build
-/build
+!/build
+/build/*
+!/build/helper.js
+!/build/upload.bat
 /dist
 /.opt-in
 
 # generated translation files
 /translations
 /locale
+
+# idea
+.idea

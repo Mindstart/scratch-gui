@@ -60,9 +60,9 @@ const vmListenerHOC = function (WrappedComponent) {
                 this.props.vm.postIOData('userData', {username: this.props.username});
             }
 
-            // Re-request a targets update when the shouldUpdateTargets state changes to true
+            // Re-request a targets update when the shouldEmitTargetsUpdate state changes to true
             // i.e. when the editor transitions out of fullscreen/player only modes
-            if (this.props.shouldUpdateTargets && !prevProps.shouldUpdateTargets) {
+            if (this.props.shouldEmitTargetsUpdate && !prevProps.shouldEmitTargetsUpdate) {
                 this.props.vm.emitTargetsUpdate(false /* Emit the event, but do not trigger project change */);
             }
         }
@@ -74,12 +74,12 @@ const vmListenerHOC = function (WrappedComponent) {
             }
         }
         handleProjectChanged () {
-            if (this.props.shouldUpdateProjectChanged && !this.props.projectChanged) {
+            if (this.props.shouldEmitUpdates && !this.props.projectChanged) {
                 this.props.onProjectChanged();
             }
         }
         handleTargetsUpdate (data) {
-            if (this.props.shouldUpdateTargets) {
+            if (this.props.shouldEmitUpdates) {
                 this.props.onTargetsUpdate(data);
             }
         }
@@ -118,8 +118,7 @@ const vmListenerHOC = function (WrappedComponent) {
                 /* eslint-disable no-unused-vars */
                 attachKeyboardEvents,
                 projectChanged,
-                shouldUpdateTargets,
-                shouldUpdateProjectChanged,
+                shouldEmitUpdates,
                 onBlockDragUpdate,
                 onGreenFlag,
                 onKeyDown,
@@ -149,18 +148,15 @@ const vmListenerHOC = function (WrappedComponent) {
         onKeyUp: PropTypes.func,
         onMicListeningUpdate: PropTypes.func.isRequired,
         onMonitorsUpdate: PropTypes.func.isRequired,
-        onProjectChanged: PropTypes.func.isRequired,
         onProjectRunStart: PropTypes.func.isRequired,
         onProjectRunStop: PropTypes.func.isRequired,
-        onProjectSaved: PropTypes.func.isRequired,
         onRuntimeStarted: PropTypes.func.isRequired,
         onShowExtensionAlert: PropTypes.func.isRequired,
         onTargetsUpdate: PropTypes.func.isRequired,
         onTurboModeOff: PropTypes.func.isRequired,
         onTurboModeOn: PropTypes.func.isRequired,
         projectChanged: PropTypes.bool,
-        shouldUpdateTargets: PropTypes.bool,
-        shouldUpdateProjectChanged: PropTypes.bool,
+        shouldEmitUpdates: PropTypes.bool,
         username: PropTypes.string,
         vm: PropTypes.instanceOf(VM).isRequired
     };
@@ -172,10 +168,8 @@ const vmListenerHOC = function (WrappedComponent) {
         projectChanged: state.scratchGui.projectChanged,
         // Do not emit target or project updates in fullscreen or player only mode
         // or when recording sounds (it leads to garbled recordings on low-power machines)
-        shouldUpdateTargets: !state.scratchGui.mode.isFullScreen && !state.scratchGui.mode.isPlayerOnly &&
+        shouldEmitUpdates: !state.scratchGui.mode.isFullScreen && !state.scratchGui.mode.isPlayerOnly &&
             !state.scratchGui.modals.soundRecorder,
-        // Do not update the projectChanged state in fullscreen or player only mode
-        shouldUpdateProjectChanged: !state.scratchGui.mode.isFullScreen && !state.scratchGui.mode.isPlayerOnly,
         vm: state.scratchGui.vm,
         username: state.session && state.session.session && state.session.session.user ?
             state.session.session.user.username : ''

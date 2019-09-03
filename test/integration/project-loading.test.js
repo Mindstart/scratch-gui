@@ -9,7 +9,8 @@ const {
     getDriver,
     getLogs,
     loadUri,
-    scope
+    scope,
+    waitUntilGone
 } = new SeleniumHelper();
 
 const uri = path.resolve(__dirname, '../../build/index.html');
@@ -32,14 +33,13 @@ describe('Loading scratch gui', () => {
             await clickText('Oops! Something went wrong.');
         });
 
-        // skipping because it relies on network speed, and tests a method
-        // of loading projects that we are not actively using anymore
-        test.skip('Load a project by ID directly through url', async () => {
+        test('Load a project by ID directly through url', async () => {
             await driver.quit(); // Reset driver to test hitting # url directly
             driver = getDriver();
 
             const projectId = '96708228';
             await loadUri(`${uri}#${projectId}`);
+            await waitUntilGone(findByText('Loading'));
             await clickXpath('//img[@title="Go"]');
             await new Promise(resolve => setTimeout(resolve, 2000));
             await clickXpath('//img[@title="Stop"]');
@@ -47,9 +47,7 @@ describe('Loading scratch gui', () => {
             await expect(logs).toEqual([]);
         });
 
-        // skipping because it relies on network speed, and tests a method
-        // of loading projects that we are not actively using anymore
-        test.skip('Load a project by ID (fullscreen)', async () => {
+        test('Load a project by ID (fullscreen)', async () => {
             await driver.quit(); // Reset driver to test hitting # url directly
             driver = getDriver();
 
@@ -62,6 +60,7 @@ describe('Loading scratch gui', () => {
                 .setSize(1920, 1080);
             const projectId = '96708228';
             await loadUri(`${uri}#${projectId}`);
+            await waitUntilGone(findByText('Loading'));
             await clickXpath('//img[@title="Full Screen Control"]');
             await new Promise(resolve => setTimeout(resolve, 500));
             await clickXpath('//img[@title="Go"]');
@@ -78,6 +77,7 @@ describe('Loading scratch gui', () => {
 
         test('Creating new project resets active tab to Code tab', async () => {
             await loadUri(uri);
+            await new Promise(resolve => setTimeout(resolve, 2000));
             await findByXpath('//*[span[text()="Costumes"]]');
             await clickText('Costumes');
             await clickXpath(
@@ -85,12 +85,13 @@ describe('Loading scratch gui', () => {
                 'contains(@class, "menu-bar_hoverable")][span[text()="File"]]'
             );
             await clickXpath('//li[span[text()="New"]]');
-            await findByXpath('//div[@class="scratchCategoryMenu"]');
+            await findByXpath('//*[div[@class="scratchCategoryMenu"]]');
             await clickText('Operators', scope.blocksTab);
         });
 
         test('Not logged in->made no changes to project->create new project should not show alert', async () => {
             await loadUri(uri);
+            await new Promise(resolve => setTimeout(resolve, 2000));
             await clickXpath(
                 '//div[contains(@class, "menu-bar_menu-bar-item") and ' +
                 'contains(@class, "menu-bar_hoverable")][span[text()="File"]]'
@@ -102,10 +103,10 @@ describe('Loading scratch gui', () => {
 
         test('Not logged in->made a change to project->create new project should show alert', async () => {
             await loadUri(uri);
+            await new Promise(resolve => setTimeout(resolve, 2000));
             await clickText('Sounds');
             await clickXpath('//button[@aria-label="Choose a Sound"]');
             await clickText('A Bass', scope.modal); // Should close the modal
-            await findByText('1.28'); // length of A Bass sound
             await clickXpath(
                 '//div[contains(@class, "menu-bar_menu-bar-item") and ' +
                 'contains(@class, "menu-bar_hoverable")][span[text()="File"]]'

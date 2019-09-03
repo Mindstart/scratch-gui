@@ -20,6 +20,7 @@
     cursor: pointer;
 
     user-select: none;
+    touch-action: none;
 }
 
 .sprite-selector-item.is-selected {
@@ -94,16 +95,16 @@
 
 .delete-button {
     position: absolute;
-    top: -.625rem;
+    top: 0.125rem;
     z-index: auto;
 }
 
 [dir="ltr"] .delete-button {
-    right: -.625rem;
+    right: 0.125rem;
 }
 
 [dir="rtl"] .delete-button {
-    left: -.625rem;
+    left: 0.125rem;
 }
 
 .number {

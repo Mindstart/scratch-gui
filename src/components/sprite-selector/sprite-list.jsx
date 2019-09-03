@@ -110,8 +110,7 @@ SpriteList.propTypes = {
     editingTarget: PropTypes.string,
     hoveredTarget: PropTypes.shape({
         hoveredSprite: PropTypes.string,
-        receivedBlocks: PropTypes.bool,
-        sprite: PropTypes.string
+        receivedBlocks: PropTypes.bool
     }),
     items: PropTypes.arrayOf(PropTypes.shape({
         costume: PropTypes.shape({

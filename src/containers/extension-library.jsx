@@ -45,6 +45,11 @@ class ExtensionLibrary extends React.PureComponent {
                 });
             }
         }
+		if(id == 'arduino'){
+			this.props.vm.extensionManager.loadExtensionURL('sensor').then(() => {
+					this.props.onCategorySelected('sensor');
+            });
+		}
     }
     render () {
         const extensionLibraryThumbnailData = extensionLibraryContent.map(extension => ({

@@ -1,10 +1,9 @@
 module.exports = {
-    extends: ['scratch/react', 'scratch/es6', 'plugin:jest/recommended'],
+    extends: ['scratch/react', 'scratch/es6'],
     env: {
         browser: true,
         jest: true
     },
-    plugins: ['jest'],
     rules: {
         'react/prop-types': 0
     }

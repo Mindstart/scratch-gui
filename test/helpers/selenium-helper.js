@@ -1,4 +1,4 @@
-jest.setTimeout(30000); // eslint-disable-line no-undef
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 30000; // eslint-disable-line no-undef
 
 import bindAll from 'lodash.bindall';
 import 'chromedriver'; // register path
@@ -7,11 +7,6 @@ import webdriver from 'selenium-webdriver';
 const {By, until, Button} = webdriver;
 
 const USE_HEADLESS = process.env.USE_HEADLESS !== 'no';
-
-// The main reason for this timeout is so that we can control the timeout message and report details;
-// if we hit the Jasmine default timeout then we get a terse message that we can't control.
-// The Jasmine default timeout is 30 seconds so make sure this is lower.
-const DEFAULT_TIMEOUT_MILLISECONDS = 20 * 1000;
 
 class SeleniumHelper {
     constructor () {
@@ -26,12 +21,13 @@ class SeleniumHelper {
             'getSauceDriver',
             'getLogs',
             'loadUri',
-            'rightClickText'
+            'rightClickText',
+            'waitUntilGone'
         ]);
     }
 
-    elementIsVisible (element, timeoutMessage = 'elementIsVisible timed out') {
-        return this.driver.wait(until.elementIsVisible(element), DEFAULT_TIMEOUT_MILLISECONDS, timeoutMessage);
+    elementIsVisible (element) {
+        return this.driver.wait(until.elementIsVisible(element));
     }
 
     get scope () {
@@ -83,12 +79,8 @@ class SeleniumHelper {
         return this.driver;
     }
 
-    findByXpath (xpath, timeoutMessage = `findByXpath timed out for path: ${xpath}`) {
-        return this.driver.wait(until.elementLocated(By.xpath(xpath)), DEFAULT_TIMEOUT_MILLISECONDS, timeoutMessage)
-            .then(el => (
-                this.driver.wait(el.isDisplayed(), DEFAULT_TIMEOUT_MILLISECONDS, `${xpath} is not visible`)
-                    .then(() => el)
-            ));
+    findByXpath (xpath) {
+        return this.driver.wait(until.elementLocated(By.xpath(xpath), 5 * 1000));
     }
 
     findByText (text, scope) {
@@ -126,6 +118,10 @@ class SeleniumHelper {
 
     clickButton (text) {
         return this.clickXpath(`//button//*[contains(text(), '${text}')]`);
+    }
+
+    waitUntilGone (element) {
+        return this.driver.wait(until.stalenessOf(element));
     }
 
     getLogs (whitelist) {

@@ -8,8 +8,7 @@ const SpinnerComponent = function (props) {
     const {
         className,
         level,
-        small,
-        large
+        small
     } = props;
     return (
         <div
@@ -17,24 +16,18 @@ const SpinnerComponent = function (props) {
                 className,
                 styles.spinner,
                 styles[level],
-                {
-                    [styles.small]: small,
-                    [styles.large]: large
-                }
+                {[styles.small]: small}
             )}
         />
     );
 };
 SpinnerComponent.propTypes = {
     className: PropTypes.string,
-    large: PropTypes.bool,
     level: PropTypes.string,
     small: PropTypes.bool
 };
 SpinnerComponent.defaultProps = {
     className: '',
-    large: false,
-    level: 'info',
-    small: false
+    level: 'info'
 };
 export default SpinnerComponent;

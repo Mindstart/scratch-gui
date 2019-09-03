@@ -24,12 +24,13 @@ const base = {
     },
     output: {
         library: 'GUI',
-        filename: '[name].js',
-        chunkFilename: 'chunks/[name].js'
+        filename: '[name].js'
     },
     externals: {
         React: 'react',
-        ReactDOM: 'react-dom'
+        ReactDOM: 'react-dom',
+		bindings: 'bindings',
+        serialport: 'serialport'									   
     },
     resolve: {
         symlinks: false
@@ -55,7 +56,10 @@ const base = {
                     ['react-intl', {
                         messagesDir: './translations/messages/'
                     }]],
-                presets: ['@babel/preset-env', '@babel/preset-react']
+                presets: [
+                    ['@babel/preset-env', {targets: {browsers: ['last 3 versions', 'Safari >= 8', 'iOS >= 8']}}],
+                    '@babel/preset-react'
+                ]
             }
         },
         {
@@ -78,7 +82,9 @@ const base = {
                         return [
                             postcssImport,
                             postcssVars,
-                            autoprefixer
+                            autoprefixer({
+                                browsers: ['last 3 versions', 'Safari >= 8', 'iOS >= 8']
+                            })
                         ];
                     }
                 }
@@ -111,7 +117,9 @@ module.exports = [
         },
         externals: {
             React: 'react',
-            ReactDOM: 'react-dom'
+            ReactDOM: 'react-dom',
+			bindings: 'bindings',
+            serialport: 'serialport'	
         },
         module: {
             rules: base.module.rules.concat([
@@ -197,7 +205,9 @@ module.exports = [
             },
             externals: {
                 React: 'react',
-                ReactDOM: 'react-dom'
+                ReactDOM: 'react-dom',
+				bindings: 'bindings',
+                serialport: 'serialport'		  
             },
             module: {
                 rules: base.module.rules.concat([
