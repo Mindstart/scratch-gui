@@ -333,6 +333,26 @@ Blockly.Arduino.sensor_menu_dht11Type = function (a) {
     }
     return [retValue, Blockly.Arduino.ORDER_ATOMIC];
 };
+Blockly.Arduino.sensor_menu_timeType = function (a) {
+    const str = a.toString();
+    let retValue = '';
+    if (str === 'year' || str === '年') {
+        retValue = 'year';
+    } else if (str === 'month' || str === '月') {
+        retValue = 'month';
+    } else if (str === 'date' || str === '日') {
+        retValue = 'date';
+    } else if (str === 'hour' || str === '时') {
+        retValue = 'hour';
+    } else if (str === 'minute' || str === '分') {
+        retValue = 'minute';
+    } else if (str === 'seconde' || str === '秒') {
+        retValue = 'second';
+    } else if (str === 'day' || str === '星期') {
+        retValue = 'day';
+    }
+    return [retValue, Blockly.Arduino.ORDER_ATOMIC];
+};
 Blockly.Arduino.sensor_menu_portMode = function (a) {
     const str = a.toString();
     let retValue = 0;
@@ -626,20 +646,17 @@ Blockly.Arduino.sensor_ultrasonicDistance2W = function (a) {
     return ['getDistance()', Blockly.Arduino.ORDER_ATOMIC];
 };
 Blockly.Arduino.sensor_dht11 = function (a) {
-    console.log(a.toString());
     const pin = Blockly.Arduino.valueToCode(a, 'PIN', Blockly.Arduino.ORDER_ATOMIC);
     const type = Blockly.Arduino.valueToCode(a, 'TYPE', Blockly.Arduino.ORDER_ATOMIC);
-    console.log(type);
     Blockly.Arduino.includes_.ultra = `#include <DHT.h>\nDHT dht11(${pin}, DHT11);\n`;
     Blockly.Arduino.setups_.setup_dht11 = '  dht11.begin();\n';
-    if (type == 'temperature') {
+    if (type === 'temperature') {
         return ['dht11.readTemperature()', Blockly.Arduino.ORDER_ATOMIC];
     }
     return ['dht11.readHumidity()', Blockly.Arduino.ORDER_ATOMIC];
     
 };
 Blockly.Arduino.sensor_sharp_ir = function (a) {
-    console.log(a.toString());
     const pin = Blockly.Arduino.valueToCode(a, 'PIN', Blockly.Arduino.ORDER_ATOMIC);
     Blockly.Arduino.definitions_.define_getDistance = `${'int getGp2d12mm()\n' +
         '{\n' +
@@ -647,6 +664,103 @@ Blockly.Arduino.sensor_sharp_ir = function (a) {
         `  return (6787.0 / (value - 3.0)) - 4.0;\n` +
         `}\n`;
     return ['getGp2d12mm()', Blockly.Arduino.ORDER_ATOMIC];
+};
+Blockly.Arduino.sensor_DS1302_setup = function (a) {
+    const clkPin = Blockly.Arduino.valueToCode(a, 'CLK', Blockly.Arduino.ORDER_ATOMIC);
+    const datPin = Blockly.Arduino.valueToCode(a, 'DAT', Blockly.Arduino.ORDER_ATOMIC);
+    const rstPin = Blockly.Arduino.valueToCode(a, 'RST', Blockly.Arduino.ORDER_ATOMIC);
+    Blockly.Arduino.includes_.ds1302 = `#include <stdio.h>\n#include <DS1302.h>`;
+    Blockly.Arduino.definitions_.define_namespace = `namespace {\n${Blockly.Arduino.tab()}${'const int clkPin = '}${clkPin};\n` +
+        `${Blockly.Arduino.tab()}${'const int datPin = '}${datPin};\n${Blockly.Arduino.tab()}${'const int rstPin = '}${rstPin};\n` +
+        `${Blockly.Arduino.tab()}${'DS1302 rtc(rstPin, datPin, clkPin);'}\n\n` +
+        `${Blockly.Arduino.tab()}String dayAsString(const Time::Day day) {\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}switch (day) {\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}case Time::kSunday: return "Sunday";\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}case Time::kMonday: return "Monday";\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}case Time::kTuesday: return "Tuesday";\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}case Time::kWednesday: return "Wednesday";\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}case Time::kThursday: return "Thursday";\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}case Time::kFriday: return "Friday";\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}case Time::kSaturday: return "Saturday";\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}}\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}return "unknown day";\n` +
+        `${Blockly.Arduino.tab()}}\n` +
+        `${Blockly.Arduino.tab()}String getDay() {\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}Time t = rtc.time();\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}return dayAsString(t.day);\n` +
+        `${Blockly.Arduino.tab()}}\n` +
+        `${Blockly.Arduino.tab()}int getYear() {\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}Time t = rtc.time();\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}return t.yr;\n` +
+        `${Blockly.Arduino.tab()}}\n` +
+        `${Blockly.Arduino.tab()}int getMonth() {\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}Time t = rtc.time();\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}return t.mon;\n` +
+        `${Blockly.Arduino.tab()}}\n` +
+        `${Blockly.Arduino.tab()}int getDate() {\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}Time t = rtc.time();\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}return t.date;\n` +
+        `${Blockly.Arduino.tab()}}\n` +
+        `${Blockly.Arduino.tab()}int getHour() {\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}Time t = rtc.time();\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}return t.hr;\n` +
+        `${Blockly.Arduino.tab()}}\n` +
+        `${Blockly.Arduino.tab()}int getMinute() {\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}Time t = rtc.time();\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}return t.min;\n` +
+        `${Blockly.Arduino.tab()}}\n` +
+        `${Blockly.Arduino.tab()}int getSecond() {\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}Time t = rtc.time();\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}return t.sec;\n` +
+        `${Blockly.Arduino.tab()}}\n` +
+        `${Blockly.Arduino.tab()}Time::Day calWeekDay(int y, int m, int d) {\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}int day = (d += m < 3 ? y-- : y - 2, 23*m/9 + d + 4 + y/4- y/100 + y/400)%7;\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}switch (day) {\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}case 7: return Time::kSunday;\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}case 1: return Time::kMonday;\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}case 2: return Time::kTuesday;\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}case 3: return Time::kWednesday;\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}case 4: return Time::kThursday;\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}case 5: return Time::kFriday;\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}case 6: return Time::kSaturday;\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}}\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}return Time::kSunday;\n` +
+        `${Blockly.Arduino.tab()}}\n` +
+        `}\n`;
+    return '';
+};
+Blockly.Arduino.sensor_DS1302 = function (a) {
+    const y = Blockly.Arduino.valueToCode(a, 'YEAR', Blockly.Arduino.ORDER_ATOMIC);
+    const m = Blockly.Arduino.valueToCode(a, 'MONTH', Blockly.Arduino.ORDER_ATOMIC);
+    const d = Blockly.Arduino.valueToCode(a, 'DATE', Blockly.Arduino.ORDER_ATOMIC);
+    const h = Blockly.Arduino.valueToCode(a, 'HOUR', Blockly.Arduino.ORDER_ATOMIC);
+    const min = Blockly.Arduino.valueToCode(a, 'MINUTE', Blockly.Arduino.ORDER_ATOMIC);
+    const s = Blockly.Arduino.valueToCode(a, 'SECOND', Blockly.Arduino.ORDER_ATOMIC);
+    Blockly.Arduino.setups_.setup_ds1302 = `${Blockly.Arduino.tab()}rtc.writeProtect(false);\n` +
+        `${Blockly.Arduino.tab()}rtc.halt(false);\n` +
+        `${Blockly.Arduino.tab()}Time t(${y},${m},${d},${h},${min},${s},calWeekDay(${y},${m},${d}));\n` +
+        `${Blockly.Arduino.tab()}rtc.time(t);`;
+
+    return '';
+};
+Blockly.Arduino.sensor_getDS1302 = function (a) {
+    const type = Blockly.Arduino.valueToCode(a, 'TYPE', Blockly.Arduino.ORDER_ATOMIC);
+    if (type === 'year') {
+        return ['getYear()', Blockly.Arduino.ORDER_ATOMIC];
+    } else if (type === 'month') {
+        return ['getMonth()', Blockly.Arduino.ORDER_ATOMIC];
+    } else if (type === 'date') {
+        return ['getDate()', Blockly.Arduino.ORDER_ATOMIC];
+    } else if (type === 'hour') {
+        return ['getHour()', Blockly.Arduino.ORDER_ATOMIC];
+    } else if (type === 'minute') {
+        return ['getMinute()', Blockly.Arduino.ORDER_ATOMIC];
+    } else if (type === 'second') {
+        return ['getSecond()', Blockly.Arduino.ORDER_ATOMIC];
+    } else if (type === 'day') {
+        return ['getDay()', Blockly.Arduino.ORDER_ATOMIC];
+    }
+    return ['', Blockly.Arduino.ORDER_ATOMIC];
 };
 Blockly.Arduino.sensor_infraredTrack = function (a){
     const b = Blockly.Arduino.ORDER_NONE; const mode = Blockly.Arduino.valueToCode(a, 'MODE', b);
