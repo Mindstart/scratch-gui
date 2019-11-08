@@ -497,6 +497,16 @@ Blockly.Arduino.operator_join = function (a){
             str2MethodBoo = true;
         }
     
+        // adjust order
+        const str0 = `${a.childBlocks_[0]}`;
+        const str1 = `${a.childBlocks_[1]}`;
+
+        if (b === str1 || c === str0) {
+            const tmpBoo = str1MethodBoo;
+            str1MethodBoo = str2MethodBoo;
+            str2MethodBoo = tmpBoo;
+        }
+
         if (str1MethodBoo && !str2MethodBoo) {
             return [`String(${b}) + String("${c}")`, Blockly.Arduino.ORDER_HIGH];
         } else if (!str1MethodBoo && str2MethodBoo) {
@@ -508,21 +518,83 @@ Blockly.Arduino.operator_join = function (a){
         }
     }
     
-    console.log(`operator_join childBlocks count : ${a.childBlocks_.length}`);
     return [`String("${b}") + String("${c}")`, Blockly.Arduino.ORDER_HIGH];
 };
 Blockly.Arduino.operator_letter_of = function (a){
+    const blockstr = a.toString();
     const b = Blockly.Arduino.valueToCode(a, 'LETTER', Blockly.Arduino.ORDER_HIGH) || '0';
     const c = Blockly.Arduino.valueToCode(a, 'STRING', Blockly.Arduino.ORDER_HIGH) || '0';
+
+    if (blockstr.indexOf('?') === -1) {
+        const str2Type = a.childBlocks_[1].category_;
+        let str2MethodBoo = false;
+        if (typeof str2Type !== 'undefined' && str2Type) {
+            str2MethodBoo = true;
+        }
+    
+        if (str2MethodBoo) {
+            return [`String(String(${c}).charAt(${b}-1))`, Blockly.Arduino.ORDER_HIGH];
+        }
+    }
+
     return [`String(String("${c}").charAt(${b}-1))`, Blockly.Arduino.ORDER_HIGH];
 };
 Blockly.Arduino.operator_length = function (a){
+    const blockstr = a.toString();
     const b = Blockly.Arduino.valueToCode(a, 'STRING', Blockly.Arduino.ORDER_HIGH) || '0';
+
+    if (blockstr.indexOf('?') === -1) {
+        const str1Type = a.childBlocks_[0].category_;
+        let str1MethodBoo = false;
+        if (typeof str1Type !== 'undefined' && str1Type) {
+            str1MethodBoo = true;
+        }
+    
+        if (str1MethodBoo) {
+            return [`String(${b}).length()`, Blockly.Arduino.ORDER_HIGH];
+        }        
+    }
+
     return [`String("${b}").length()`, Blockly.Arduino.ORDER_HIGH];
 };
 Blockly.Arduino.operator_contains = function (a){
+    const blockstr = `${a}`;
     const b = Blockly.Arduino.valueToCode(a, 'STRING1', Blockly.Arduino.ORDER_HIGH) || '0';
     const c = Blockly.Arduino.valueToCode(a, 'STRING2', Blockly.Arduino.ORDER_HIGH) || '0';
+
+    if (blockstr !== '? 包含 ? ?' && blockstr !== '? contains ? ?') {
+        const str1Type = a.childBlocks_[0].category_;
+        const str2Type = a.childBlocks_[1].category_;
+        let str1MethodBoo = false;
+        let str2MethodBoo = false;
+        if (typeof str1Type !== 'undefined' && str1Type) {
+            str1MethodBoo = true;
+        }
+        if (typeof str2Type !== 'undefined' && str2Type) {
+            str2MethodBoo = true;
+        }
+    
+        // adjust order
+        const str0 = `${a.childBlocks_[0]}`;
+        const str1 = `${a.childBlocks_[1]}`;
+    
+        if (b === str1 || c === str0) {
+            const tmpBoo = str1MethodBoo;
+            str1MethodBoo = str2MethodBoo;
+            str2MethodBoo = tmpBoo;
+        }
+    
+        if (str1MethodBoo && !str2MethodBoo) {
+            return [`(String(${b}).indexOf(String("${c}")) != -1)`, Blockly.Arduino.ORDER_HIGH];
+        } else if (!str1MethodBoo && str2MethodBoo) {
+            return [`(String("${b}").indexOf(String(${c})) != -1)`, Blockly.Arduino.ORDER_HIGH];
+        } else if (str1MethodBoo && str2MethodBoo) {
+            return [`(String(${b}).indexOf(String(${c})) != -1)`, Blockly.Arduino.ORDER_HIGH];
+        } else if (!str1MethodBoo && !str2MethodBoo) {
+            return [`(String("${b}").indexOf(String("${c}")) != -1)`, Blockly.Arduino.ORDER_HIGH];
+        }
+    }
+
     return [`(String("${b}").indexOf(String("${c}")) != -1)`, Blockly.Arduino.ORDER_HIGH];
 };
 Blockly.Arduino.operator_mod = function (a){
@@ -988,8 +1060,6 @@ Blockly.Arduino.sensor_lcdDisplay = function (a) {
     return `   displayLCD(${value},${row});\n`;
 };
 Blockly.Arduino.sensor_motorForward = function (a) {
-    console.info('enter arduino_motorForward');
-    console.info(a);
     Blockly.Arduino.setups_.setup_motor =
         '  pinMode(4,OUTPUT);\n' +
         '  pinMode(7,OUTPUT);\n' +
@@ -1052,15 +1122,13 @@ Blockly.Arduino.sensor_motorStop = function (a) {
     return code;
 };
 Blockly.Arduino.sensor_motorControl = function (a) {
-    console.info('enter sensor_motorControl');
-    console.info(a.toString());
     const speedL = Blockly.Arduino.valueToCode(a, 'POWERL', Blockly.Arduino.ORDER_ATOMIC) || '127';
     const speedR = Blockly.Arduino.valueToCode(a, 'POWERR', Blockly.Arduino.ORDER_ATOMIC) || '127';
-    const block_string = a.toString();
-    if (block_string.includes('L Forward') || block_string.includes('左马达转向为 前进')) {
+    const blockString = a.toString();
+    if (blockString.includes('L Forward') || blockString.includes('左马达转向为 前进')) {
         var dirL = 'HIGH';
     } else var dirL = 'LOW';
-    if (block_string.includes('R Forward') || block_string.includes('右马达转向为 前进')) {
+    if (blockString.includes('R Forward') || blockString.includes('右马达转向为 前进')) {
         var dirR = 'HIGH';
     } else var dirR = 'LOW';
     Blockly.Arduino.setups_.setup_motor =
