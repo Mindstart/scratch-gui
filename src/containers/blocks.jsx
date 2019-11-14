@@ -514,7 +514,7 @@ Blockly.Arduino.operator_join = function (a){
         } else if (str1MethodBoo && str2MethodBoo) {
             return [`String(${b}) + String(${c})`, Blockly.Arduino.ORDER_HIGH];
         } else if (!str1MethodBoo && !str2MethodBoo) {
-            return [`String("${b}") + String("${c})"`, Blockly.Arduino.ORDER_HIGH];
+            return [`String("${b}") + String("${c}")`, Blockly.Arduino.ORDER_HIGH];
         }
     }
     
