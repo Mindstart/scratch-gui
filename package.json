@@ -2,7 +2,10 @@
   "name": "Ainoview",
   "version": "0.1.3",
   "description": "Ainobot Programming Interface Using Scratch 3.0",
-  "main": "./dist/scratch-gui.js",
+  "window": {
+	  "icon": "./static/ainoview.png",
+	  "toolbar": true
+  },
   "scripts": {
     "build": "webpack --progress --colors --bail",
     "clean": "rimraf ./build && mkdirp build && rimraf ./dist && mkdirp dist",
