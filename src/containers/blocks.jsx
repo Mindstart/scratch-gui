@@ -1059,6 +1059,10 @@ Blockly.Arduino.sensor_lcdDisplay = function (a) {
 
     return `   displayLCD(${value},${row});\n`;
 };
+Blockly.Arduino.sensor_button = function (a) {
+    const b = Blockly.Arduino.ORDER_NONE;
+    return [`!digitalRead(${Blockly.Arduino.valueToCode(a, 'PIN', b)})`, b];
+};
 Blockly.Arduino.sensor_motorForward = function (a) {
     Blockly.Arduino.setups_.setup_motor =
         '  pinMode(4,OUTPUT);\n' +
