@@ -14,6 +14,9 @@ npm-*
 /build/*
 !/build/helper.js
 !/build/upload.bat
+!/build/package.json.example
+!/build/main.js
+!/build/mode-c_cpp.js
 /dist
 /.opt-in
 
