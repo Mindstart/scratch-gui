@@ -1,6 +1,6 @@
 {
   "name": "Ainoview",
-  "version": "0.1.3",
+  "version": "0.1.5",
   "description": "Ainobot Programming Interface Using Scratch 3.0",
   "window": {
 	  "icon": "./static/ainoview.png",
