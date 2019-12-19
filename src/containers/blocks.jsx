@@ -634,7 +634,7 @@ Blockly.Arduino.operator_contains = function (a){
 Blockly.Arduino.operator_mod = function (a){
     const b = Blockly.Arduino.valueToCode(a, 'NUM1', Blockly.Arduino.ORDER_HIGH) || '0';
     const c = Blockly.Arduino.valueToCode(a, 'NUM2', Blockly.Arduino.ORDER_HIGH) || '0';
-    return [`(((int)${b})%((int)${c})))`, Blockly.Arduino.ORDER_HIGH];
+    return [`(((int)${b})%((int)${c}))`, Blockly.Arduino.ORDER_HIGH];
 };
 Blockly.Arduino.operator_round = function (a){
     const b = Blockly.Arduino.valueToCode(a, 'NUM', Blockly.Arduino.ORDER_HIGH) || '0';
