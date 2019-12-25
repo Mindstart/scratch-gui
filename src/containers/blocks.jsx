@@ -478,7 +478,7 @@ Blockly.Arduino.text = function (a) {
 Blockly.Arduino.operator_random = function (a) {
     const b = Blockly.Arduino.valueToCode(a, 'FROM', Blockly.Arduino.ORDER_HIGH) || '0';
     a = Blockly.Arduino.valueToCode(a, 'TO', Blockly.Arduino.ORDER_HIGH) || '0';
-    return [`random(${b},${a})`, Blockly.Arduino.ORDER_HIGH];
+    return [`random(${b},${a}+1)`, Blockly.Arduino.ORDER_HIGH];
 };
 Blockly.Arduino.operator_compare = function (a) {
     const b = Blockly.Arduino.valueToCode(a, 'OPERAND1', Blockly.Arduino.ORDER_HIGH) || '0';
