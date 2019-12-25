@@ -17,6 +17,9 @@ npm-*
 !/build/package.json.example
 !/build/main.js
 !/build/mode-c_cpp.js
+!/build/arduino
+/build/arduino/*
+!/build/arduino/libraries
 /dist
 /.opt-in
 
