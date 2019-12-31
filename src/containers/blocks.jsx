@@ -335,7 +335,17 @@ Blockly.Arduino.sensor_menu_pinLevel = function (a) {
     }
     return [retValue, Blockly.Arduino.ORDER_ATOMIC];
 };
-Blockly.Arduino.sensor_menu_boolVal = function (a) {
+Blockly.Arduino.display_menu_pinLevel = function (a) {
+    const str = a.toString();
+    let retValue = 0;
+    if (str === 'low' || str === '低电平') {
+        retValue = 'LOW';
+    } else if (str === 'high' || str === '高电平') {
+        retValue = 'HIGH';
+    }
+    return [retValue, Blockly.Arduino.ORDER_ATOMIC];
+};
+Blockly.Arduino.display_menu_boolVal = function (a) {
     const str = a.toString();
     let retValue = 0;
     if (str === 'false' || str === '否') {
@@ -405,15 +415,19 @@ Blockly.Arduino.sensor_menu_digitalPin = function (a) {
     const str = a.toString();
     return [str, Blockly.Arduino.ORDER_ATOMIC];
 };
-Blockly.Arduino.sensor_menu_segment1Pin = function (a) {
+Blockly.Arduino.display_menu_digitalPin = function (a) {
     const str = a.toString();
     return [str, Blockly.Arduino.ORDER_ATOMIC];
 };
-Blockly.Arduino.sensor_menu_segment2Pin = function (a) {
+Blockly.Arduino.display_menu_segment1Pin = function (a) {
     const str = a.toString();
     return [str, Blockly.Arduino.ORDER_ATOMIC];
 };
-Blockly.Arduino.sensor_menu_segmentNum = function (a) {
+Blockly.Arduino.display_menu_segment2Pin = function (a) {
+    const str = a.toString();
+    return [str, Blockly.Arduino.ORDER_ATOMIC];
+};
+Blockly.Arduino.display_menu_segmentNum = function (a) {
     const str = a.toString();
     return [str, Blockly.Arduino.ORDER_ATOMIC];
 };
@@ -521,7 +535,7 @@ Blockly.Arduino.sensor_menu_bmpData = function (a) {
 Blockly.Arduino.sensor_menu_dataType = function (a){
     return [a.toString(), Blockly.Arduino.ORDER_ATOMIC];
 };
-Blockly.Arduino.sensor_menu_lcdLine = function (a){
+Blockly.Arduino.display_menu_lcdLine = function (a){
     return [a.toString(), Blockly.Arduino.ORDER_ATOMIC];
 };
 Blockly.Arduino.sensor_menu_oss = function (a) {
@@ -1093,12 +1107,12 @@ Blockly.Arduino.sensor_bmp180 = function (a){
 		'}\n';
     return [`calculate(${data})`, Blockly.Arduino.ORDER_ATOMIC];
 };
-Blockly.Arduino.sensor_lcdAddress = function (a){
+Blockly.Arduino.display_lcdAddress = function (a){
     const address = Blockly.Arduino.valueToCode(a, 'VALUE', Blockly.Arduino.ORDER_NONE);
     Blockly.Arduino.variables_.var_lcd = `LiquidCrystal_I2C lcd(${address},16,2);\n`;
     return '';
 };
-Blockly.Arduino.sensor_lcdDisplay = function (a) {
+Blockly.Arduino.display_lcdDisplay = function (a) {
     let row = Blockly.Arduino.valueToCode(a, 'ROW', Blockly.Arduino.ORDER_NONE);
     if (row === '2') {
         row = '1';
@@ -1164,7 +1178,7 @@ Blockly.Arduino.sensor_button = function (a) {
 Blockly.Arduino.arduino_systemUptime = function (a) {
     return ['millis()', Blockly.Arduino.ORDER_ATOMIC];
 };
-Blockly.Arduino.sensor_initOneBitSegment = function (a) {
+Blockly.Arduino.display_initOneBitSegment = function (a) {
     const pinA = Blockly.Arduino.valueToCode(a, 'PIN_A', Blockly.Arduino.ORDER_NONE);
     const pinB = Blockly.Arduino.valueToCode(a, 'PIN_B', Blockly.Arduino.ORDER_NONE);
     const pinC = Blockly.Arduino.valueToCode(a, 'PIN_C', Blockly.Arduino.ORDER_NONE);
@@ -1196,7 +1210,7 @@ Blockly.Arduino.sensor_initOneBitSegment = function (a) {
 
     return '';
 };
-Blockly.Arduino.sensor_initTwoBitSegment = function (a) {
+Blockly.Arduino.display_initTwoBitSegment = function (a) {
     const pinA = Blockly.Arduino.valueToCode(a, 'PIN_A', Blockly.Arduino.ORDER_NONE);
     const pinB = Blockly.Arduino.valueToCode(a, 'PIN_B', Blockly.Arduino.ORDER_NONE);
     const pinC = Blockly.Arduino.valueToCode(a, 'PIN_C', Blockly.Arduino.ORDER_NONE);
@@ -1231,7 +1245,7 @@ Blockly.Arduino.sensor_initTwoBitSegment = function (a) {
 
     return '';
 };
-Blockly.Arduino.sensor_oneBitSegment = function (a) {
+Blockly.Arduino.display_oneBitSegment = function (a) {
     const blockstr = a.toString();
     if (blockstr.indexOf('?') === -1) {
         const pin = Blockly.Arduino.valueToCode(a, 'PIN', Blockly.Arduino.ORDER_ATOMIC);
@@ -1240,7 +1254,7 @@ Blockly.Arduino.sensor_oneBitSegment = function (a) {
     }
     return ``;
 };
-Blockly.Arduino.sensor_twoBitSegment = function (a) {
+Blockly.Arduino.display_twoBitSegment = function (a) {
     const blockstr = a.toString();
     if (blockstr.indexOf('?') === -1) {
         const pin = Blockly.Arduino.valueToCode(a, 'PIN', Blockly.Arduino.ORDER_ATOMIC);
@@ -1249,7 +1263,7 @@ Blockly.Arduino.sensor_twoBitSegment = function (a) {
     }
     return ``;
 };
-Blockly.Arduino.sensor_segmentDisplay = function (a) {
+Blockly.Arduino.display_segmentDisplay = function (a) {
     const blockstr = a.toString();
     if (blockstr.indexOf('?') === -1) {
         Blockly.Arduino.definitions_.define_variable_segment = '//根据共阴极数码管段码表定义0~9显示的各段开关状态\n' +
@@ -1280,11 +1294,66 @@ Blockly.Arduino.sensor_segmentDisplay = function (a) {
             '}\n';
 
         const num = Blockly.Arduino.valueToCode(a, 'NUM', Blockly.Arduino.ORDER_ATOMIC);
-        return `showNum(${num})${Blockly.Arduino.END}`;
+        return  `${Blockly.Arduino.tab()}showNum(${num})${Blockly.Arduino.END}`;
     }
     return ``;
 };
-Blockly.Arduino.sensor_segmentDisplayDot = function (a) {
+Blockly.Arduino.display_segmentDisplayTwoDigits = function (a){
+    const blockstr = a.toString();
+    console.log("1");
+    if (blockstr.indexOf('?') === -1) {
+        console.log("2");
+        Blockly.Arduino.definitions_.define_variable_segment = '//根据共阴极数码管段码表定义0~99显示的各段开关状态\n' +
+            `const int numTable[10][8] = {\n` +
+            `${Blockly.Arduino.tab()}//1为点亮，0为关闭\n` +
+            `${Blockly.Arduino.tab()}//a  b  c  d  e  f  g  dp\n` +
+            `${Blockly.Arduino.tab()}{1, 1, 1, 1, 1, 1, 0, 0},//0\n` +
+            `${Blockly.Arduino.tab()}{0, 1, 1, 0, 0, 0, 0, 0},//1\n` +
+            `${Blockly.Arduino.tab()}{1, 1, 0, 1, 1, 0, 1, 0},//2\n` +
+            `${Blockly.Arduino.tab()}{1, 1, 1, 1, 0, 0, 1, 0},//3\n` +
+            `${Blockly.Arduino.tab()}{0, 1, 1, 0, 0, 1, 1, 0},//4\n` +
+            `${Blockly.Arduino.tab()}{1, 0, 1, 1, 0, 1, 1, 0},//5\n` +
+            `${Blockly.Arduino.tab()}{1, 0, 1, 1, 1, 1, 1, 0},//6\n` +
+            `${Blockly.Arduino.tab()}{1, 1, 1, 0, 0, 0, 0, 0},//7\n` +
+            `${Blockly.Arduino.tab()}{1, 1, 1, 1, 1, 1, 1, 0},//8\n` +
+            `${Blockly.Arduino.tab()}{1, 1, 1, 1, 0, 1, 1, 0},//9\n` +
+            '};\n';
+            console.log("3");
+        Blockly.Arduino.definitions_.define_showNum = 'void showNum(int num) {\n' +
+            `${Blockly.Arduino.tab()}digitalWrite(A_PIN, numTable[num][0]);\n` +
+            `${Blockly.Arduino.tab()}digitalWrite(B_PIN, numTable[num][1]);\n` +
+            `${Blockly.Arduino.tab()}digitalWrite(C_PIN, numTable[num][2]);\n` +
+            `${Blockly.Arduino.tab()}digitalWrite(D_PIN, numTable[num][3]);\n` +
+            `${Blockly.Arduino.tab()}digitalWrite(E_PIN, numTable[num][4]);\n` +
+            `${Blockly.Arduino.tab()}digitalWrite(F_PIN, numTable[num][5]);\n` +
+            `${Blockly.Arduino.tab()}digitalWrite(G_PIN, numTable[num][6]);\n` +
+            `${Blockly.Arduino.tab()}digitalWrite(DP_PIN, numTable[num][7]);\n` +
+            '}\n';
+            console.log("4");
+        Blockly.Arduino.definitions_.define_displayTwoDigits = 'void showTwoDigits(int num) {\n' +
+            `${Blockly.Arduino.tab()}showNum(int(num/10));\n` +
+            `${Blockly.Arduino.tab()}digitalWrite(COM1_PIN,LOW);\n` +
+            `${Blockly.Arduino.tab()}digitalWrite(COM2_PIN,HIGH);\n` +
+            `${Blockly.Arduino.tab()}digitalWrite(DP_PIN,LOW);\n` +
+            `${Blockly.Arduino.tab()}delay(0.01*1000);\n` +
+            `${Blockly.Arduino.tab()}showNum(num - int(num/10)*10);\n` +
+            `${Blockly.Arduino.tab()}digitalWrite(COM1_PIN,HIGH);\n` +
+            `${Blockly.Arduino.tab()}digitalWrite(COM2_PIN,LOW);\n` +
+            `${Blockly.Arduino.tab()}digitalWrite(DP_PIN,LOW);\n` +
+            `${Blockly.Arduino.tab()}delay(0.01*1000);\n` +
+            '}\n';
+            console.log("4");
+        const num = Blockly.Arduino.valueToCode(a, 'NUM', Blockly.Arduino.ORDER_ATOMIC);
+        console.log("num: "+num);
+        if (num < 0 || num > 99){
+            alert(`${e.message}. Input must be integer between 0 ~ 99.`);
+            return `${Blockly.Arduino.tab()}showTwoDigits(0)${Blockly.Arduino.END}`;
+        }
+        return `${Blockly.Arduino.tab()}showTwoDigits(${num})${Blockly.Arduino.END}`;
+    }
+    return ``;
+};
+Blockly.Arduino.display_segmentDisplayDot = function (a) {
     const blockstr = a.toString();
     if (blockstr.indexOf('?') === -1) {
         const boolval = Blockly.Arduino.valueToCode(a, 'BOOLVAL', Blockly.Arduino.ORDER_ATOMIC);
@@ -1292,7 +1361,7 @@ Blockly.Arduino.sensor_segmentDisplayDot = function (a) {
     }
     return ``;
 };
-Blockly.Arduino.sensor_motorForward = function (a) {
+Blockly.Arduino.motor_motorForward = function (a) {
     Blockly.Arduino.setups_.setup_motor =
         'pinMode(4,OUTPUT);\n' +
         'pinMode(7,OUTPUT);\n' +
@@ -1305,7 +1374,7 @@ Blockly.Arduino.sensor_motorForward = function (a) {
         `digitalWrite(4,LOW);\n`;
     return code;
 };
-Blockly.Arduino.sensor_motorBackward = function (a) {
+Blockly.Arduino.motor_motorBackward = function (a) {
     Blockly.Arduino.setups_.setup_motor =
         'pinMode(4,OUTPUT);\n' +
         'pinMode(7,OUTPUT);\n' +
@@ -1318,7 +1387,7 @@ Blockly.Arduino.sensor_motorBackward = function (a) {
         `digitalWrite(4,HIGH);\n`;
     return code;
 };
-Blockly.Arduino.sensor_motorTurnRight = function (a) {
+Blockly.Arduino.motor_motorTurnRight = function (a) {
     Blockly.Arduino.setups_.setup_motor =
         'pinMode(4,OUTPUT);\n' +
         'pinMode(7,OUTPUT);\n' +
@@ -1331,7 +1400,7 @@ Blockly.Arduino.sensor_motorTurnRight = function (a) {
         `digitalWrite(4,LOW);\n`;
     return code;
 };
-Blockly.Arduino.sensor_motorTurnLeft = function (a) {
+Blockly.Arduino.motor_motorTurnLeft = function (a) {
     Blockly.Arduino.setups_.setup_motor =
         'pinMode(4,OUTPUT);\n' +
         'pinMode(7,OUTPUT);\n' +
@@ -1344,7 +1413,7 @@ Blockly.Arduino.sensor_motorTurnLeft = function (a) {
         `digitalWrite(4,LOW);\n`;
     return code;
 };
-Blockly.Arduino.sensor_motorStop = function (a) {
+Blockly.Arduino.motor_motorStop = function (a) {
     Blockly.Arduino.setups_.setup_motor =
         'pinMode(4,OUTPUT);\n' +
         'pinMode(7,OUTPUT);\n' +
@@ -1477,7 +1546,7 @@ Blockly.Arduino.sensor_getLeftOrRightSpeed = function (a) {
     }
     return ['', Blockly.Arduino.ORDER_ATOMIC];
 };
-Blockly.Arduino.sensor_motorControl = function (a) {
+Blockly.Arduino.motor_motorControl = function (a) {
     const speedL = Blockly.Arduino.valueToCode(a, 'POWERL', Blockly.Arduino.ORDER_ATOMIC) || '127';
     const speedR = Blockly.Arduino.valueToCode(a, 'POWERR', Blockly.Arduino.ORDER_ATOMIC) || '127';
     const blockString = a.toString();

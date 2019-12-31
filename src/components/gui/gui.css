@@ -192,7 +192,7 @@
         Only reason we need this, is so .targetWrapper, which holds the selectors,
         goes to full vertical height of the window
     */
-    display: flex;
+    display: none;
     flex-direction: column;
     /* pad entire wrapper to the left and right; allow children to fill width */
     padding-left: $space;

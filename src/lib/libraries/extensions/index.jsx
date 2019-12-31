@@ -54,6 +54,12 @@ import gdxforConnectionSmallIconURL from './gdxfor/gdxfor-small.svg';
 import sensorIconURL from './sensor/sensor.png';
 import sensorInsetIconURL from './sensor/sensor-small.svg';
 
+import displayIconURL from './display/sensor.png';
+import displayInsetIconURL from './display/sensor-small.svg';
+
+import motorIconURL from './motor/sensor.png';
+import motorInsetIconURL from './motor/sensor-small.svg';
+
 
 export default [
     {
@@ -362,7 +368,7 @@ export default [
         connectingMessage: (
             <FormattedMessage
                 defaultMessage="Connecting..."
-                description="Message to help people connect to their Arduino. Must note the PIN should be 1234."
+                description="Message to help people connect to their Arduino."
                 id="gui.extension.arduino.connectingMessage"
             />
         )
@@ -376,8 +382,40 @@ export default [
         description: (
             <FormattedMessage
                 defaultMessage="Sensors for building robot."
-                description="Description for the 'Arduino UNO' extension"
+                description="Description for the sensor extension"
                 id="gui.extension.sensor.description"
+            />
+        ),
+        featured: true,
+        disabled: false
+    },
+    {
+        name: 'Display',
+        extensionId: 'display',
+		collaborator: 'MindStart',
+        iconURL: displayIconURL,
+		insetIconURL: displayInsetIconURL,
+        description: (
+            <FormattedMessage
+                defaultMessage="Visual presentation of data."
+                description="Description for the display device extension"
+                id="gui.extension.display.description"
+            />
+        ),
+        featured: true,
+        disabled: false
+    },
+    {
+        name: 'Motor',
+        extensionId: 'motor',
+		collaborator: 'MindStart',
+        iconURL: motorIconURL,
+		insetIconURL: motorInsetIconURL,
+        description: (
+            <FormattedMessage
+                defaultMessage="Supplies motive power for robot."
+                description="Description for the motor device extension"
+                id="gui.extension.motor.description"
             />
         ),
         featured: true,
