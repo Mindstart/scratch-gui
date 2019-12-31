@@ -557,7 +557,6 @@ class MenuBar extends React.Component {
                         ) : [])}
                     </div> */}
                 </div>
-
                 {/* show the proper UI in the account menu, given whether the user is
                 logged in, and whether a session is available to log in with */}
                 <div className={styles.accountInfoGroup}>
@@ -642,7 +641,7 @@ class MenuBar extends React.Component {
                     ) : (
                         // ******** no login session is available, so don't show login stuff
                         <React.Fragment>
-                            {/* <div className={classNames(styles.menuBarItem)}>
+                            { <div className={classNames(styles.menuBarItem)}>
                                 <a
                                     className={styles.arduinoLink}
                                     target="_blank"
@@ -653,13 +652,13 @@ class MenuBar extends React.Component {
                                         onClick={this.props.toggleArduinoPanel}
                                     >
                                         <FormattedMessage
-                                            defaultMessage="Arduino Panel"
+                                            defaultMessage="Code Converter"
                                             description="Label for project Arduino Code button"
                                             id="gui.menuBar.arduinoPanel"
                                         />
                                     </Button>
                                 </a>
-                            </div> */}
+                            </div>}
                             {/* {this.props.showComingSoon ? (
                                 <React.Fragment>
                                     <MenuBarItemTooltip id="mystuff">
