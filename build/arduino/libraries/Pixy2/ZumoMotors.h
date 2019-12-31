@@ -28,6 +28,8 @@ class ZumoMotors
 
     static void setPower1(double number);//设置小车空载时电机的功率系数【建议取值范围0.6 - 0.9之间】
     static void setPower2(double number);//设置小车载满球时电机的功率系数【建议取值范围0.7 - 0.98之间】
+
+    static void setPowerNum(double number);//设置小车电机的功率系数【建议取值范围0.7 - 0.98之间】
     
 
     static void setLeftSpeed2(int speed,int taskFlag);//载满球和空车时的电机功率系数不能一样

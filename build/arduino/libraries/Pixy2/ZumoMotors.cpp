@@ -16,10 +16,10 @@
 
 static boolean flipLeft = false;
 static boolean flipRight = false;
-static double powerNum = 0.84;//电机功率系数
+static double powerNum = 0.86;//电机功率系数
 
-static double taskPower1 = 0.86;//空载时小车电机的功率系数
-static double taskPower2 = 0.89;//载满球时小车电机的功率系数
+static double taskPower1 = 0.87;//空载时小车电机的功率系数
+static double taskPower2 = 0.86;//载满球时小车电机的功率系数
 
 static boolean taskFlag = true;//true时，表示执行附加任务，此时是载满球的小车，功率系数应该加大
 
@@ -43,6 +43,11 @@ void ZumoMotors::init2()
 void ZumoMotors::setTaskFlag(boolean flag)
 {
     taskFlag = flag;
+}
+
+void ZumoMotors::setPowerNum(double number)//设置小车电机的功率系数【建议取值范围0.6 - 0.9之间】
+{
+    powerNum = number;
 }
 
 void ZumoMotors::setPower1(double number)//设置小车空载【基础任务】时电机的功率系数【建议取值范围0.6 - 0.9之间】
@@ -75,14 +80,15 @@ void ZumoMotors::setLeftSpeed(int speed)
   Serial.print("Left speed=====>>");
   Serial.println(value);
   // analogWrite(PWM_L, speed * 51 / 80);
-  // analogWrite(PWM_L, (speed * 51 / 80) * powerNum);
   
-  if (taskFlag)//true时，表示执行附加任务，此时是载满球的小车，功率系数应该加大
-  {
-    analogWrite(PWM_L, (speed * 51 / 80) * taskPower2);
-  }else{
-    analogWrite(PWM_L, (speed * 51 / 80) * taskPower1);
-  }
+  analogWrite(PWM_L, (speed * 51 / 80) * powerNum);//改为统一的功率系数，根据任务类型不同，自己调用方法设置功率系数
+  
+  // if (taskFlag)//true时，表示执行附加任务，此时是载满球的小车，功率系数应该加大
+  // {
+  //   analogWrite(PWM_L, (speed * 51 / 80) * taskPower2);
+  // }else{
+  //   analogWrite(PWM_L, (speed * 51 / 80) * taskPower1);
+  // }
 
   // digitalWrite(7, HIGH);
   if (reverse){
@@ -146,14 +152,15 @@ void ZumoMotors::setRightSpeed(int speed)
   Serial.print("Right speed=====>>");
   Serial.println(value);
   // analogWrite(PWM_R, speed * 51 / 80);
-  // analogWrite(PWM_R, (speed * 51 / 80) * powerNum);
+  
+  analogWrite(PWM_R, (speed * 51 / 80) * powerNum);//改为统一的功率系数，根据任务类型不同，自己调用方法设置功率系数
 
-  if (taskFlag)//true时，表示执行附加任务，此时是载满球的小车，功率系数应该加大
-  {
-    analogWrite(PWM_R, (speed * 51 / 80) * taskPower2);
-  }else{
-    analogWrite(PWM_R, (speed * 51 / 80) * taskPower1);
-  }
+  // if (taskFlag)//true时，表示执行附加任务，此时是载满球的小车，功率系数应该加大
+  // {
+  //   analogWrite(PWM_R, (speed * 51 / 80) * taskPower2);
+  // }else{
+  //   analogWrite(PWM_R, (speed * 51 / 80) * taskPower1);
+  // }
     
 // #ifdef USE_20KHZ_PWM
 //   OCR1A = speed;
