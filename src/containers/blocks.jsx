@@ -396,18 +396,14 @@ Blockly.Arduino.sensor_menu_pixy2Command = function (a) {
     let retValue = 0;
     if (str === 'Refresh Data In Tracking Mode' || str === '获取传感器数据') {
         retValue = '0';
-    } else if (str === 'Calculate Heading Error With Respect To m_x1' || str === '计算航向误差') {
+    } else if (str === 'Calculate Left And Right Wheel Speed' || str === '计算左右车轮速度') {
         retValue = '1';
-    } else if (str === 'Perform PID Calcs On Heading Error' || str === '对航向误差进行PID计算') {
-        retValue = '2';
-    } else if (str === 'Separate Heading Into Wheel Velocities' || str === '将前进方向分为左右车轮速度') {
-        retValue = '3';
     } else if (str === 'Slow Down' || str === '减速') {
-        retValue = '4';
+        retValue = '2';
     } else if (str === 'Boost' || str === '加速') {
-        retValue = '5';
+        retValue = '3';
     } else if (str === 'Reverse Vector' || str === '反转向量') {
-        retValue = '6';
+        retValue = '4';
     }
     return [retValue, Blockly.Arduino.ORDER_ATOMIC];
 };
@@ -1473,9 +1469,9 @@ Blockly.Arduino.sensor_setRoboRaveTaskType = function (a) {
 Blockly.Arduino.sensor_setMotorSpeedBasedOnPixy2 = function (a) {
     const blockstr = a.toString();
     if (blockstr.indexOf('?') === -1) {
-        const direction = Blockly.Arduino.valueToCode(a, 'DIRECTION', Blockly.Arduino.ORDER_NONE);
-        const speed = Blockly.Arduino.valueToCode(a, 'SPEED', Blockly.Arduino.ORDER_NONE);
-        return `motors.set${direction}Speed(${speed})${Blockly.Arduino.END}`;
+        const leftSpeed = Blockly.Arduino.valueToCode(a, 'LEFT_SPEED', Blockly.Arduino.ORDER_NONE);
+        const rightSpeed = Blockly.Arduino.valueToCode(a, 'RIGHT_SPEED', Blockly.Arduino.ORDER_NONE);
+        return `motors.setLeftSpeed(${leftSpeed});\nmotors.setRightSpeed(${rightSpeed})${Blockly.Arduino.END}`;
     }
     return ``;
 };
@@ -1487,21 +1483,15 @@ Blockly.Arduino.sensor_refreshDataInTrackingModeFromPixy2 = function (a) {
             return `res = pixy.line.getMainFeatures()${Blockly.Arduino.END}`;
         }
         if (pixy2Command === '1') {
-            return `error = (int32_t)pixy.line.vectors->m_x1 - (int32_t)X_CENTER${Blockly.Arduino.END}`;
+            return `error = (int32_t)pixy.line.vectors->m_x1 - (int32_t)X_CENTER;\nheadingLoop.update(error);\nleft = headingLoop.m_command;\nright = -headingLoop.m_command${Blockly.Arduino.END}`;
         }
         if (pixy2Command === '2') {
-            return `headingLoop.update(error)${Blockly.Arduino.END}`;
-        }
-        if (pixy2Command === '3') {
-            return `left = headingLoop.m_command;\nright = -headingLoop.m_command${Blockly.Arduino.END}`;
-        }
-        if (pixy2Command === '4') {
             return `left += ZUMO_SLOW;\nright += ZUMO_SLOW${Blockly.Arduino.END}`;
         }
-        if (pixy2Command === '5') {
+        if (pixy2Command === '3') {
             return `left += ZUMO_FAST;\nright += ZUMO_FAST${Blockly.Arduino.END}`;
         }
-        if (pixy2Command === '6') {
+        if (pixy2Command === '4') {
             return `pixy.line.reverseVector()${Blockly.Arduino.END}`;
         }
         
