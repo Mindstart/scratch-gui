@@ -90,7 +90,10 @@ Blockly.Arduino.finish = function (a) {
 
     a = j.join('\n') + a;
 
-    Blockly.Arduino.codeStage == Blockly.Arduino.Setup && (d += `\nvoid loop(){\n${a}\n}\n`);
+    // Blockly.Arduino.codeStage == Blockly.Arduino.Setup && (d += `\nvoid loop(){\n${a}\n}\n`);
+    if (Blockly.Arduino.codeStage == Blockly.Arduino.Setup) {
+        d += `\nvoid loop(){\n${a}\n}\n`;
+    }
     delete Blockly.Arduino.definitions_;
     delete Blockly.Arduino.includes_;
     delete Blockly.Arduino.variables_;
@@ -98,10 +101,11 @@ Blockly.Arduino.finish = function (a) {
     Blockly.Arduino.variableDB_.reset();
     return d;
 };
-Blockly.Arduino.scrub_ = function (a, b) {
-    a = a.nextConnection && a.nextConnection.targetBlock();
-    a = Blockly.Arduino.blockToCode(a);
-    return b + a;
+
+Blockly.Arduino.scrub_ = function (block, code) {
+    const nextBlock = block.nextConnection && block.nextConnection.targetBlock();
+    const nextCode = Blockly.Arduino.blockToCode(nextBlock);
+    return code + nextCode;
 };
 Blockly.Arduino.scrubNakedValue = function (a) {
     return `${a}\n`;
@@ -135,34 +139,35 @@ Blockly.Arduino.arduino_loop = function (a){
     c = Blockly.Arduino.addLoopTrap(c, a.id);
     return c;
 };
+
 Blockly.Arduino.arduino_pin_mode = function (a) {
     const b = Blockly.Arduino.ORDER_NONE; const c = Blockly.Arduino.valueToCode(a, 'PIN', b);
     a = Blockly.Arduino.valueToCode(a, 'MODE', b);
-    return `${Blockly.Arduino.tab()}pinMode(${c},${a})${Blockly.Arduino.END}`;
+    return `pinMode(${c},${a})${Blockly.Arduino.END}`;
 };
 Blockly.Arduino.arduino_serial_begin = function (a){
     const baud = Blockly.Arduino.valueToCode(a, 'Baud', Blockly.Arduino.ORDER_ATOMIC);
-    return `${Blockly.Arduino.tab()}Serial.begin(${baud});\n`;
+    return `Serial.begin(${baud});\n`;
 };
 Blockly.Arduino.arduino_serial_print = function (a){
     const b = Blockly.Arduino.valueToCode(a, 'NL', Blockly.Arduino.ORDER_ATOMIC);
     a = Blockly.Arduino.valueToCode(a, 'VALUE', Blockly.Arduino.ORDER_ATOMIC);
     if (a.indexOf('(') === 0 || (a.indexOf('()') !== -1) || (a.indexOf('(') > 0 && a.indexOf(')') > 0)) {
-        return `${Blockly.Arduino.tab()}${b}(${a})${Blockly.Arduino.END}`;
+        return `${b}(${a})${Blockly.Arduino.END}`;
     }
-    return `${Blockly.Arduino.tab()}${b}("${a}")${Blockly.Arduino.END}`;
+    return `${b}("${a}")${Blockly.Arduino.END}`;
 };
 Blockly.Arduino.arduino_pwm_write = function (a) {
     const b = Blockly.Arduino.ORDER_NONE;
     const c = Blockly.Arduino.valueToCode(a, 'PIN', b);
     a = Blockly.Arduino.valueToCode(a, 'VALUE', b);
-    return `${Blockly.Arduino.tab()}analogWrite(${c},${a})${Blockly.Arduino.END}`;
+    return `analogWrite(${c},${a})${Blockly.Arduino.END}`;
 };
 Blockly.Arduino.arduino_digital_write = function (a) {
     const b = Blockly.Arduino.ORDER_NONE;
     const c = Blockly.Arduino.valueToCode(a, 'PIN', b);
     a = Blockly.Arduino.valueToCode(a, 'LEVEL', b);
-    return `${Blockly.Arduino.tab()}digitalWrite(${c},${a})${Blockly.Arduino.END}`;
+    return `digitalWrite(${c},${a})${Blockly.Arduino.END}`;
 };
 Blockly.Arduino.arduino_digital_read = function (a) {
     const b = Blockly.Arduino.ORDER_NONE;
@@ -193,7 +198,7 @@ Blockly.Arduino.arduino_servo_write = function (a) {
     a = Blockly.Arduino.valueToCode(a, 'DEGREE', b);
     c = `${Blockly.Arduino.tab()}servo.attach(${c})${Blockly.Arduino.END}`;
     Blockly.Arduino.setups_.servo = c;
-    return `${Blockly.Arduino.tab()}servo.write(${a})${Blockly.Arduino.END}`;
+    return `servo.write(${a})${Blockly.Arduino.END}`;
 };
 Blockly.Arduino.arduino_menu = function (a) {
     console.info(`inputList=${a.inputList[1].name} ${a.inputList[1].getValue()} ${a.inputList[1].fieldRow[0].value_}`);
@@ -224,27 +229,27 @@ Blockly.Arduino.control_repeat = function (a) {
     const b = Blockly.Arduino.valueToCode(a, 'TIMES', Blockly.Arduino.ORDER_HIGH);
     let c = Blockly.Arduino.statementToCode(a, 'SUBSTACK');
     c = Blockly.Arduino.addLoopTrap(c, a.id);
-    a = `${Blockly.Arduino.tab()}for(int i=0;i<${b};i++){\n`;
+    a = `for(int i=0;i<${b};i++){\n`;
     Blockly.Arduino.tabPos++;
     Blockly.Arduino.tabPos--;
-    return a = `${a + c}${Blockly.Arduino.tab()}}\n`;
+    return a = `${a + c}}\n`;
 };
 Blockly.Arduino.control_forever = function (a) {
-    let b = `${Blockly.Arduino.tab()}while(1){\n`;
+    let b = `while(1){\n`;
     Blockly.Arduino.tabPos++;
     let c = Blockly.Arduino.statementToCode(a, 'SUBSTACK');
     c = Blockly.Arduino.addLoopTrap(c, a.id);
     Blockly.Arduino.tabPos--;
-    return b = `${b + c}${Blockly.Arduino.tab()}}\n`;
+    return b = `${b + c}}\n`;
 };
 Blockly.Arduino.control_if = function (a) {
     const b = Blockly.Arduino.valueToCode(a, 'CONDITION', Blockly.Arduino.ORDER_NONE) || 'false';
     let c = Blockly.Arduino.statementToCode(a, 'SUBSTACK');
     c = Blockly.Arduino.addLoopTrap(c, a.id);
-    a = `${Blockly.Arduino.tab()}if(${b}){\n`;
+    a = `if(${b}){\n`;
     Blockly.Arduino.tabPos++;
     Blockly.Arduino.tabPos--;
-    return a = `${a + c}${Blockly.Arduino.tab()}}\n`;
+    return a = `${a + c}}\n`;
 };
 Blockly.Arduino.control_if_else = function (a) {
     let b = Blockly.Arduino.valueToCode(a, 'CONDITION', Blockly.Arduino.ORDER_NONE) || 'false';
@@ -252,29 +257,29 @@ Blockly.Arduino.control_if_else = function (a) {
     c = Blockly.Arduino.addLoopTrap(c, a.id);
     let d = Blockly.Arduino.statementToCode(a, 'SUBSTACK2');
     d = Blockly.Arduino.addLoopTrap(d, a.id);
-    b = `${Blockly.Arduino.tab()}if(${b}){\n`;
+    b = `if(${b}){\n`;
     Blockly.Arduino.tabPos++;
     Blockly.Arduino.tabPos--;
-    b = `${b + c}${Blockly.Arduino.tab()}}else{\n`;
+    b = `${b + c}}else{\n`;
     Blockly.Arduino.tabPos++;
     Blockly.Arduino.tabPos--;
-    return b = `${b + d}${Blockly.Arduino.tab()}}\n`;
+    return b = `${b + d}}\n`;
 };
 Blockly.Arduino.control_repeat_until = function (a){
     const b = Blockly.Arduino.valueToCode(a, 'CONDITION', Blockly.Arduino.ORDER_NONE) || 'false';
     const c = Blockly.Arduino.statementToCode(a, 'SUBSTACK');
-    a = `${Blockly.Arduino.tab()}while(!(${b})){\n`;
+    a = `while(!(${b})){\n`;
     Blockly.Arduino.tabPos++;
     Blockly.Arduino.tabPos--;
-    return a = `${a + c}${Blockly.Arduino.tab()}}\n`;
+    return a = `${a + c}}\n`;
 };
 Blockly.Arduino.control_wait_until = function (a){
     const b = Blockly.Arduino.valueToCode(a, 'CONDITION', Blockly.Arduino.ORDER_NONE) || 'false';
     const c = Blockly.Arduino.statementToCode(a, 'SUBSTACK');
-    a = `${Blockly.Arduino.tab()}while(!(${b})){\n`;
+    a = `while(!(${b})){\n`;
     Blockly.Arduino.tabPos++;
     Blockly.Arduino.tabPos--;
-    return a = `${a + c}${Blockly.Arduino.tab()}}\n`;
+    return a = `${a + c}}\n`;
 };
 Blockly.Arduino.looks_say = function (a) {
     a = Blockly.Arduino.valueToCode(a, 'MESSAGE', Blockly.Arduino.ORDER_ATOMIC);

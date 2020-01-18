@@ -3,8 +3,8 @@
   "version": "0.1.7",
   "description": "Ainobot Programming Interface Using Scratch 3.0",
   "window": {
-	  "icon": "./static/ainoview.png",
-	  "toolbar": true
+    "icon": "./static/ainoview.png",
+    "toolbar": true
   },
   "scripts": {
     "build": "webpack --progress --colors --bail",
