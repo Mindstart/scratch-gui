@@ -11,7 +11,7 @@ const upload = function (com, cmd) {
     console.log(`com : ${com}`);
     console.log(`cmd : ${cmd}`);
     const req = http.request(options, (res) => {
-        res.setEncoding('binary');
+        res.setEncoding('utf-8');
         res.on('data', (data) => {
             global.uploadMessage = data;
             return data;

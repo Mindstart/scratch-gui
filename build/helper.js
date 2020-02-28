@@ -3,10 +3,10 @@ const http = require('http');
 const child_process = require('child_process');
 const fs = require('fs');
 
-let response = "compile"; 
+let response = 'compile';
 let request;
-let port; 
-let code; 
+let port;
+let code;
 
 function listener(req, res) {
 	res.setHeader("Access-Control-Allow-Origin", "*");
@@ -40,19 +40,27 @@ function createIno(code){
 	var currpath = process.cwd(); 
 	// Notice the double-backslashes on this following line
 	currpath = currpath.replace(/\\/g, '/');
-	// currpath = currpath.split("/package.nw");
-	// currpath = currpath[0];
-	var inopath = currpath + '/arduino/sketch/sketch.ino';
-	inopath = decodeURIComponent(inopath);
-	console.log(`createIno inopath ${inopath}`);
 
-	// var currpath = 'C:\\Users\\huwew\\Documents\\ainoview_test\\arduino\\sketch';
-	// var currpath = 'C:\\Users\\huwew\\Documents\\ainoview test\\arduino\\sketch';
-	// var currpath = 'C:\\Program Files (x86)\\AinoView_test_can_del\\nwjs-sdk-v0.32.2-win-x64\\package.nw\\arduino\\sketch';
-	// currpath = currpath.replace(/\\/g, '/');
-	// var inopath = currpath + '/sketch/sketch.ino';
-	// inopath = decodeURIComponent(inopath);
-	// console.log(`createIno inopath ${inopath}`);
+	var datapath = process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + '/Library/Preferences' : process.env.HOME + "/.local/share");
+	// The expected result is:
+	// OS X - '/Users/user/Library/Preferences'
+	// Windows 8 & 10 - 'C:\Users\user\AppData\Roaming'
+	// Windows XP - 'C:\Documents and Settings\user\Application Data'
+	// Linux - '/home/user/.local/share'
+	console.log(`createIno datapath ${datapath}`);
+	datapath = datapath.replace(/\\/g, '/');
+	datapath = datapath + '/AinoView';
+	if (!fs.existsSync(datapath)){
+		fs.mkdirSync(datapath);
+	}
+	datapath = datapath + '/sketch';
+	if (!fs.existsSync(datapath)){
+		fs.mkdirSync(datapath);
+	}
+	console.log(`createIno datapath modify ${datapath}`);
+
+	var inopath = datapath + '/sketch.ino';
+	console.log(`createIno inopath ${inopath}`);
 
 	fs.writeFileSync(inopath, code, (err) => {
   		if (err) throw err;
@@ -65,7 +73,17 @@ function createIno(code){
 function uploadSketch(port){
 	const bat = child_process.spawnSync('cmd.exe', ['/c', 'upload.bat '+port],  { stdio: ['ignore', 'ignore', 'pipe'] });
 	if(bat.status != 0){
-		response = " ERROR: "+bat.stderr; 
+		console.log(`uploadSketch err: ${bat}`);
+		console.log(bat);
+		var uint8Arr = bat.stderr;
+		console.log(uint8Arr);
+		var strArrayBuffer = typedArrayToBuffer(uint8Arr);
+		console.log(strArrayBuffer);
+		var strUint16Array = new Uint16Array(strArrayBuffer);
+		console.log(strUint16Array);
+		var msg = array2Str(strUint16Array);
+		console.log(`msg: ${msg}`);
+		response = " ERROR: "+ bat.stderr; 
 	} else{
 		response = "success";
 	}
@@ -74,22 +92,24 @@ function uploadSketch(port){
 function openIDE(){
 	console.log(`openIDE ${process.cwd()}`);
 
-	// var arduinopath = 'C:\\Program Files (x86)\\Arduino';
-	// arduinopath = arduinopath.replace(/\\/g, '/');
-	// var exepath = arduinopath + '/arduino.exe'; 
-
 	var currpath = process.cwd(); 
 	// Notice the double-backslashes on this following line
 	currpath = currpath.replace(/\\/g, '/');
-	// var tmppath = currpath.split("/package.nw");
-	// var inopath = tmppath[0] + '/sketch/sketch.ino'; 
-	var inopath = currpath + '/arduino/sketch/sketch.ino'; 
 	var exepath = currpath + '/arduino/arduino.exe'; 
+
+	var datapath = process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + '/Library/Preferences' : process.env.HOME + "/.local/share");
+	// The expected result is:
+	// OS X - '/Users/user/Library/Preferences'
+	// Windows 8 & 10 - 'C:\Users\user\AppData\Roaming'
+	// Windows XP - 'C:\Documents and Settings\user\Application Data'
+	// Linux - '/home/user/.local/share'
+	console.log(`createIno datapath ${datapath}`);
+	datapath = datapath.replace(/\\/g, '/');
+	var inopath = datapath + '/AinoView/sketch/sketch.ino';
 
 	console.log(`openIDE inopath ${inopath}`);
 	console.log(`openIDE exepath ${exepath}`);
 
-	// const ide = child_process.exec('"arduino/arduino.exe" "arduino/sketch/sketch.ino"');
 	const ide = child_process.exec('"' + exepath + '"' + ' ' + '"' + inopath + '"');
 	ide.stderr.on('data', (data) => {
 		console.log(`stderr: ${data}`);
@@ -98,6 +118,14 @@ function openIDE(){
 
 function defaultErrorHandler(error) {
     console.log(error);
+}
+
+function array2Str(buf) {
+	return String.fromCharCode.apply(null, new Uint16Array(buf));
+}
+
+function typedArrayToBuffer(array) {
+    return array.buffer.slice(array.byteOffset, array.byteLength + array.byteOffset)
 }
 
 const server = http.createServer(listener);
