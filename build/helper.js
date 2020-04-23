@@ -3,6 +3,29 @@ const http = require('http');
 const childProcess = require('child_process');
 const fs = require('fs');
 
+var path = require("path"),
+    shell = require("shelljs"),
+    HOMEPATH = "win32" === process.platform ? process.env.USERPROFILE : process.env.HOME,
+    inoDir = path.resolve(HOMEPATH, "ainoview-avr", "ino", "sketch"),
+    buildDir = path.resolve(HOMEPATH, "ainoview-avr", "build"),
+    preCompile = function () {
+        shell.mkdir("-p", inoDir), shell.mkdir("-p", buildDir)
+    };
+preCompile();
+
+// microsoft store version
+// var arduinoDir = "";
+// var batfilename = "upload_ms.bat";
+// desktop version
+var arduinoDir = "arduino/";
+var batfilename = "upload.bat";
+
+console.log(HOMEPATH);
+console.log(inoDir);
+console.log(buildDir);
+console.log(arduinoDir);
+console.log(batfilename);
+
 let response = 'compile';
 let request;
 let port;
@@ -11,36 +34,10 @@ let writeIno = false;
 
 function createIno (code){
     console.log('createIno');
-    var currpath = process.cwd();
-    // Notice the double-backslashes on this following line
-    currpath = currpath.replace(/\\/g, '/');
+    preCompile();
 
-    var datapath = process.env.APPDATA || (process.platform === 'darwin' ? process.env.HOME + '/Library/Preferences' : process.env.HOME + '/.local/share');
-    // The expected result is:
-    // OS X - '/Users/user/Library/Preferences'
-    // Windows 8 & 10 - 'C:\Users\user\AppData\Roaming'
-    // Windows XP - 'C:\Documents and Settings\user\Application Data'
-    // Linux - '/home/user/.local/share'
-    console.log(`createIno datapath ${datapath}`);
-    datapath = datapath.replace(/\\/g, '/');
-    datapath = datapath + '/AinoView';
-    if (!fs.existsSync(datapath)){
-        fs.mkdirSync(datapath);
-    }
-    datapath = datapath + '/sketch';
-    if (!fs.existsSync(datapath)){
-        fs.mkdirSync(datapath);
-    }
-    console.log(`createIno datapath modify ${datapath}`);
-
-    var inopath = datapath + '/sketch.ino';
+    var inopath = inoDir + '/sketch.ino';
     console.log(`createIno inopath ${inopath}`);
-
-    // fs.writeFileSync(inopath, code, (err) => {
-    // 	if (err) throw err;
-    // 	console.log('It\'s saved!');
-    // });
-    // fs.writeFileSync('arduino/sketch/sketch.ino', code);
 
 	try {
 		fs.writeFileSync(inopath, code);
@@ -54,21 +51,12 @@ function createIno (code){
 function uploadSketch (port){
     console.log(`uploadSketch`);
 
-    var datapath = process.env.APPDATA || (process.platform === 'darwin' ? process.env.HOME + '/Library/Preferences' : process.env.HOME + '/.local/share');
-    // The expected result is:
-    // OS X - '/Users/user/Library/Preferences'
-    // Windows 8 & 10 - 'C:\Users\user\AppData\Roaming'
-    // Windows XP - 'C:\Documents and Settings\user\Application Data'
-    // Linux - '/home/user/.local/share'
-    datapath = datapath.replace(/\\/g, '/');
-    // var arduinopath = datapath + '/arduino';
-    var arduinopath = 'arduino';
-    console.log(`uploadSketch arduinopath ${arduinopath}`);
+    console.log(`uploadSketch arduinopath ${arduinoDir}`);
 
-    var inopath = datapath + '/AinoView/sketch/sketch.ino';
+    var inopath = inoDir + '/sketch.ino';
     console.log(`uploadSketch inopath ${inopath}`);
 
-    const bat = childProcess.spawnSync('cmd.exe', ['/c', 'upload.bat ' + port + ' ' + arduinopath + ' ' + inopath], {stdio: ['ignore', 'ignore', 'pipe']});
+    const bat = childProcess.spawnSync('cmd.exe', ['/c', batfilename + ' ' + port + ' ' + arduinoDir + ' ' + inopath + ' ' + buildDir], {stdio: ['ignore', 'ignore', 'pipe']});
     console.log(bat);
     if (bat.status !== 0){
         response = ' ERROR: ' + bat.stderr;
@@ -78,25 +66,10 @@ function uploadSketch (port){
 }
 
 function openIDE (){
-    console.log(`openIDE currentpath ${process.cwd()}`);
+    console.log(`openIDE currentpath ${inoDir}`);
 
-    var datapath = process.env.APPDATA || (process.platform === 'darwin' ? process.env.HOME + '/Library/Preferences' : process.env.HOME + '/.local/share');
-    // The expected result is:
-    // OS X - '/Users/user/Library/Preferences'
-    // Windows 8 & 10 - 'C:\Users\user\AppData\Roaming'
-    // Windows XP - 'C:\Documents and Settings\user\Application Data'
-    // Linux - '/home/user/.local/share'
-    console.log(`createIno datapath ${datapath}`);
-
-    datapath = datapath.replace(/\\/g, '/');
-    var inopath = datapath + '/AinoView/sketch/sketch.ino';
-    // var exepath = datapath + '/arduino/arduino.exe';
-    var exepath = 'arduino/arduino.exe';
-
-    // var currpath = process.cwd();
-    // Notice the double-backslashes on this following line
-    // currpath = currpath.replace(/\\/g, '/');
-    // var exepath = currpath + '/arduino/arduino.exe';
+    var inopath = inoDir + '/sketch.ino';
+    var exepath = arduinoDir + 'arduino.exe';
 
     console.log(`openIDE inopath ${inopath}`);
     console.log(`openIDE exepath ${exepath}`);
@@ -140,10 +113,6 @@ function listener (req, res) {
 
 function defaultErrorHandler (error) {
     console.log(error);
-}
-
-function array2Str (buf) {
-    return String.fromCharCode.apply(null, new Uint16Array(buf));
 }
 
 const server = http.createServer(listener);
