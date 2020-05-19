@@ -32,23 +32,23 @@ let port;
 let code;
 let writeIno = false;
 
-function createIno (code){
+function createIno(code) {
     console.log('createIno');
     preCompile();
 
     var inopath = inoDir + '/sketch.ino';
     console.log(`createIno inopath ${inopath}`);
 
-	try {
-		fs.writeFileSync(inopath, code);
-		console.log('It\'s saved!');
-		writeIno = true;
-	} catch (e) {
-		console.log(e);
-	}
+    try {
+        fs.writeFileSync(inopath, code);
+        console.log('It\'s saved!');
+        writeIno = true;
+    } catch (e) {
+        console.log(e);
+    }
 }
 
-function uploadSketch (port){
+function uploadSketch(port) {
     console.log(`uploadSketch`);
 
     console.log(`uploadSketch arduinopath ${arduinoDir}`);
@@ -56,16 +56,18 @@ function uploadSketch (port){
     var inopath = inoDir + '/sketch.ino';
     console.log(`uploadSketch inopath ${inopath}`);
 
-    const bat = childProcess.spawnSync('cmd.exe', ['/c', batfilename + ' ' + port + ' ' + arduinoDir + ' ' + inopath + ' ' + buildDir], {stdio: ['ignore', 'ignore', 'pipe']});
+    const bat = childProcess.spawnSync('cmd.exe', ['/c', batfilename + ' ' + port + ' ' + arduinoDir + ' ' + inopath + ' ' + buildDir], {
+        stdio: ['ignore', 'ignore', 'pipe']
+    });
     console.log(bat);
-    if (bat.status !== 0){
+    if (bat.status !== 0) {
         response = ' ERROR: ' + bat.stderr;
     } else {
         response = 'success';
     }
 }
 
-function openIDE (){
+function openIDE() {
     console.log(`openIDE currentpath ${inoDir}`);
 
     var inopath = inoDir + '/sketch.ino';
@@ -84,34 +86,34 @@ function listener (req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
     req.setMaxListeners(300);
     request = req.url;
-    if (request.indexOf('openIno') > 0){
-		writeIno = false;
+    if (request.indexOf('openIno') > 0) {
+        writeIno = false;
         console.log(`listener openIno`);
         console.log(request);
         request = request.split('/');
         code = decodeURIComponent(request[2]);
-		createIno(code);
-		if (writeIno) {
-        	openIDE();
-		}
-    } else if (request.indexOf('COM') > 0){
-		writeIno = false;
+        createIno(code);
+        if (writeIno) {
+            openIDE();
+        }
+    } else if (request.indexOf('COM') > 0) {
+        writeIno = false;
         console.log(`listener COM`);
         console.log(request);
         request = request.split('/');
         port = request[1];
         code = decodeURIComponent(request[2]);
-		createIno(code);
-		if (writeIno) {
-        	uploadSketch(port);
-		}
+        createIno(code);
+        if (writeIno) {
+            uploadSketch(port);
+        }
     } else {
         response = 'badport';
     }
     res.end(response);
 }
 
-function defaultErrorHandler (error) {
+function defaultErrorHandler(error) {
     console.log(error);
 }
 

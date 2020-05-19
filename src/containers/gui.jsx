@@ -49,46 +49,46 @@ const messages = defineMessages({
         description: 'Default title for project',
         defaultMessage: 'Scratch Project'
     },
-	welcomeMsg: {
-		id: 'gui.gui.welcomeMsg',
-		description: 'Default welcome message',
-		defaultMessage: 'Welcome to Ainoview!'
-	},
-	prepareStatus: {
-		id: 'gui.gui.prepareStatus',
-		description: 'Waiting ino file to be generated',
-		defaultMessage: 'Preparing Sketch...'
-	},
-	compileStatus: {
-		id: 'gui.gui.compileStatus',
-		description: 'Compile ino file',
-		defaultMessage: 'Compiling scripts...'
-	},
-	uploadSuccess: {
+    welcomeMsg: {
+        id: 'gui.gui.welcomeMsg',
+        description: 'Default welcome message',
+        defaultMessage: 'Welcome to Ainoview!'
+    },
+    prepareStatus: {
+        id: 'gui.gui.prepareStatus',
+        description: 'Waiting ino file to be generated',
+        defaultMessage: 'Preparing Sketch...'
+    },
+    compileStatus: {
+        id: 'gui.gui.compileStatus',
+        description: 'Compile ino file',
+        defaultMessage: 'Compiling scripts...'
+    },
+    uploadSuccess: {
         id: 'gui.gui.uploadSuccess',
-		description: 'upload success message',
+        description: 'upload success message',
         defaultMessage: 'Upload Completed!'
-	},
+    },
     emptyPort: {
-		id: 'gui.gui.emptyPort',
-		description: 'empty com port selection',
-		defaultMessage: 'Error: Arduino port is not selected'
-	},
-	errorPort: {
-		id: 'gui.gui.errorPort',
-		description: 'Port value is not received',
-		defaultMessage: 'Error: Selected port is missing'
-	},
-	errorConnect: {
-		id: 'gui.gui.errorConnect',
-		description: 'Error message from helper.js or arduino builder',
-		defaultMessage: 'Error: Cannot connect to backend helper.'
-	},
-	errorUnknown: {
-		id: 'gui.gui.errorUnknown',
-		description: 'Error message from helper.js or arduino builder',
-		defaultMessage: 'Error: Cannot complete the process, see the following details.'
-	}
+        id: 'gui.gui.emptyPort',
+        description: 'empty com port selection',
+        defaultMessage: 'Error: Arduino port is not selected'
+    },
+    errorPort: {
+        id: 'gui.gui.errorPort',
+        description: 'Port value is not received',
+        defaultMessage: 'Error: Selected port is missing'
+    },
+    errorConnect: {
+        id: 'gui.gui.errorConnect',
+        description: 'Error message from helper.js or arduino builder',
+        defaultMessage: 'Error: Cannot connect to backend helper.'
+    },
+    errorUnknown: {
+        id: 'gui.gui.errorUnknown',
+        description: 'Error message from helper.js or arduino builder',
+        defaultMessage: 'Error: Cannot complete the process, see the following details.'
+    }
 });
 
 import {upload} from '../upload/upload';
@@ -99,7 +99,7 @@ class GUI extends React.Component {
         super(props);
         bindAll(this, ['toggleArduinoPanel', 'toggelStage', 'timeTranslate', 'appendLog', 'updateLog',
             'handleInputChange', 'updateEditorInstance', 'translateCode', 'selectBaudRate',
-			'openIno','uploadProject']);
+            'openIno', 'uploadProject']);
         this.consoleMsgBuff = [{msg: props.intl.formatMessage(messages.welcomeMsg), color: 'green'}];
         this.editor;
         this.state = {
@@ -175,17 +175,17 @@ class GUI extends React.Component {
             this.props.onProjectLoaded();
         }
     }
-	selectBaudRate(){
-		
-	}
-    toggleArduinoPanel (){
+    selectBaudRate () {
+
+    }
+    toggleArduinoPanel () {
         this.setState({showarduinopanel: !this.state.showarduinopanel});
     }
-    toggelStage (){
+    toggelStage () {
         this.setState({showstage: !this.state.showstage});
     }
-    timeTranslate (){
-        if (this.state.translateChecked){
+    timeTranslate () {
+        if (this.state.translateChecked) {
             const code = this.childCp.sb2cpp();
             if (code === 'error') {
                 this.setState({translateChecked: false});
@@ -195,21 +195,22 @@ class GUI extends React.Component {
             }
         }
     }
-    handleInputChange (event){
+    handleInputChange (event) {
         const target = event.target;
         const value = target.type === 'checkbox' ? target.checked : target.value;
         this.setState({
-            translateChecked: value}
+            translateChecked: value
+        }
         );
     }
-    updateEditorInstance (editor){
+    updateEditorInstance (editor) {
         this.editor = editor;
     }
     translateCode () {
         const code = this.childCp.sb2cpp();
-		if(code !== 'error') {
-			this.setState({editorCode: code, timeWorkspace: this.childCp});	
-		}
+        if (code !== 'error') {
+            this.setState({editorCode: code, timeWorkspace: this.childCp});
+        }
     }
     appendLog (msg, color) {
         if (!color) {
@@ -219,104 +220,49 @@ class GUI extends React.Component {
         this.setState({consoleMsg: this.consoleMsgBuff});
     }
     updateLog () {
-        console.log('Log 1: '+global.uploadMessage);
-        if (global.uploadMessage != '' && global.uploadMessage != 'complete'){
-            if(global.uploadMessage == 'success'){
-				this.appendLog(this.props.intl.formatMessage(messages.uploadSuccess), 'green');
-				global.uploadMessage = 'complete';
-			}
-			else if(global.uploadMessage == 'compile'){
-				this.appendLog(this.props.intl.formatMessage(messages.compileStatus), 'white');
-				global.uploadMessage = '';
-			}
-			else if(global.uploadMessage == 'badport'){
-				this.appendLog(this.props.intl.formatMessage(messages.errorPort), 'red');
-				global.uploadMessage = 'complete';
-			}
-			else if(global.uploadMessage == 'Connection Error'){
-				this.appendLog(this.props.intl.formatMessage(messages.errorConnect), 'red');
-				global.uploadMessage = 'complete';
-			}
-			else{
-				this.appendLog(this.props.intl.formatMessage(messages.errorUnknown), 'red');
-				this.appendLog(global.uploadMessage, 'red');
-				global.uploadMessage = 'complete';
-			}
+        console.log(`Log 1: ${global.uploadMessage}`);
+        if (global.uploadMessage !== '' && global.uploadMessage !== 'complete') {
+            if (global.uploadMessage === 'success') {
+                this.appendLog(this.props.intl.formatMessage(messages.uploadSuccess), 'green');
+                global.uploadMessage = 'complete';
+            } else if (global.uploadMessage === 'compile') {
+                this.appendLog(this.props.intl.formatMessage(messages.compileStatus), 'white');
+                global.uploadMessage = '';
+            } else if (global.uploadMessage === 'badport') {
+                this.appendLog(this.props.intl.formatMessage(messages.errorPort), 'red');
+                global.uploadMessage = 'complete';
+            } else if (global.uploadMessage === 'Connection Error') {
+                this.appendLog(this.props.intl.formatMessage(messages.errorConnect), 'red');
+                global.uploadMessage = 'complete';
+            } else {
+                this.appendLog(this.props.intl.formatMessage(messages.errorUnknown), 'red');
+                this.appendLog(global.uploadMessage, 'red');
+                global.uploadMessage = 'complete';
+            }
         }
     }
-	openIno (){
-		const code = this.state.editorCode.toString();
-		upload('openIno', code);
-	}
+    openIno () {
+        const code = this.state.editorCode.toString();
+        upload('openIno', code);
+    }
     uploadProject () {
         const code = this.state.editorCode.toString();
-		this.appendLog(this.props.intl.formatMessage(messages.prepareStatus), 'white');
-		global.uploadMessage = '';
-		if(global.port_connect == null){
-			global.uploadMessage = this.props.intl.formatMessage(messages.emptyPort);
-			this.appendLog(global.uploadMessage, 'red');
-		}
-		else{
-			upload(global.port_connect, code);
-			const check = setInterval(this.updateLog, 1000);
-			const remove = setInterval(function (){
-				if(global.uploadMessage == 'complete'){
-					clearInterval(check);
-					clearInterval(remove);
-				}
-			}, 1000);
-		}
-		/*if (first_time_upload == false){
-            chrome.fileSystem.chooseEntry({type: 'openDirectory'}, function (entry){
-				if(entry == null){
-					first_time_upload = false;
-					global.uploadMessage = 'Error: Sketch directory is undefined';
-				}
-				else {
-					fs_chrome = WebFS(entry);
-					chrome.fileSystem.getDisplayPath(entry, function (path){
-						console.log('Path: ' + path);
-					});
-					fs_chrome.writeFile('./sketch.ino', code, function (err){
-						if (err == null) {
-							if(global.port_connect == null){
-								global.uploadMessage = 'Error: Arduino port is not selected';
-
-							}
-							else {
-								upload(global.port_connect, code);
-							}
-							first_time_upload = true;
-						}
-						else {
-							global.uploadMessage = err.toString();
-						}
-					});
-			   }
-            });
+        this.appendLog(this.props.intl.formatMessage(messages.prepareStatus), 'white');
+        global.uploadMessage = '';
+        if (global.port_connect === null) {
+            global.uploadMessage = this.props.intl.formatMessage(messages.emptyPort);
+            this.appendLog(global.uploadMessage, 'red');
         }
-		else if (first_time_upload == true){
-            fs_chrome.writeFile('./sketch.ino', code, function (err){
-                if (err == null) {
-					if(global.port_connect == null){
-						global.uploadMessage = 'Error: Arduino port is not selected';
-					}
-					else{
-						upload(global.port_connect, code);
-					}
+        else {
+            upload(global.port_connect, code);
+            const check = setInterval(this.updateLog, 1000);
+            const remove = setInterval(() => {
+                if (global.uploadMessage === 'complete') {
+                    clearInterval(check);
+                    clearInterval(remove);
                 }
-				else {
-					global.uploadMessage = err.toString();
-				}
-            });
+            }, 1000);
         }
-		const check = setInterval(this.updateLog, 1000);
-		const remove = setInterval(function (){
-			if(global.uploadMessage == 'complete'){
-				clearInterval(check);
-				clearInterval(remove);
-			}
-		}, 1000);*/
     }
     setReduxTitle (newTitle) {
         if (newTitle === null || typeof newTitle === 'undefined') {
@@ -335,7 +281,7 @@ class GUI extends React.Component {
         const {
             /* eslint-disable no-unused-vars */
             assetHost,
-			hideIntro,
+            hideIntro,
             cloudHost,
             error,
             isError,
@@ -349,12 +295,12 @@ class GUI extends React.Component {
             projectId,
             projectTitle,
             /* eslint-enable no-unused-vars */
-			projectData,
-			children,
+            projectData,
+            children,
             fetchingProject,
             isLoading,
             loadingStateVisible,
-			vm,
+            vm,
 
             ...componentProps
         } = this.props;
@@ -379,21 +325,21 @@ class GUI extends React.Component {
             >
                 {/*{children}*/}
                 <ArduinoPanel visible={this.state.showarduinopanel}
-                              code={this.state.editorCode}
-                              vm={vm}
-                              consoleMsg={this.state.consoleMsg}
-                              editorCode={this.state.editorCode}
-                              translateCode={this.translateCode}
-                              uploadProj={this.uploadProject}
-                              openIno={this.openIno}
-                              //firmata={this.firmata}
-                              translateChecked={this.state.translateChecked}
-                              handleInputChange={this.handleInputChange}
-                              updateEditorInstance={this.updateEditorInstance}
+                    code={this.state.editorCode}
+                    vm={vm}
+                    consoleMsg={this.state.consoleMsg}
+                    editorCode={this.state.editorCode}
+                    translateCode={this.translateCode}
+                    uploadProj={this.uploadProject}
+                    openIno={this.openIno}
+                    //firmata={this.firmata}
+                    translateChecked={this.state.translateChecked}
+                    handleInputChange={this.handleInputChange}
+                    updateEditorInstance={this.updateEditorInstance}
                 />
                 <Blocks
                     grow={1}
-                    getInstance = {(childCp) => {this.childCp = childCp;}}
+                    getInstance={(childCp) => { this.childCp = childCp; }}
                     isVisible={true}
                     timeTranslate={this.timeTranslate}
                     options={{
@@ -444,8 +390,8 @@ GUI.propTypes = {
 GUI.defaultProps = {
     isScratchDesktop: false,
     onStorageInit: storageInstance => storageInstance.addOfficialScratchWebStores(),
-    onProjectLoaded: () => {},
-    onUpdateProjectId: () => {},
+    onProjectLoaded: () => { },
+    onUpdateProjectId: () => { },
     backpackOptions: {
         host: null,
         visible: false

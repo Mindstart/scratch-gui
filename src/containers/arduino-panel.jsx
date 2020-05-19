@@ -3,7 +3,7 @@ import React from 'react';
 import ArduinoPanelComponent from '../components/arduino-panel/arduino-panel.jsx';
 
 class ArduinoPanel extends React.Component {
-    constructor(props) {
+    constructor (props) {
         super(props);
         this.state = {
             editorCode: this.props.editorCode,
@@ -11,13 +11,13 @@ class ArduinoPanel extends React.Component {
         };
     }
 
-    componentWillReceiveProps(nextProps, nextState) {
+    componentWillReceiveProps (nextProps, nextState) {
         this.setState({
             codes: nextProps.codes,
             code: nextState.codes
         })
     }
-    render() {
+    render () {
         const {
             ...props
         } = this.props;
@@ -32,7 +32,7 @@ class ArduinoPanel extends React.Component {
                 codeRef={this.props.updateEditorInstance}
                 translateChecked={this.props.translateChecked}
                 // handleInputChange={this.props.handleInputChange}
-                firmata = {this.props.firmata}
+                firmata={this.props.firmata}
                 windowHeight={this.props.windowHeight}
                 {...props}
             />
