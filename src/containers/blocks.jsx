@@ -128,13 +128,13 @@ Blockly.Arduino.event_arduinobegin = function (a) {
     c = Blockly.Arduino.addLoopTrap(c, a.id);
     return a = `${b}\n}\n\nvoid loop(){\n${c}`;
 };
-Blockly.Arduino.arduino_setup = function (a){
+Blockly.Arduino.arduino_setup = function (a) {
     let c = Blockly.Arduino.statementToCode(a, 'SUBSTACK');
     c = Blockly.Arduino.addLoopTrap(c, a.id);
     Blockly.Arduino.setups_.setup = c;
     return '';
 };
-Blockly.Arduino.arduino_loop = function (a){
+Blockly.Arduino.arduino_loop = function (a) {
     let c = Blockly.Arduino.statementToCode(a, 'SUBSTACK');
     c = Blockly.Arduino.addLoopTrap(c, a.id);
     return c;
@@ -145,11 +145,11 @@ Blockly.Arduino.arduino_pin_mode = function (a) {
     a = Blockly.Arduino.valueToCode(a, 'MODE', b);
     return `pinMode(${c},${a})${Blockly.Arduino.END}`;
 };
-Blockly.Arduino.arduino_serial_begin = function (a){
+Blockly.Arduino.arduino_serial_begin = function (a) {
     const baud = Blockly.Arduino.valueToCode(a, 'Baud', Blockly.Arduino.ORDER_ATOMIC);
     return `Serial.begin(${baud});\n`;
 };
-Blockly.Arduino.arduino_serial_print = function (a){
+Blockly.Arduino.arduino_serial_print = function (a) {
     const b = Blockly.Arduino.valueToCode(a, 'NL', Blockly.Arduino.ORDER_ATOMIC);
     a = Blockly.Arduino.valueToCode(a, 'VALUE', Blockly.Arduino.ORDER_ATOMIC);
     if (a.indexOf('(') === 0 || (a.indexOf('()') !== -1) || (a.indexOf('(') > 0 && a.indexOf(')') > 0)) {
@@ -265,7 +265,7 @@ Blockly.Arduino.control_if_else = function (a) {
     Blockly.Arduino.tabPos--;
     return b = `${b + d}}\n`;
 };
-Blockly.Arduino.control_repeat_until = function (a){
+Blockly.Arduino.control_repeat_until = function (a) {
     const b = Blockly.Arduino.valueToCode(a, 'CONDITION', Blockly.Arduino.ORDER_NONE) || 'false';
     const c = Blockly.Arduino.statementToCode(a, 'SUBSTACK');
     a = `while(!(${b})){\n`;
@@ -273,7 +273,7 @@ Blockly.Arduino.control_repeat_until = function (a){
     Blockly.Arduino.tabPos--;
     return a = `${a + c}}\n`;
 };
-Blockly.Arduino.control_wait_until = function (a){
+Blockly.Arduino.control_wait_until = function (a) {
     const b = Blockly.Arduino.valueToCode(a, 'CONDITION', Blockly.Arduino.ORDER_NONE) || 'false';
     const c = Blockly.Arduino.statementToCode(a, 'SUBSTACK');
     a = `while(!(${b})){\n`;
@@ -533,10 +533,10 @@ Blockly.Arduino.sensor_menu_bmpData = function (a) {
         return [2, Blockly.Arduino.ORDER_ATOMIC];
     }
 };
-Blockly.Arduino.sensor_menu_dataType = function (a){
+Blockly.Arduino.sensor_menu_dataType = function (a) {
     return [a.toString(), Blockly.Arduino.ORDER_ATOMIC];
 };
-Blockly.Arduino.display_menu_lcdLine = function (a){
+Blockly.Arduino.display_menu_lcdLine = function (a) {
     return [a.toString(), Blockly.Arduino.ORDER_ATOMIC];
 };
 Blockly.Arduino.sensor_menu_oss = function (a) {
@@ -580,21 +580,21 @@ Blockly.Arduino.operator_arithmetic = function (a) {
         operator_divide: '/'
     }[a.type] + c, d];
 };
-Blockly.Arduino.operator_and = function (a){
+Blockly.Arduino.operator_and = function (a) {
     const b = Blockly.Arduino.valueToCode(a, 'OPERAND1', Blockly.Arduino.ORDER_HIGH) || '0';
     const c = Blockly.Arduino.valueToCode(a, 'OPERAND2', Blockly.Arduino.ORDER_HIGH) || '0';
     return [`${b}&&${c}`, Blockly.Arduino.ORDER_AND];
 };
-Blockly.Arduino.operator_or = function (a){
+Blockly.Arduino.operator_or = function (a) {
     const b = Blockly.Arduino.valueToCode(a, 'OPERAND1', Blockly.Arduino.ORDER_HIGH) || '0';
     const c = Blockly.Arduino.valueToCode(a, 'OPERAND2', Blockly.Arduino.ORDER_HIGH) || '0';
     return [`${b}||${c}`, Blockly.Arduino.ORDER_OR];
 };
-Blockly.Arduino.operator_not = function (a){
+Blockly.Arduino.operator_not = function (a) {
     const b = Blockly.Arduino.valueToCode(a, 'OPERAND', Blockly.Arduino.ORDER_HIGH) || '0';
     return [`!${b}`];
 };
-Blockly.Arduino.operator_join = function (a){
+Blockly.Arduino.operator_join = function (a) {
     const blockstr = a.toString();
     const b = Blockly.Arduino.valueToCode(a, 'STRING1', Blockly.Arduino.ORDER_HIGH) || '0';
     const c = Blockly.Arduino.valueToCode(a, 'STRING2', Blockly.Arduino.ORDER_HIGH) || '0';
@@ -609,7 +609,7 @@ Blockly.Arduino.operator_join = function (a){
         if (typeof str2Type !== 'undefined' && str2Type) {
             str2MethodBoo = true;
         }
-    
+
         // adjust order
         const str0 = `${a.childBlocks_[0]}`;
         const str1 = `${a.childBlocks_[1]}`;
@@ -630,10 +630,10 @@ Blockly.Arduino.operator_join = function (a){
             return [`String("${b}") + String("${c}")`, Blockly.Arduino.ORDER_HIGH];
         }
     }
-    
+
     return [`String("${b}") + String("${c}")`, Blockly.Arduino.ORDER_HIGH];
 };
-Blockly.Arduino.operator_letter_of = function (a){
+Blockly.Arduino.operator_letter_of = function (a) {
     const blockstr = a.toString();
     const b = Blockly.Arduino.valueToCode(a, 'LETTER', Blockly.Arduino.ORDER_HIGH) || '0';
     const c = Blockly.Arduino.valueToCode(a, 'STRING', Blockly.Arduino.ORDER_HIGH) || '0';
@@ -644,7 +644,7 @@ Blockly.Arduino.operator_letter_of = function (a){
         if (typeof str2Type !== 'undefined' && str2Type) {
             str2MethodBoo = true;
         }
-    
+
         if (str2MethodBoo) {
             return [`String(String(${c}).charAt(${b}-1))`, Blockly.Arduino.ORDER_HIGH];
         }
@@ -652,7 +652,7 @@ Blockly.Arduino.operator_letter_of = function (a){
 
     return [`String(String("${c}").charAt(${b}-1))`, Blockly.Arduino.ORDER_HIGH];
 };
-Blockly.Arduino.operator_length = function (a){
+Blockly.Arduino.operator_length = function (a) {
     const blockstr = a.toString();
     const b = Blockly.Arduino.valueToCode(a, 'STRING', Blockly.Arduino.ORDER_HIGH) || '0';
 
@@ -662,15 +662,15 @@ Blockly.Arduino.operator_length = function (a){
         if (typeof str1Type !== 'undefined' && str1Type) {
             str1MethodBoo = true;
         }
-    
+
         if (str1MethodBoo) {
             return [`String(${b}).length()`, Blockly.Arduino.ORDER_HIGH];
-        }        
+        }
     }
 
     return [`String("${b}").length()`, Blockly.Arduino.ORDER_HIGH];
 };
-Blockly.Arduino.operator_contains = function (a){
+Blockly.Arduino.operator_contains = function (a) {
     const blockstr = `${a}`;
     const b = Blockly.Arduino.valueToCode(a, 'STRING1', Blockly.Arduino.ORDER_HIGH) || '0';
     const c = Blockly.Arduino.valueToCode(a, 'STRING2', Blockly.Arduino.ORDER_HIGH) || '0';
@@ -686,17 +686,17 @@ Blockly.Arduino.operator_contains = function (a){
         if (typeof str2Type !== 'undefined' && str2Type) {
             str2MethodBoo = true;
         }
-    
+
         // adjust order
         const str0 = `${a.childBlocks_[0]}`;
         const str1 = `${a.childBlocks_[1]}`;
-    
+
         if (b === str1 || c === str0) {
             const tmpBoo = str1MethodBoo;
             str1MethodBoo = str2MethodBoo;
             str2MethodBoo = tmpBoo;
         }
-    
+
         if (str1MethodBoo && !str2MethodBoo) {
             return [`(String(${b}).indexOf(String("${c}")) != -1)`, Blockly.Arduino.ORDER_HIGH];
         } else if (!str1MethodBoo && str2MethodBoo) {
@@ -710,46 +710,46 @@ Blockly.Arduino.operator_contains = function (a){
 
     return [`(String("${b}").indexOf(String("${c}")) != -1)`, Blockly.Arduino.ORDER_HIGH];
 };
-Blockly.Arduino.operator_mod = function (a){
+Blockly.Arduino.operator_mod = function (a) {
     const b = Blockly.Arduino.valueToCode(a, 'NUM1', Blockly.Arduino.ORDER_HIGH) || '0';
     const c = Blockly.Arduino.valueToCode(a, 'NUM2', Blockly.Arduino.ORDER_HIGH) || '0';
     return [`(((int)${b})%((int)${c}))`, Blockly.Arduino.ORDER_HIGH];
 };
-Blockly.Arduino.operator_round = function (a){
+Blockly.Arduino.operator_round = function (a) {
     const b = Blockly.Arduino.valueToCode(a, 'NUM', Blockly.Arduino.ORDER_HIGH) || '0';
     return [`round(${b})`, Blockly.Arduino.ORDER_HIGH];
 };
 // TODO : add by Huang Weiwang huwewa@gmail.com 2019.08.08
-Blockly.Arduino.operator_mathop = function (a){
+Blockly.Arduino.operator_mathop = function (a) {
     const operator = a.getFieldValue();
     const b = Blockly.Arduino.valueToCode(a, 'NUM', Blockly.Arduino.ORDER_HIGH) || '0';
-    if (operator.indexOf('绝对值') !== -1){
+    if (operator.indexOf('绝对值') !== -1) {
         return [`(abs(${b}))`, Blockly.Arduino.ORDER_HIGH];
-    } else if (operator.indexOf('向下取整') !== -1){
+    } else if (operator.indexOf('向下取整') !== -1) {
         return [`(floor(${b}))`, Blockly.Arduino.ORDER_HIGH];
-    } else if (operator.indexOf('向上取整') !== -1){
+    } else if (operator.indexOf('向上取整') !== -1) {
         return [`(ceil(${b}))`, Blockly.Arduino.ORDER_HIGH];
-    } else if (operator.indexOf('平方根') !== -1){
+    } else if (operator.indexOf('平方根') !== -1) {
         return [`(sqrt(${b}))`, Blockly.Arduino.ORDER_HIGH];
-    } else if (operator.indexOf('sin') !== -1){
+    } else if (operator.indexOf('sin') !== -1) {
         return [`abs(${b})`, Blockly.Arduino.ORDER_HIGH];
-    } else if (operator.indexOf('cos') !== -1){
+    } else if (operator.indexOf('cos') !== -1) {
         return [`abs(${b})`, Blockly.Arduino.ORDER_HIGH];
-    } else if (operator.indexOf('tan') !== -1){
+    } else if (operator.indexOf('tan') !== -1) {
         return [`abs(${b})`, Blockly.Arduino.ORDER_HIGH];
-    } else if (operator.indexOf('asin') !== -1){
+    } else if (operator.indexOf('asin') !== -1) {
         return [`abs(${b})`, Blockly.Arduino.ORDER_HIGH];
-    } else if (operator.indexOf('acos') !== -1){
+    } else if (operator.indexOf('acos') !== -1) {
         return [`abs(${b})`, Blockly.Arduino.ORDER_HIGH];
-    } else if (operator.indexOf('atan') !== -1){
+    } else if (operator.indexOf('atan') !== -1) {
         return [`abs(${b})`, Blockly.Arduino.ORDER_HIGH];
-    } else if (operator.indexOf('ln') !== -1){
+    } else if (operator.indexOf('ln') !== -1) {
         return [`abs(${b})`, Blockly.Arduino.ORDER_HIGH];
-    } else if (operator.indexOf('log') !== -1){
+    } else if (operator.indexOf('log') !== -1) {
         return [`abs(${b})`, Blockly.Arduino.ORDER_HIGH];
-    } else if (operator.indexOf('e^') !== -1){
+    } else if (operator.indexOf('e^') !== -1) {
         return [`abs(${b})`, Blockly.Arduino.ORDER_HIGH];
-    } else if (operator.indexOf('10^') !== -1){
+    } else if (operator.indexOf('10^') !== -1) {
         return [`abs(${b})`, Blockly.Arduino.ORDER_HIGH];
     }
     return [``, Blockly.Arduino.ORDER_HIGH];
@@ -789,7 +789,7 @@ Blockly.Arduino.data_variable = function (block) {
     Blockly.Arduino.definitions_[`define_variable${code}`] = `double ${code} = 0;`;
     return [code, Blockly.Arduino.ORDER_NONE];
 };
-Blockly.Arduino.arduino_variable_create = function (a){
+Blockly.Arduino.arduino_variable_create = function (a) {
     const b = Blockly.Arduino.ORDER_ATOMIC; const type = Blockly.Arduino.valueToCode(a, 'TYPE', b);
     const name = Blockly.Arduino.valueToCode(a, 'NAME', b); const value = Blockly.Arduino.valueToCode(a, 'VALUE', b);
     Blockly.Arduino.definitions_[`define_variable${name}`] = `${type} ${name} = ${value};`;
@@ -839,7 +839,7 @@ Blockly.Arduino.sensor_dht11 = function (a) {
         return ['dht11.readTemperature()', Blockly.Arduino.ORDER_ATOMIC];
     }
     return ['dht11.readHumidity()', Blockly.Arduino.ORDER_ATOMIC];
-    
+
 };
 Blockly.Arduino.sensor_sharp_ir = function (a) {
     const pin = Blockly.Arduino.valueToCode(a, 'PIN', Blockly.Arduino.ORDER_ATOMIC);
@@ -947,18 +947,18 @@ Blockly.Arduino.sensor_getDS1302 = function (a) {
     }
     return ['', Blockly.Arduino.ORDER_ATOMIC];
 };
-Blockly.Arduino.sensor_infraredTrack = function (a){
+Blockly.Arduino.sensor_infraredTrack = function (a) {
     const b = Blockly.Arduino.ORDER_NONE; const mode = Blockly.Arduino.valueToCode(a, 'MODE', b);
     const PORT = Blockly.Arduino.valueToCode(a, 'PORT', b);
     Blockly.Arduino.setups_.setup_irTrack = `  pinMode(${PORT}, INPUT);\n`;
     Blockly.Arduino.definitions_.define_irTrack = `${'String ir_track()\n' +
-		'{\n' +
-		' int data = '}${mode}Read(${PORT}); \n` +
-		` return String(data); \n` +
-		`}\n`;
+        '{\n' +
+        ' int data = '}${mode}Read(${PORT}); \n` +
+        ` return String(data); \n` +
+        `}\n`;
     return ['ir_track()', Blockly.Arduino.ORDER_ATOMIC];
 };
-Blockly.Arduino.sensor_temperature = function (a){
+Blockly.Arduino.sensor_temperature = function (a) {
     const PIN = Blockly.Arduino.valueToCode(a, 'PORT', Blockly.Arduino.ORDER_ATOMIC);
     Blockly.Arduino.includes_.temp = '#include <math.h>';
     Blockly.Arduino.definitions_.define_temperature = `${'String temperature()\n' +
@@ -971,7 +971,7 @@ Blockly.Arduino.sensor_temperature = function (a){
         `}\n`;
     return ['temperature()', Blockly.Arduino.ORDER_ATOMIC];
 };
-Blockly.Arduino.sensor_humidity = function (a){
+Blockly.Arduino.sensor_humidity = function (a) {
     const PIN = Blockly.Arduino.valueToCode(a, 'PORT', Blockly.Arduino.ORDER_ATOMIC);
     Blockly.Arduino.includes_.humid = '#include <DHT.h>';
     Blockly.Arduino.variables_.var_dht = `DHT dht(${PIN}, DHT11);\n`;
@@ -983,7 +983,7 @@ Blockly.Arduino.sensor_humidity = function (a){
         '}\n';
     return ['humidity()', Blockly.Arduino.ORDER_ATOMIC];
 };
-Blockly.Arduino.sensor_bmp180 = function (a){
+Blockly.Arduino.sensor_bmp180 = function (a) {
 
     const data = Blockly.Arduino.valueToCode(a, 'DATA', Blockly.Arduino.ORDER_ATOMIC);
     const oss = Blockly.Arduino.valueToCode(a, 'OSS', Blockly.Arduino.ORDER_ATOMIC);
@@ -991,124 +991,124 @@ Blockly.Arduino.sensor_bmp180 = function (a){
     console.log(`BMP OSS: ${oss}`);
     Blockly.Arduino.includes_.wire = '#include <Wire.h>';
     Blockly.Arduino.variables_.var_bmp180 = '#define BMP180ADD 0xEE>>1;\n' + 'unsigned char OSS;\n' + 'int ac1, ac2, ac3;\n' +
-		'unsigned int ac4, ac5, ac6;\n' + 'int b1, b2;\n' + 'int mb, mc, md;\n' + 'float temperature;\n' + 'double pressure, pressure2, altitude;\n' + 'long b5;\n';
+        'unsigned int ac4, ac5, ac6;\n' + 'int b1, b2;\n' + 'int mb, mc, md;\n' + 'float temperature;\n' + 'double pressure, pressure2, altitude;\n' + 'long b5;\n';
     Blockly.Arduino.setups_.setup_bmp180 = `${' Wire.begin();\n' + ' OSS = '}${oss};\n` + ` BMP180start();\n`;
     Blockly.Arduino.definitions_.define_bmp180 = 'String calculate(int index)\n' +
-		'{\n' +
-		' temperature = bmp180GetTemperature(bmp180ReadUT());\n' +
-		' temperature = temperature*0.1;\n' +
-		' pressure = bmp180GetPressure(bmp180ReadUP());\n' +
-		' pressure2 = pressure/101325;\n' +
-		' pressure2 = pow(pressure2,0.19029496);\n' +
-		' altitude = 44330*(1-pressure2);\n' +
-		' char *myStrings[] = {String(temperature,1),String(pressure),String(altitude)};\n' +
-		' return myStrings[index];\n' +
-		'}\n' +
-		'void BMP180start()\n' +
-		'{\n' +
-		' ac1 = bmp180ReadDate(0xAA);\n' +
-		' ac2 = bmp180ReadDate(0xAC);\n' +
-		' ac3 = bmp180ReadDate(0xAE);\n' +
-		' ac4 = bmp180ReadDate(0xB0);\n' +
-		' ac5 = bmp180ReadDate(0xB2);\n' +
-		' ac6 = bmp180ReadDate(0xB4);\n' +
-		' b1 = bmp180ReadDate(0xB6);\n' +
-		' b2 = bmp180ReadDate(0xB8);\n' +
-		' mb = bmp180ReadDate(0xBA);\n' +
-		' mc = bmp180ReadDate(0xBC);\n' +
-		' md = bmp180ReadDate(0xBE);\n' +
-		'}\n' +
-		'short bmp180GetTemperature(unsigned int ut)\n' +
-		'{\n' +
-		' long x1, x2;\n' +
-		' x1 = (((long)ut - (long)ac6)*(long)ac5) >> 15;\n' +
-		' x2 = ((long)mc << 11)/(x1 + md);\n' +
-		' b5 = x1 + x2;\n' +
-		' return ((b5 + 8)>>4);\n' +
-		'}\n' +
-		'long bmp180GetPressure(unsigned long up)\n' +
-		'{\n' +
-		' long x1, x2, x3, b3, b6, p;\n' +
-		' unsigned long b4, b7;\n' +
-		' b6 = b5 - 4000;\n' +
-		' x1 = (b2 * (b6 * b6)>>12)>>11;\n' +
-		' x2 = (ac2 * b6)>>11;\n' +
-		' x3 = x1 + x2;\n' +
-		'\n' +
-		' b3 = (((((long)ac1)*4 + x3)<<OSS) + 2)>>2;\n' +
-		' x1 = (ac3 * b6)>>13;\n' +
-		' x2 = (b1 * ((b6 * b6)>>12))>>16;\n' +
-		' x3 = ((x1 + x2) + 2)>>2;\n' +
-		' b4 = (ac4 * (unsigned long)(x3 + 32768))>>15;\n' +
-		' b7 = ((unsigned long)(up - b3) * (50000>>OSS));\n' +
-		' if (b7 < 0x80000000)\n' +
-		'   p = (b7<<1)/b4;\n' +
-		' else\n' +
-		'   p = (b7/b4)<<1;\n' +
-		'\n' +
-		' x1 = (p>>8) * (p>>8);\n' +
-		' x1 = (x1 * 3038)>>16;\n' +
-		' x2 = (-7357 * p)>>16;\n' +
-		' p += (x1 + x2 + 3791)>>4;\n' +
-		'\n' +
-		' return p;\n' +
-		'}\n' +
-		'int bmp180Read(unsigned char address)\n' +
-		'{\n' +
-		' unsigned char data;\n' +
-		' Wire.beginTransmission(BMP180ADD);\n' +
-		' Wire.write(address);\n' +
-		' Wire.endTransmission();\n' +
-		' Wire.requestFrom(BMP180ADD, 1);\n' +
-		' while(!Wire.available());\n' +
-		' return Wire.read();\n' +
-		'}\n' +
-		'int bmp180ReadDate(unsigned char address)\n' +
-		'{\n' +
-		' unsigned char msb, lsb;\n' +
-		' Wire.beginTransmission(BMP180ADD);\n' +
-		' Wire.write(address);\n' +
-		' Wire.endTransmission();\n' +
-		' Wire.requestFrom(BMP180ADD, 2);\n' +
-		' while(Wire.available()<2);\n' +
-		' msb = Wire.read();\n' +
-		' lsb = Wire.read();\n' +
-		' return (int) msb<<8 | lsb;\n' +
-		'}\n' +
-		'unsigned int bmp180ReadUT()' +
-		'{\n' +
-		' unsigned int ut;\n' +
-		' Wire.beginTransmission(BMP180ADD);\n' +
-		' Wire.write(0xF4);\n' +
-		' Wire.write(0x2E);\n' +
-		' Wire.endTransmission();\n' +
-		' delay(5);\n' +
-		' ut = bmp180ReadDate(0xF6);\n' +
-		' return ut;\n' +
-		'}\n' +
-		'unsigned long bmp180ReadUP()' +
-		'{\n' +
-		' unsigned char msb, lsb, xlsb;\n' +
-		' unsigned long up = 0;\n' +
-		' Wire.beginTransmission(BMP180ADD);\n' +
-		' Wire.write(0xF4);\n' +
-		' Wire.write(0x34 + (OSS<<6));\n' +
-		' Wire.endTransmission();\n' +
-		' delay(2 + (3<<OSS));\n' +
-		' Wire.beginTransmission(BMP180ADD);\n' +
-		' Wire.write(0xF6);\n' +
-		' Wire.endTransmission();\n' +
-		' Wire.requestFrom(BMP180ADD, 3);\n' +
-		' while(Wire.available() < 3);\n' +
-		' msb = Wire.read();\n' +
-		' lsb = Wire.read();\n' +
-		' xlsb = Wire.read();\n' +
-		' up = (((unsigned long) msb << 16) | ((unsigned long) lsb << 8) | (unsigned long) xlsb) >> (8-OSS);\n' +
-		' return up;\n' +
-		'}\n';
+        '{\n' +
+        ' temperature = bmp180GetTemperature(bmp180ReadUT());\n' +
+        ' temperature = temperature*0.1;\n' +
+        ' pressure = bmp180GetPressure(bmp180ReadUP());\n' +
+        ' pressure2 = pressure/101325;\n' +
+        ' pressure2 = pow(pressure2,0.19029496);\n' +
+        ' altitude = 44330*(1-pressure2);\n' +
+        ' char *myStrings[] = {String(temperature,1),String(pressure),String(altitude)};\n' +
+        ' return myStrings[index];\n' +
+        '}\n' +
+        'void BMP180start()\n' +
+        '{\n' +
+        ' ac1 = bmp180ReadDate(0xAA);\n' +
+        ' ac2 = bmp180ReadDate(0xAC);\n' +
+        ' ac3 = bmp180ReadDate(0xAE);\n' +
+        ' ac4 = bmp180ReadDate(0xB0);\n' +
+        ' ac5 = bmp180ReadDate(0xB2);\n' +
+        ' ac6 = bmp180ReadDate(0xB4);\n' +
+        ' b1 = bmp180ReadDate(0xB6);\n' +
+        ' b2 = bmp180ReadDate(0xB8);\n' +
+        ' mb = bmp180ReadDate(0xBA);\n' +
+        ' mc = bmp180ReadDate(0xBC);\n' +
+        ' md = bmp180ReadDate(0xBE);\n' +
+        '}\n' +
+        'short bmp180GetTemperature(unsigned int ut)\n' +
+        '{\n' +
+        ' long x1, x2;\n' +
+        ' x1 = (((long)ut - (long)ac6)*(long)ac5) >> 15;\n' +
+        ' x2 = ((long)mc << 11)/(x1 + md);\n' +
+        ' b5 = x1 + x2;\n' +
+        ' return ((b5 + 8)>>4);\n' +
+        '}\n' +
+        'long bmp180GetPressure(unsigned long up)\n' +
+        '{\n' +
+        ' long x1, x2, x3, b3, b6, p;\n' +
+        ' unsigned long b4, b7;\n' +
+        ' b6 = b5 - 4000;\n' +
+        ' x1 = (b2 * (b6 * b6)>>12)>>11;\n' +
+        ' x2 = (ac2 * b6)>>11;\n' +
+        ' x3 = x1 + x2;\n' +
+        '\n' +
+        ' b3 = (((((long)ac1)*4 + x3)<<OSS) + 2)>>2;\n' +
+        ' x1 = (ac3 * b6)>>13;\n' +
+        ' x2 = (b1 * ((b6 * b6)>>12))>>16;\n' +
+        ' x3 = ((x1 + x2) + 2)>>2;\n' +
+        ' b4 = (ac4 * (unsigned long)(x3 + 32768))>>15;\n' +
+        ' b7 = ((unsigned long)(up - b3) * (50000>>OSS));\n' +
+        ' if (b7 < 0x80000000)\n' +
+        '   p = (b7<<1)/b4;\n' +
+        ' else\n' +
+        '   p = (b7/b4)<<1;\n' +
+        '\n' +
+        ' x1 = (p>>8) * (p>>8);\n' +
+        ' x1 = (x1 * 3038)>>16;\n' +
+        ' x2 = (-7357 * p)>>16;\n' +
+        ' p += (x1 + x2 + 3791)>>4;\n' +
+        '\n' +
+        ' return p;\n' +
+        '}\n' +
+        'int bmp180Read(unsigned char address)\n' +
+        '{\n' +
+        ' unsigned char data;\n' +
+        ' Wire.beginTransmission(BMP180ADD);\n' +
+        ' Wire.write(address);\n' +
+        ' Wire.endTransmission();\n' +
+        ' Wire.requestFrom(BMP180ADD, 1);\n' +
+        ' while(!Wire.available());\n' +
+        ' return Wire.read();\n' +
+        '}\n' +
+        'int bmp180ReadDate(unsigned char address)\n' +
+        '{\n' +
+        ' unsigned char msb, lsb;\n' +
+        ' Wire.beginTransmission(BMP180ADD);\n' +
+        ' Wire.write(address);\n' +
+        ' Wire.endTransmission();\n' +
+        ' Wire.requestFrom(BMP180ADD, 2);\n' +
+        ' while(Wire.available()<2);\n' +
+        ' msb = Wire.read();\n' +
+        ' lsb = Wire.read();\n' +
+        ' return (int) msb<<8 | lsb;\n' +
+        '}\n' +
+        'unsigned int bmp180ReadUT()' +
+        '{\n' +
+        ' unsigned int ut;\n' +
+        ' Wire.beginTransmission(BMP180ADD);\n' +
+        ' Wire.write(0xF4);\n' +
+        ' Wire.write(0x2E);\n' +
+        ' Wire.endTransmission();\n' +
+        ' delay(5);\n' +
+        ' ut = bmp180ReadDate(0xF6);\n' +
+        ' return ut;\n' +
+        '}\n' +
+        'unsigned long bmp180ReadUP()' +
+        '{\n' +
+        ' unsigned char msb, lsb, xlsb;\n' +
+        ' unsigned long up = 0;\n' +
+        ' Wire.beginTransmission(BMP180ADD);\n' +
+        ' Wire.write(0xF4);\n' +
+        ' Wire.write(0x34 + (OSS<<6));\n' +
+        ' Wire.endTransmission();\n' +
+        ' delay(2 + (3<<OSS));\n' +
+        ' Wire.beginTransmission(BMP180ADD);\n' +
+        ' Wire.write(0xF6);\n' +
+        ' Wire.endTransmission();\n' +
+        ' Wire.requestFrom(BMP180ADD, 3);\n' +
+        ' while(Wire.available() < 3);\n' +
+        ' msb = Wire.read();\n' +
+        ' lsb = Wire.read();\n' +
+        ' xlsb = Wire.read();\n' +
+        ' up = (((unsigned long) msb << 16) | ((unsigned long) lsb << 8) | (unsigned long) xlsb) >> (8-OSS);\n' +
+        ' return up;\n' +
+        '}\n';
     return [`calculate(${data})`, Blockly.Arduino.ORDER_ATOMIC];
 };
-Blockly.Arduino.display_lcdAddress = function (a){
+Blockly.Arduino.display_lcdAddress = function (a) {
     const address = Blockly.Arduino.valueToCode(a, 'VALUE', Blockly.Arduino.ORDER_NONE);
     Blockly.Arduino.variables_.var_lcd = `LiquidCrystal_I2C lcd(${address},16,2);\n`;
     return '';
@@ -1295,15 +1295,15 @@ Blockly.Arduino.display_segmentDisplay = function (a) {
             '}\n';
 
         const num = Blockly.Arduino.valueToCode(a, 'NUM', Blockly.Arduino.ORDER_ATOMIC);
-        return  `${Blockly.Arduino.tab()}showNum(${num})${Blockly.Arduino.END}`;
+        return `${Blockly.Arduino.tab()}showNum(${num})${Blockly.Arduino.END}`;
     }
     return ``;
 };
-Blockly.Arduino.display_segmentDisplayTwoDigits = function (a){
+Blockly.Arduino.display_segmentDisplayTwoDigits = function (a) {
     const blockstr = a.toString();
-    console.log("1");
+    console.log('1');
     if (blockstr.indexOf('?') === -1) {
-        console.log("2");
+        console.log('2');
         Blockly.Arduino.definitions_.define_variable_segment = '//根据共阴极数码管段码表定义0~99显示的各段开关状态\n' +
             `const int numTable[10][8] = {\n` +
             `${Blockly.Arduino.tab()}//1为点亮，0为关闭\n` +
@@ -1319,7 +1319,7 @@ Blockly.Arduino.display_segmentDisplayTwoDigits = function (a){
             `${Blockly.Arduino.tab()}{1, 1, 1, 1, 1, 1, 1, 0},//8\n` +
             `${Blockly.Arduino.tab()}{1, 1, 1, 1, 0, 1, 1, 0},//9\n` +
             '};\n';
-            console.log("3");
+        console.log('3');
         Blockly.Arduino.definitions_.define_showNum = 'void showNum(int num) {\n' +
             `${Blockly.Arduino.tab()}digitalWrite(A_PIN, numTable[num][0]);\n` +
             `${Blockly.Arduino.tab()}digitalWrite(B_PIN, numTable[num][1]);\n` +
@@ -1330,7 +1330,7 @@ Blockly.Arduino.display_segmentDisplayTwoDigits = function (a){
             `${Blockly.Arduino.tab()}digitalWrite(G_PIN, numTable[num][6]);\n` +
             `${Blockly.Arduino.tab()}digitalWrite(DP_PIN, numTable[num][7]);\n` +
             '}\n';
-            console.log("4");
+        console.log('4');
         Blockly.Arduino.definitions_.define_displayTwoDigits = 'void showTwoDigits(int num) {\n' +
             `${Blockly.Arduino.tab()}showNum(int(num/10));\n` +
             `${Blockly.Arduino.tab()}digitalWrite(COM1_PIN,LOW);\n` +
@@ -1343,10 +1343,10 @@ Blockly.Arduino.display_segmentDisplayTwoDigits = function (a){
             `${Blockly.Arduino.tab()}digitalWrite(DP_PIN,LOW);\n` +
             `${Blockly.Arduino.tab()}delay(0.01*1000);\n` +
             '}\n';
-            console.log("4");
+        console.log('4');
         const num = Blockly.Arduino.valueToCode(a, 'NUM', Blockly.Arduino.ORDER_ATOMIC);
-        console.log("num: "+num);
-        if (num < 0 || num > 99){
+        console.log(`num: ${num}`);
+        if (num < 0 || num > 99) {
             alert(`${e.message}. Input must be integer between 0 ~ 99.`);
             return `${Blockly.Arduino.tab()}showTwoDigits(0)${Blockly.Arduino.END}`;
         }
@@ -1499,12 +1499,11 @@ Blockly.Arduino.sensor_refreshDataInTrackingModeFromPixy2 = function (a) {
         if (pixy2Command === '4') {
             return `pixy.line.reverseVector()${Blockly.Arduino.END}`;
         }
-        
+
     }
     return ``;
 };
 Blockly.Arduino.sensor_pixy2FoundTheVector = function (a) {
-    const blockstr = a.toString();
     const foundVector = Blockly.Arduino.valueToCode(a, 'FOUND_VECTOR', Blockly.Arduino.ORDER_NONE);
     if (foundVector === '0') {
         return ['res&LINE_VECTOR', Blockly.Arduino.ORDER_ATOMIC];
@@ -1557,68 +1556,12 @@ Blockly.Arduino.motor_motorControl = function (a) {
         '  pinMode(5,OUTPUT);\n' +
         '  pinMode(6,OUTPUT);\n';
     const code = `  digitalWrite(4,${dirL});\n` +
-			  `  digitalWrite(7,${dirR});\n` +
-			  `  analogWrite(5,${speedR});\n` +
-			  `  analogWrite(6,${speedL});\n`;
+        `  digitalWrite(7,${dirR});\n` +
+        `  analogWrite(5,${speedR});\n` +
+        `  analogWrite(6,${speedL});\n`;
     return code;
 };
-/* Blockly.Arduino.motor_ = function() {
-    var dropdown_direction = this.getFieldValue('DIRECTION');
-    var speedA = Blockly.Arduino.valueToCode(this, 'SPEEDA', Blockly.Arduino.ORDER_ATOMIC) || '127'
-    var speedB = Blockly.Arduino.valueToCode(this, 'SPEEDB', Blockly.Arduino.ORDER_ATOMIC) || '127'
-    Blockly.Arduino.setups_["setup_motor"] =
-        "  pinMode(4,OUTPUT);//directionPinA\n"+
-        "  pinMode(7,OUTPUT);//directionPinB\n"+
-        "  pinMode(5,OUTPUT);//speedPinA\n"+
-        "  pinMode(6,OUTPUT);//speedPinB\n";
-    var code = "";
-    if(dropdown_direction==="forward"){
-        Blockly.Arduino.definitions_['define_forward'] = "void forward()\n"+
-            "{\n"+
-            "  analogWrite(5,"+speedA+");//Motor A speed\n"+
-            "  analogWrite(6,"+speedB+");//Motor B speed\n"+
-            "  digitalWrite(7,LOW);//turn DC Motor B (right) move clockwise\n"+
-            "  digitalWrite(4,LOW);//turn DC Motor A (left) move clockwise\n"+
-            "}\n";
-        code="forward();\n";
-    } else if (dropdown_direction==="right") {
-        Blockly.Arduino.definitions_['define_right'] = "void right()\n"+
-            "{\n"+
-            "  analogWrite(5,"+speedA+");//Motor A speed\n"+
-            "  analogWrite(6,"+speedB+");//Motor B speed\n"+
-            "  digitalWrite(7,HIGH);//turn DC Motor B (right) move clockwise\n"+
-            "  digitalWrite(4,LOW);//turn DC Motor A (left) move anti-clockwise\n"+
-            "}\n\n";
-        code="right();\n";
-    } else if (dropdown_direction==="left") {
-        Blockly.Arduino.definitions_['define_left'] = "void left()\n"+
-            "{\n"+
-            "  analogWrite(5,"+speedA+");//Motor A speed\n"+
-            "  analogWrite(6,"+speedB+");//Motor B speed\n"+
-            "  digitalWrite(7,LOW);//turn DC Motor B (right) move anticlockwise\n"+
-            "  digitalWrite(4,HIGH);//turn DC Motor A (left) move clockwise\n"+
-            "}\n\n";
-        code="left();\n";
-    } else if (dropdown_direction==="backward"){
-        Blockly.Arduino.definitions_['define_backward'] = "void backward()\n"+
-            "{\n"+
-            "  analogWrite(5,"+speedA+");//Motor A speed\n"+
-            "  analogWrite(6,"+speedB+");//Motor B speed\n"+
-            "  digitalWrite(7,HIGH);//turn DC Motor B (right) move anticlockwise\n"+
-            "  digitalWrite(4,HIGH);//turn DC Motor A (left) move anticlockwise\n"+
-            "}\n\n";
-        code="backward();\n";
-    } else if (dropdown_direction==="stop"){
-        Blockly.Arduino.definitions_['define_stop'] = "void stop()\n"+
-            "{\n"+
-            "  analogWrite(5,0);//Motor A speed\n"+
-            "  analogWrite(6,0);//Motor B speed\n"+
-            "}\n\n"
-        code="stop();\n";
-    }
-    return code;
-};
-*/
+
 Blockly.Arduino.operator_add = Blockly.Arduino.operator_arithmetic;
 Blockly.Arduino.operator_subtract = Blockly.Arduino.operator_arithmetic;
 Blockly.Arduino.operator_multiply = Blockly.Arduino.operator_arithmetic;
@@ -1644,7 +1587,7 @@ const DroppableBlocks = DropAreaHOC([
 ])(BlocksComponent);
 
 class Blocks extends React.Component {
-    constructor (props) {
+    constructor(props) {
         super(props);
         this.ScratchBlocks = VMScratchBlocks(props.vm);
         bindAll(this, [
@@ -1689,12 +1632,12 @@ class Blocks extends React.Component {
         };
         this.onTargetsUpdate = debounce(this.onTargetsUpdate, 100);
         this.toolboxUpdateQueue = [];
-        const {getInstance} = props;
+        const { getInstance } = props;
         if (typeof getInstance === 'function') {
             getInstance(this);
         }
     }
-    componentDidMount () {
+    componentDidMount() {
         this.ScratchBlocks.FieldColourSlider.activateEyedropper_ = this.props.onActivateColorPicker;
         this.ScratchBlocks.Procedures.externalProcedureDefCallback = this.props.onActivateCustomProcedures;
         this.ScratchBlocks.ScratchMsgs.setLocale(this.props.locale);
@@ -1702,7 +1645,7 @@ class Blocks extends React.Component {
         const workspaceConfig = defaultsDeep({},
             Blocks.defaultOptions,
             this.props.options,
-            {rtl: this.props.isRtl, toolbox: this.props.toolboxXML}
+            { rtl: this.props.isRtl, toolbox: this.props.toolboxXML }
         );
         this.workspace = this.ScratchBlocks.inject(this.blocks, workspaceConfig);
 
@@ -1746,7 +1689,7 @@ class Blocks extends React.Component {
         }
         analytics.pageview('/editors/blocks');
     }
-    shouldComponentUpdate (nextProps, nextState) {
+    shouldComponentUpdate(nextProps, nextState) {
         return (
             this.state.prompt !== nextState.prompt ||
             this.state.connectionModal !== nextState.connectionModal ||
@@ -1759,7 +1702,7 @@ class Blocks extends React.Component {
             this.props.stageSize !== nextProps.stageSize
         );
     }
-    componentDidUpdate (prevProps) {
+    componentDidUpdate(prevProps) {
         // If any modals are open, call hideChaff to close z-indexed field editors
         if (this.props.anyModalVisible && !prevProps.anyModalVisible) {
             this.ScratchBlocks.hideChaff();
@@ -1797,18 +1740,18 @@ class Blocks extends React.Component {
             this.workspace.setVisible(false);
         }
     }
-    componentWillUnmount () {
+    componentWillUnmount() {
         this.detachVM();
         this.workspace.dispose();
         clearTimeout(this.toolboxUpdateTimeout);
     }
-    requestToolboxUpdate () {
+    requestToolboxUpdate() {
         clearTimeout(this.toolboxUpdateTimeout);
         this.toolboxUpdateTimeout = setTimeout(() => {
             this.updateToolbox();
         }, 0);
     }
-    setLocale () {
+    setLocale() {
         this.ScratchBlocks.ScratchMsgs.setLocale(this.props.locale);
         this.props.vm.setLocale(this.props.locale, this.props.messages)
             .then(() => {
@@ -1821,7 +1764,7 @@ class Blocks extends React.Component {
             });
     }
 
-    updateToolbox () {
+    updateToolbox() {
         this.toolboxUpdateTimeout = false;
 
         const categoryId = this.workspace.toolbox_.getSelectedCategoryId();
@@ -1847,7 +1790,7 @@ class Blocks extends React.Component {
         queue.forEach(fn => fn());
     }
 
-    withToolboxUpdates (fn) {
+    withToolboxUpdates(fn) {
         // if there is a queued toolbox update, we need to wait
         if (this.toolboxUpdateTimeout) {
             this.toolboxUpdateQueue.push(fn);
@@ -1856,7 +1799,7 @@ class Blocks extends React.Component {
         }
     }
 
-    attachVM () {
+    attachVM() {
         this.workspace.addChangeListener(this.props.vm.blockListener);
         this.flyoutWorkspace = this.workspace
             .getFlyout()
@@ -1876,7 +1819,7 @@ class Blocks extends React.Component {
         this.props.vm.addListener('PERIPHERAL_CONNECTED', this.handleStatusButtonUpdate);
         this.props.vm.addListener('PERIPHERAL_DISCONNECTED', this.handleStatusButtonUpdate);
     }
-    detachVM () {
+    detachVM() {
         this.props.vm.removeListener('SCRIPT_GLOW_ON', this.onScriptGlowOn);
         this.props.vm.removeListener('SCRIPT_GLOW_OFF', this.onScriptGlowOff);
         this.props.vm.removeListener('BLOCK_GLOW_ON', this.onBlockGlowOn);
@@ -1890,7 +1833,7 @@ class Blocks extends React.Component {
         this.props.vm.removeListener('PERIPHERAL_DISCONNECTED', this.handleStatusButtonUpdate);
     }
 
-    updateToolboxBlockValue (id, value) {
+    updateToolboxBlockValue(id, value) {
         this.withToolboxUpdates(() => {
             const block = this.workspace
                 .getFlyout()
@@ -1902,7 +1845,7 @@ class Blocks extends React.Component {
         });
     }
 
-    onTargetsUpdate () {
+    onTargetsUpdate() {
         if (this.props.vm.editingTarget && this.workspace.getFlyout()) {
             ['glide', 'move', 'set'].forEach(prefix => {
                 this.updateToolboxBlockValue(`${prefix}x`, Math.round(this.props.vm.editingTarget.x).toString());
@@ -1910,7 +1853,7 @@ class Blocks extends React.Component {
             });
         }
     }
-    onWorkspaceMetricsChange () {
+    onWorkspaceMetricsChange() {
         const target = this.props.vm.editingTarget;
         if (target && target.id) {
             const workspaceMetrics = Object.assign({}, this.state.workspaceMetrics, {
@@ -1920,30 +1863,30 @@ class Blocks extends React.Component {
                     scale: this.workspace.scale
                 }
             });
-            this.setState({workspaceMetrics});
+            this.setState({ workspaceMetrics });
         }
     }
-    onScriptGlowOn (data) {
+    onScriptGlowOn(data) {
         this.workspace.glowStack(data.id, true);
     }
-    onScriptGlowOff (data) {
+    onScriptGlowOff(data) {
         this.workspace.glowStack(data.id, false);
     }
-    onBlockGlowOn (data) {
+    onBlockGlowOn(data) {
         this.workspace.glowBlock(data.id, true);
     }
-    onBlockGlowOff (data) {
+    onBlockGlowOff(data) {
         this.workspace.glowBlock(data.id, false);
     }
-    onVisualReport (data) {
+    onVisualReport(data) {
         this.workspace.reportValue(data.id, data.value);
     }
-    getToolboxXML () {
+    getToolboxXML() {
         // Use try/catch because this requires digging pretty deep into the VM
         // Code inside intentionally ignores several error situations (no stage, etc.)
         // Because they would get caught by this try/catch
         try {
-            let {editingTarget: target, runtime} = this.props.vm;
+            let { editingTarget: target, runtime } = this.props.vm;
             const stage = runtime.getTargetForStage();
             if (!target) target = stage; // If no editingTarget, use the stage
 
@@ -1960,7 +1903,7 @@ class Blocks extends React.Component {
             return null;
         }
     }
-    onWorkspaceUpdate (data) {
+    onWorkspaceUpdate(data) {
         // When we change sprites, update the toolbox to have the new sprite's blocks
         const toolboxXML = this.getToolboxXML();
         if (toolboxXML) {
@@ -1994,7 +1937,7 @@ class Blocks extends React.Component {
         this.workspace.addChangeListener(this.props.vm.blockListener);
 
         if (this.props.vm.editingTarget && this.state.workspaceMetrics[this.props.vm.editingTarget.id]) {
-            const {scrollX, scrollY, scale} = this.state.workspaceMetrics[this.props.vm.editingTarget.id];
+            const { scrollX, scrollY, scale } = this.state.workspaceMetrics[this.props.vm.editingTarget.id];
             this.workspace.scrollX = scrollX;
             this.workspace.scrollY = scrollY;
             this.workspace.scale = scale;
@@ -2006,7 +1949,7 @@ class Blocks extends React.Component {
         // workspace to be 'undone' here.
         this.workspace.clearUndo();
     }
-    handleExtensionAdded (blocksInfo) {
+    handleExtensionAdded(blocksInfo) {
         // select JSON from each block info object then reject the pseudo-blocks which don't have JSON, like separators
         // this actually defines blocks and MUST run regardless of the UI state
         this.ScratchBlocks.defineBlocksWithJsonArray(blocksInfo.map(blockInfo => blockInfo.json).filter(x => x));
@@ -2017,11 +1960,11 @@ class Blocks extends React.Component {
             this.props.updateToolboxState(toolboxXML);
         }
     }
-    handleBlocksInfoUpdate (blocksInfo) {
+    handleBlocksInfoUpdate(blocksInfo) {
         // @todo Later we should replace this to avoid all the warnings from redefining blocks.
         this.handleExtensionAdded(blocksInfo);
     }
-    handleCategorySelected (categoryId) {
+    handleCategorySelected(categoryId) {
         const extension = extensionData.find(ext => ext.extensionId === categoryId);
         if (extension && extension.launchPeripheralConnectionFlow) {
             this.handleConnectionModalStart(categoryId);
@@ -2031,7 +1974,7 @@ class Blocks extends React.Component {
             this.workspace.toolbox_.setSelectedCategoryById(categoryId);
         });
     }
-    sb2cpp () {
+    sb2cpp() {
         let code = '';
         try {
             code = code + Blockly.Arduino.workspaceToCode(this.workspace);
@@ -2042,11 +1985,11 @@ class Blocks extends React.Component {
         }
         return code;
     }
-    setBlocks (blocks) {
+    setBlocks(blocks) {
         this.blocks = blocks;
     }
-    handlePromptStart (message, defaultValue, callback, optTitle, optVarType) {
-        const p = {prompt: {callback, message, defaultValue}};
+    handlePromptStart(message, defaultValue, callback, optTitle, optVarType) {
+        const p = { prompt: { callback, message, defaultValue } };
         p.prompt.title = optTitle ? optTitle :
             this.ScratchBlocks.Msg.VARIABLE_MODAL_TITLE;
         p.prompt.varType = typeof optVarType === 'string' ?
@@ -2058,16 +2001,16 @@ class Blocks extends React.Component {
         p.prompt.showCloudOption = (optVarType === this.ScratchBlocks.SCALAR_VARIABLE_TYPE) && this.props.canUseCloud;
         this.setState(p);
     }
-    handleConnectionModalStart (extensionId) {
+    handleConnectionModalStart(extensionId) {
         this.props.onOpenConnectionModal(extensionId);
     }
-    handleConnectionModalClose () {
-        this.setState({connectionModal: null});
+    handleConnectionModalClose() {
+        this.setState({ connectionModal: null });
     }
-    handleStatusButtonUpdate () {
+    handleStatusButtonUpdate() {
         this.ScratchBlocks.refreshStatusButtons(this.workspace);
     }
-    handleOpenSoundRecorder () {
+    handleOpenSoundRecorder() {
         this.props.onOpenSoundRecorder();
     }
 
@@ -2076,23 +2019,23 @@ class Blocks extends React.Component {
      * and additional potentially conflicting variable names from the VM
      * to the variable validation prompt callback used in scratch-blocks.
      */
-    handlePromptCallback (input, variableOptions) {
+    handlePromptCallback(input, variableOptions) {
         this.state.prompt.callback(
             input,
             this.props.vm.runtime.getAllVarNamesOfType(this.state.prompt.varType),
             variableOptions);
         this.handlePromptClose();
     }
-    handlePromptClose () {
-        this.setState({prompt: null});
+    handlePromptClose() {
+        this.setState({ prompt: null });
     }
-    handleCustomProceduresClose (data) {
+    handleCustomProceduresClose(data) {
         this.props.onRequestCloseCustomProcedures(data);
         const ws = this.workspace;
         ws.refreshToolboxSelection_();
         ws.toolbox_.scrollToCategoryById('myBlocks');
     }
-    handleDrop (dragInfo) {
+    handleDrop(dragInfo) {
         fetch(dragInfo.payload.bodyUrl)
             .then(response => response.json())
             .then(blocks => this.props.vm.shareBlocksToTarget(blocks, this.props.vm.editingTarget.id))
@@ -2101,11 +2044,11 @@ class Blocks extends React.Component {
                 this.updateToolbox(); // To show new variables/custom blocks
             });
     }
-    UndoStacked (e) { // 撤销
+    UndoStacked(e) { // 撤销
         this.ScratchBlocks.hideChaff();
         this.ScratchBlocks.mainWorkspace.undo(e);
     }
-    render () {
+    render() {
         /* eslint-disable no-unused-vars */
         const {
             anyModalVisible,
