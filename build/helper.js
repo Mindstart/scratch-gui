@@ -3,6 +3,12 @@ const http = require('http');
 const childProcess = require('child_process');
 const fs = require('fs');
 
+let response = 'compile';
+let request;
+let port;
+let code;
+let writeIno = false;
+
 var path = require("path"),
     shell = require("shelljs"),
     HOMEPATH = "win32" === process.platform ? process.env.USERPROFILE : process.env.HOME,
@@ -13,30 +19,11 @@ var path = require("path"),
     };
 preCompile();
 
-// microsoft store version
-// var arduinoDir = "";
-// var batfilename = "upload_ms.bat";
-// desktop version
-var arduinoDir = "arduino/";
-var batfilename = "upload.bat";
-
-console.log(HOMEPATH);
-console.log(inoDir);
-console.log(buildDir);
-console.log(arduinoDir);
-console.log(batfilename);
-
-let response = 'compile';
-let request;
-let port;
-let code;
-let writeIno = false;
+var arduinopath = 'arduino';
+var inopath = inoDir + '/sketch.ino';
+var arduinoexepath = 'arduino/arduino.exe';
 
 function createIno(code) {
-    console.log('createIno');
-    preCompile();
-
-    var inopath = inoDir + '/sketch.ino';
     console.log(`createIno inopath ${inopath}`);
 
     try {
@@ -49,17 +36,11 @@ function createIno(code) {
 }
 
 function uploadSketch(port) {
-    console.log(`uploadSketch`);
-
-    console.log(`uploadSketch arduinopath ${arduinoDir}`);
-
-    var inopath = inoDir + '/sketch.ino';
     console.log(`uploadSketch inopath ${inopath}`);
 
-    const bat = childProcess.spawnSync('cmd.exe', ['/c', batfilename + ' ' + port + ' ' + arduinoDir + ' ' + inopath + ' ' + buildDir], {
+    const bat = childProcess.spawnSync('cmd.exe', ['/c', 'upload.bat ' + port + ' ' + arduinopath + ' ' + inopath + ' ' + buildDir], {
         stdio: ['ignore', 'ignore', 'pipe']
     });
-    console.log(bat);
     if (bat.status !== 0) {
         response = ' ERROR: ' + bat.stderr;
     } else {
@@ -68,21 +49,16 @@ function uploadSketch(port) {
 }
 
 function openIDE() {
-    console.log(`openIDE currentpath ${inoDir}`);
-
-    var inopath = inoDir + '/sketch.ino';
-    var exepath = arduinoDir + 'arduino.exe';
-
     console.log(`openIDE inopath ${inopath}`);
-    console.log(`openIDE exepath ${exepath}`);
+    console.log(`openIDE exepath ${arduinoexepath}`);
 
-    const ide = childProcess.exec('"' + exepath + '"' + ' ' + '"' + inopath + '"');
+    const ide = childProcess.exec('"' + arduinoexepath + '"' + ' ' + '"' + inopath + '"');
     ide.stderr.on('data', (data) => {
         console.log(`stderr: ${data}`);
     });
 }
 
-function listener (req, res) {
+function listener(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
     req.setMaxListeners(300);
     request = req.url;

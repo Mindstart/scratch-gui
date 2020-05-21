@@ -16,16 +16,16 @@ import ExtensionLibrary from './extension-library.jsx';
 import extensionData from '../lib/libraries/extensions/index.jsx';
 import CustomProcedures from './custom-procedures.jsx';
 import errorBoundaryHOC from '../lib/error-boundary-hoc.jsx';
-import {STAGE_DISPLAY_SIZES} from '../lib/layout-constants';
+import { STAGE_DISPLAY_SIZES } from '../lib/layout-constants';
 import DropAreaHOC from '../lib/drop-area-hoc.jsx';
 import DragConstants from '../lib/drag-constants';
 
-import {connect} from 'react-redux';
-import {updateToolbox} from '../reducers/toolbox';
-import {activateColorPicker} from '../reducers/color-picker';
-import {closeExtensionLibrary, openSoundRecorder, openConnectionModal} from '../reducers/modals';
-import {activateCustomProcedures, deactivateCustomProcedures} from '../reducers/custom-procedures';
-import {setConnectionModalExtensionId} from '../reducers/connection-modal';
+import { connect } from 'react-redux';
+import { updateToolbox } from '../reducers/toolbox';
+import { activateColorPicker } from '../reducers/color-picker';
+import { closeExtensionLibrary, openSoundRecorder, openConnectionModal } from '../reducers/modals';
+import { activateCustomProcedures, deactivateCustomProcedures } from '../reducers/custom-procedures';
+import { setConnectionModalExtensionId } from '../reducers/connection-modal';
 
 import {
     activateTab,
@@ -337,6 +337,58 @@ Blockly.Arduino.sensor_menu_pinLevel = function (a) {
         retValue = 'LOW';
     } else if (str === 'high' || str === '高电平') {
         retValue = 'HIGH';
+    }
+    return [retValue, Blockly.Arduino.ORDER_ATOMIC];
+};
+Blockly.Arduino.sensor_menu_axis = function (a) {
+    const str = a.toString();
+    let retValue = 0;
+    if (str === 'x') {
+        retValue = 'x';
+    }
+    return [retValue, Blockly.Arduino.ORDER_ATOMIC];
+};
+Blockly.Arduino.sensor_menu_vectorDirect = function (a) {
+    const str = a.toString();
+    let retValue = 0;
+    if (str === 'head(arrow end)' || str === '头部（箭头末端）') {
+        retValue = 'head';
+    }
+    return [retValue, Blockly.Arduino.ORDER_ATOMIC];
+};
+Blockly.Arduino.sensor_menu_which = function (a) {
+    const str = a.toString();
+    let retValue = 0;
+    if (str === 'right front' || str === '右前轮') {
+        retValue = 'rightfront';
+    } else if (str === 'left front' || str === '左前轮') {
+        retValue = 'leftfront';
+    } else if (str === 'right back' || str === '右后轮') {
+        retValue = 'rightback';
+    } else if (str === 'left back' || str === '左后轮') {
+        retValue = 'leftback';
+    }
+    return [retValue, Blockly.Arduino.ORDER_ATOMIC];
+};
+Blockly.Arduino.sensor_menu_wheelDirect = function (a) {
+    const str = a.toString();
+    let retValue = 0;
+    if (str === 'forward' || str === '正转') {
+        retValue = 'forward';
+    } else if (str === 'reverse' || str === '反转') {
+        retValue = 'reverse';
+    }
+    return [retValue, Blockly.Arduino.ORDER_ATOMIC];
+};
+Blockly.Arduino.sensor_menu_wheelStatus = function (a) {
+    const str = a.toString();
+    let retValue = 0;
+    if (str === 'forward' || str === '前进') {
+        retValue = 'forward';
+    } else if (str === 'back' || str === '后退') {
+        retValue = 'back';
+    } else if (str === 'stop' || str === '停止') {
+        retValue = 'stop';
     }
     return [retValue, Blockly.Arduino.ORDER_ATOMIC];
 };
@@ -1560,6 +1612,119 @@ Blockly.Arduino.motor_motorControl = function (a) {
         `  analogWrite(5,${speedR});\n` +
         `  analogWrite(6,${speedL});\n`;
     return code;
+};
+Blockly.Arduino.sensor_getVectorLocation = function (a) {
+    const axis = Blockly.Arduino.valueToCode(a, 'AXIS', Blockly.Arduino.ORDER_ATOMIC);
+    const direction = Blockly.Arduino.valueToCode(a, 'DIRECTION', Blockly.Arduino.ORDER_ATOMIC);
+    if (axis === 'x') {
+        if (direction === 'head') {
+            return ['pixy.line.vectors->m_x1', Blockly.Arduino.ORDER_ATOMIC];
+        }
+    }
+    return ['', Blockly.Arduino.ORDER_ATOMIC];
+};
+Blockly.Arduino.sensor_mecanumWheelSpeed = function (a) {
+    Blockly.Arduino.includes_.mecanumwheel = `#include "Adafruit_MotorShield.h"\n#include "Adafruit_MS_PWMServoDriver.h"\n`;
+    Blockly.Arduino.variables_.afms = `Adafruit_MotorShield AFMS = Adafruit_MotorShield();`;
+    Blockly.Arduino.variables_.motor1 = `Adafruit_DCMotor *m1Motor = AFMS.getMotor(1);`;
+    Blockly.Arduino.variables_.motor2 = `Adafruit_DCMotor *m2Motor = AFMS.getMotor(2);`;
+    Blockly.Arduino.variables_.motor3 = `Adafruit_DCMotor *m3Motor = AFMS.getMotor(3);`;
+    Blockly.Arduino.variables_.motor4 = `Adafruit_DCMotor *m4Motor = AFMS.getMotor(4);`;
+    Blockly.Arduino.definitions_.define_motorControl = `void motorControl(String motorStr,int mdirection, int mspeed){\n` +
+        `${Blockly.Arduino.tab()}if (motorStr == "rf") {\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}if (mdirection == 1){\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}m2Motor->run(FORWARD);m2Motor->setSpeed(mspeed);\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}}\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}else if (mdirection == -1){\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}m2Motor->run(BACKWARD);m2Motor->setSpeed(mspeed);\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}}\n` +
+        `${Blockly.Arduino.tab()}}\n` +
+        `${Blockly.Arduino.tab()}else if (motorStr == "lf") {\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}if (mdirection == 1){\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}m1Motor->run(FORWARD);m1Motor->setSpeed(mspeed);\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}}\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}else if (mdirection == -1){\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}m1Motor->run(BACKWARD);m1Motor->setSpeed(mspeed);\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}}\n` +
+        `${Blockly.Arduino.tab()}}\n` +
+        `${Blockly.Arduino.tab()}else if (motorStr == "rr") {\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}if (mdirection == 1){\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}m4Motor->run(FORWARD);m4Motor->setSpeed(mspeed);\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}}\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}else if (mdirection == -1){\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}m4Motor->run(BACKWARD);m4Motor->setSpeed(mspeed);\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}}\n` +
+        `${Blockly.Arduino.tab()}}\n` +
+        `${Blockly.Arduino.tab()}else if (motorStr == "lr") {\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}if (mdirection == 1){\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}m3Motor->run(FORWARD);m3Motor->setSpeed(mspeed);\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}}\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}else if (mdirection == -1){\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}m3Motor->run(BACKWARD);m3Motor->setSpeed(mspeed);\n` +
+        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}}\n` +
+        `${Blockly.Arduino.tab()}}\n` +
+        `}\n`;
+
+    const which = Blockly.Arduino.valueToCode(a, 'WHICH', Blockly.Arduino.ORDER_ATOMIC);
+    const direct = Blockly.Arduino.valueToCode(a, 'DIRECT', Blockly.Arduino.ORDER_ATOMIC);
+    const speed = Blockly.Arduino.valueToCode(a, 'SPEED', Blockly.Arduino.ORDER_ATOMIC);
+    var idx, wheelDirect;
+    if (which === 'rightfront') {
+        idx = 'rf';
+    } else if (which === 'leftfront') {
+        idx = 'lf';
+    } else if (which === 'rightback') {
+        idx = 'rr';
+    } else if (which === 'leftback') {
+        idx = 'lr';
+    }
+
+    if (direct === 'forward') {
+        wheelDirect = 1;
+    } else if (direct === 'reverse') {
+        wheelDirect = -1;
+    }
+
+    return `motorControl("${idx}", ${wheelDirect}, ${speed})${Blockly.Arduino.END}`;
+};
+
+Blockly.Arduino.sensor_mecanumWheelStatus = function (a) {
+    Blockly.Arduino.includes_.mecanumwheel = `#include "Adafruit_MotorShield.h"\n#include "Adafruit_MS_PWMServoDriver.h"\n`;
+    Blockly.Arduino.variables_.afms = `Adafruit_MotorShield AFMS = Adafruit_MotorShield();`;
+    Blockly.Arduino.variables_.motor1 = `Adafruit_DCMotor *m1Motor = AFMS.getMotor(1);`;
+    Blockly.Arduino.variables_.motor2 = `Adafruit_DCMotor *m2Motor = AFMS.getMotor(2);`;
+    Blockly.Arduino.variables_.motor3 = `Adafruit_DCMotor *m3Motor = AFMS.getMotor(3);`;
+    Blockly.Arduino.variables_.motor4 = `Adafruit_DCMotor *m4Motor = AFMS.getMotor(4);`;
+
+    const status = Blockly.Arduino.valueToCode(a, 'STATUS', Blockly.Arduino.ORDER_ATOMIC);
+    const speed = Blockly.Arduino.valueToCode(a, 'SPEED', Blockly.Arduino.ORDER_ATOMIC);
+    if (status === 'forward') {
+        Blockly.Arduino.definitions_.define_goforward = `void goForward(int mspeed){\n` +
+            `${Blockly.Arduino.tab()}m1Motor->run(FORWARD);m1Motor->setSpeed(mspeed);\n` +
+            `${Blockly.Arduino.tab()}m2Motor->run(FORWARD);m2Motor->setSpeed(mspeed);\n` +
+            `${Blockly.Arduino.tab()}m3Motor->run(FORWARD);m3Motor->setSpeed(mspeed);\n` +
+            `${Blockly.Arduino.tab()}m4Motor->run(FORWARD);m4Motor->setSpeed(mspeed);\n` +
+            `}`;
+        return `goForward(${speed})${Blockly.Arduino.END}`;
+    } else if (status === 'back') {
+        Blockly.Arduino.definitions_.define_gobackad = `void goBackwad(int mspeed){\n` +
+            `${Blockly.Arduino.tab()}m1Motor->run(BACKWARD);m1Motor->setSpeed(mspeed);\n` +
+            `${Blockly.Arduino.tab()}m2Motor->run(BACKWARD);m2Motor->setSpeed(mspeed);\n` +
+            `${Blockly.Arduino.tab()}m3Motor->run(BACKWARD);m3Motor->setSpeed(mspeed);\n` +
+            `${Blockly.Arduino.tab()}m4Motor->run(BACKWARD);m4Motor->setSpeed(mspeed);\n` +
+            `}`;
+        return `goBackwad(${speed})${Blockly.Arduino.END}`;
+    } else if (status === 'stop') {
+        Blockly.Arduino.definitions_.define_stopmotor = `void stopMotor(){\n` +
+            `${Blockly.Arduino.tab()}m1Motor->run(RELEASE);\n` +
+            `${Blockly.Arduino.tab()}m2Motor->run(RELEASE);\n` +
+            `${Blockly.Arduino.tab()}m3Motor->run(RELEASE);\n` +
+            `${Blockly.Arduino.tab()}m4Motor->run(RELEASE);\n` +
+            `}`;
+        return `stopMotor()${Blockly.Arduino.END}`;
+    }
+
+    return ``;
 };
 
 Blockly.Arduino.operator_add = Blockly.Arduino.operator_arithmetic;
