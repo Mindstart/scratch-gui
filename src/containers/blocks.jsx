@@ -1625,6 +1625,7 @@ Blockly.Arduino.sensor_getVectorLocation = function (a) {
 };
 Blockly.Arduino.sensor_mecanumWheelSpeed = function (a) {
     Blockly.Arduino.includes_.mecanumwheel = `#include "Adafruit_MotorShield.h"\n#include "Adafruit_MS_PWMServoDriver.h"\n`;
+    Blockly.Arduino.setups_.mecanumwheelinit = `${Blockly.Arduino.tab()}AFMS.begin();\n`;
     Blockly.Arduino.variables_.afms = `Adafruit_MotorShield AFMS = Adafruit_MotorShield();`;
     Blockly.Arduino.variables_.motor1 = `Adafruit_DCMotor *m1Motor = AFMS.getMotor(1);`;
     Blockly.Arduino.variables_.motor2 = `Adafruit_DCMotor *m2Motor = AFMS.getMotor(2);`;
@@ -1690,6 +1691,7 @@ Blockly.Arduino.sensor_mecanumWheelSpeed = function (a) {
 
 Blockly.Arduino.sensor_mecanumWheelStatus = function (a) {
     Blockly.Arduino.includes_.mecanumwheel = `#include "Adafruit_MotorShield.h"\n#include "Adafruit_MS_PWMServoDriver.h"\n`;
+    Blockly.Arduino.setups_.mecanumwheelinit = `${Blockly.Arduino.tab()}AFMS.begin();\n`;
     Blockly.Arduino.variables_.afms = `Adafruit_MotorShield AFMS = Adafruit_MotorShield();`;
     Blockly.Arduino.variables_.motor1 = `Adafruit_DCMotor *m1Motor = AFMS.getMotor(1);`;
     Blockly.Arduino.variables_.motor2 = `Adafruit_DCMotor *m2Motor = AFMS.getMotor(2);`;
