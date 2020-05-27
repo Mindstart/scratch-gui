@@ -1490,20 +1490,11 @@ Blockly.Arduino.sensor_setServoDegree = function (a) {
 Blockly.Arduino.sensor_initPixy2 = function (a) {
     const blockstr = a.toString();
     if (blockstr.indexOf('?') === -1) {
-        const slow = Blockly.Arduino.valueToCode(a, 'SLOW', Blockly.Arduino.ORDER_ATOMIC);
-        const fast = Blockly.Arduino.valueToCode(a, 'FAST', Blockly.Arduino.ORDER_ATOMIC);
         Blockly.Arduino.includes_.spi = '#include <SPI.h>';
         Blockly.Arduino.includes_.pixy2 = '#include <Pixy2.h>';
         Blockly.Arduino.includes_.pidloop = '#include <PIDLoop.h>';
-        Blockly.Arduino.includes_.zumomotors = '#include <ZumoMotors.h>';
-        Blockly.Arduino.variables_.zumofast = `#define ZUMO_FAST ${fast}`;
-        Blockly.Arduino.variables_.zumoslow = `#define ZUMO_SLOW ${slow}`;
-        Blockly.Arduino.variables_.xcenter = `#define X_CENTER (pixy.frameWidth/2)`;
         Blockly.Arduino.variables_.pixy = `Pixy2 pixy${Blockly.Arduino.END}`;
-        Blockly.Arduino.variables_.zumomotors = `ZumoMotors motors${Blockly.Arduino.END}`;
         Blockly.Arduino.variables_.pidloop = `PIDLoop headingLoop(5000, 0, 0, false)${Blockly.Arduino.END}`;
-        Blockly.Arduino.setups_.leftspeed = `${Blockly.Arduino.tab()}motors.setLeftSpeed(0)${Blockly.Arduino.END}`;
-        Blockly.Arduino.setups_.rightspeed = `${Blockly.Arduino.tab()}motors.setRightSpeed(0)${Blockly.Arduino.END}`;
         Blockly.Arduino.setups_.pixyinit = `${Blockly.Arduino.tab()}pixy.init()${Blockly.Arduino.END}`;
         Blockly.Arduino.setups_.pixysetlamp = `${Blockly.Arduino.tab()}pixy.setLamp(1, 1)${Blockly.Arduino.END}`;
         Blockly.Arduino.setups_.pixychangeprog = `${Blockly.Arduino.tab()}pixy.changeProg("line_tracking")${Blockly.Arduino.END}`;
@@ -1520,15 +1511,6 @@ Blockly.Arduino.sensor_setRoboRaveTaskType = function (a) {
     if (blockstr.indexOf('?') === -1) {
         const taskType = Blockly.Arduino.valueToCode(a, 'TASK_TYPE', Blockly.Arduino.ORDER_NONE);
         return `motors.setTaskFlag(${taskType})${Blockly.Arduino.END}`;
-    }
-    return ``;
-};
-Blockly.Arduino.sensor_setMotorSpeedBasedOnPixy2 = function (a) {
-    const blockstr = a.toString();
-    if (blockstr.indexOf('?') === -1) {
-        const leftSpeed = Blockly.Arduino.valueToCode(a, 'LEFT_SPEED', Blockly.Arduino.ORDER_NONE);
-        const rightSpeed = Blockly.Arduino.valueToCode(a, 'RIGHT_SPEED', Blockly.Arduino.ORDER_NONE);
-        return `motors.setLeftSpeed(${leftSpeed});\nmotors.setRightSpeed(${rightSpeed})${Blockly.Arduino.END}`;
     }
     return ``;
 };
@@ -1574,23 +1556,6 @@ Blockly.Arduino.sensor_pixy2FoundTheVector = function (a) {
     }
 
     return '';
-};
-Blockly.Arduino.sensor_pixy2SetPowerRate = function (a) {
-    const blockstr = a.toString();
-    if (blockstr.indexOf('?') === -1) {
-        const rate = Blockly.Arduino.valueToCode(a, 'RATE', Blockly.Arduino.ORDER_NONE);
-        return `motors.setPowerNum(${rate})${Blockly.Arduino.END}`;
-    }
-    return ``;
-};
-Blockly.Arduino.sensor_getLeftOrRightSpeed = function (a) {
-    const direction = Blockly.Arduino.valueToCode(a, 'DIRECTION', Blockly.Arduino.ORDER_ATOMIC);
-    if (direction === 'Left') {
-        return ['left', Blockly.Arduino.ORDER_ATOMIC];
-    } else if (direction === 'Right') {
-        return ['right', Blockly.Arduino.ORDER_ATOMIC];
-    }
-    return ['', Blockly.Arduino.ORDER_ATOMIC];
 };
 Blockly.Arduino.motor_motorControl = function (a) {
     const speedL = Blockly.Arduino.valueToCode(a, 'POWERL', Blockly.Arduino.ORDER_ATOMIC) || '127';
