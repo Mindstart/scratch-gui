@@ -128,16 +128,14 @@ Blockly.Arduino.event_arduinobegin = function (a) {
     c = Blockly.Arduino.addLoopTrap(c, a.id);
     return a = `${b}\n}\n\nvoid loop(){\n${c}`;
 };
-Blockly.Arduino.arduino_setup = function (a) {
-    let c = Blockly.Arduino.statementToCode(a, 'SUBSTACK');
+Blockly.Arduino.arduino_arduinostart = function (a) {
+    let b = Blockly.Arduino.statementToCode(a, 'SUBSTACK');
+    b = Blockly.Arduino.addLoopTrap(b, a.id);
+    Blockly.Arduino.setups_.setup = b;
+    let c = Blockly.Arduino.statementToCode(a, 'SUBSTACK2');
     c = Blockly.Arduino.addLoopTrap(c, a.id);
-    Blockly.Arduino.setups_.setup = c;
+    Blockly.Arduino.loops_.loop = c;
     return '';
-};
-Blockly.Arduino.arduino_loop = function (a) {
-    let c = Blockly.Arduino.statementToCode(a, 'SUBSTACK');
-    c = Blockly.Arduino.addLoopTrap(c, a.id);
-    return c;
 };
 
 Blockly.Arduino.arduino_pin_mode = function (a) {
@@ -1493,15 +1491,15 @@ Blockly.Arduino.sensor_initPixy2 = function (a) {
         Blockly.Arduino.includes_.spi = '#include <SPI.h>';
         Blockly.Arduino.includes_.pixy2 = '#include <Pixy2.h>';
         Blockly.Arduino.includes_.pidloop = '#include <PIDLoop.h>';
-        Blockly.Arduino.variables_.pixy = `Pixy2 pixy${Blockly.Arduino.END}`;
-        Blockly.Arduino.variables_.pidloop = `PIDLoop headingLoop(5000, 0, 0, false)${Blockly.Arduino.END}`;
-        Blockly.Arduino.setups_.pixyinit = `${Blockly.Arduino.tab()}pixy.init()${Blockly.Arduino.END}`;
-        Blockly.Arduino.setups_.pixysetlamp = `${Blockly.Arduino.tab()}pixy.setLamp(1, 1)${Blockly.Arduino.END}`;
-        Blockly.Arduino.setups_.pixychangeprog = `${Blockly.Arduino.tab()}pixy.changeProg("line_tracking")${Blockly.Arduino.END}`;
-        Blockly.Arduino.loops_.res = `${Blockly.Arduino.tab()}int8_t res${Blockly.Arduino.END}`;
-        Blockly.Arduino.loops_.error = `${Blockly.Arduino.tab()}int32_t error${Blockly.Arduino.END}`;
-        Blockly.Arduino.loops_.leftandright = `${Blockly.Arduino.tab()}int left, right${Blockly.Arduino.END}`;
-        Blockly.Arduino.loops_.buf = `${Blockly.Arduino.tab()}char buf[96]${Blockly.Arduino.END}`;
+        Blockly.Arduino.variables_.pixy = `Pixy2 pixy;\n`;
+        Blockly.Arduino.variables_.pidloop = `PIDLoop headingLoop(5000, 0, 0, false);\n`;
+        Blockly.Arduino.setups_.pixyinit = `${Blockly.Arduino.tab()}pixy.init();`;
+        Blockly.Arduino.setups_.pixysetlamp = `${Blockly.Arduino.tab()}pixy.setLamp(1, 1);`;
+        Blockly.Arduino.setups_.pixychangeprog = `${Blockly.Arduino.tab()}pixy.changeProg("line_tracking");`;
+        Blockly.Arduino.loops_.res = `${Blockly.Arduino.tab()}int8_t res;`;
+        Blockly.Arduino.loops_.error = `${Blockly.Arduino.tab()}int32_t error;`;
+        Blockly.Arduino.loops_.leftandright = `${Blockly.Arduino.tab()}int left, right;`;
+        Blockly.Arduino.loops_.buf = `${Blockly.Arduino.tab()}char buf[96];`;
         return ``;
     }
     return ``;
