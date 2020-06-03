@@ -1382,16 +1382,24 @@ Blockly.Arduino.display_segmentDisplayTwoDigits = function (a) {
             '}\n';
         console.log('4');
         Blockly.Arduino.definitions_.define_displayTwoDigits = 'void showTwoDigits(int num) {\n' +
-            `${Blockly.Arduino.tab()}showNum(int(num/10));\n` +
-            `${Blockly.Arduino.tab()}digitalWrite(COM1_PIN,LOW);\n` +
-            `${Blockly.Arduino.tab()}digitalWrite(COM2_PIN,HIGH);\n` +
-            `${Blockly.Arduino.tab()}digitalWrite(DP_PIN,LOW);\n` +
-            `${Blockly.Arduino.tab()}delay(0.01*1000);\n` +
-            `${Blockly.Arduino.tab()}showNum(num - int(num/10)*10);\n` +
-            `${Blockly.Arduino.tab()}digitalWrite(COM1_PIN,HIGH);\n` +
-            `${Blockly.Arduino.tab()}digitalWrite(COM2_PIN,LOW);\n` +
-            `${Blockly.Arduino.tab()}digitalWrite(DP_PIN,LOW);\n` +
-            `${Blockly.Arduino.tab()}delay(0.01*1000);\n` +
+            `${Blockly.Arduino.tab()}if (num < 10) {\n` +
+            `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}showNum(num - int(num/10)*10);\n` +
+            `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}digitalWrite(COM1_PIN,HIGH);\n` +
+            `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}digitalWrite(COM2_PIN,LOW);\n` +
+            `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}digitalWrite(DP_PIN,LOW);\n` +
+            `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}delay(0.01*1000);\n` +
+            `${Blockly.Arduino.tab()}} else {\n` +
+            `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}showNum(int(num/10));\n` +
+            `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}digitalWrite(COM1_PIN,LOW);\n` +
+            `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}digitalWrite(COM2_PIN,HIGH);\n` +
+            `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}digitalWrite(DP_PIN,LOW);\n` +
+            `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}delay(0.01*1000);\n` +
+            `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}showNum(num - int(num/10)*10);\n` +
+            `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}digitalWrite(COM1_PIN,HIGH);\n` +
+            `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}digitalWrite(COM2_PIN,LOW);\n` +
+            `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}digitalWrite(DP_PIN,LOW);\n` +
+            `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}delay(0.01*1000);\n` +
+            `${Blockly.Arduino.tab()}}\n` +
             '}\n';
         console.log('4');
         const num = Blockly.Arduino.valueToCode(a, 'NUM', Blockly.Arduino.ORDER_ATOMIC);
