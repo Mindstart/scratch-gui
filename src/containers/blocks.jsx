@@ -53,54 +53,102 @@ Blockly.Arduino.Loop = 2;
 Blockly.Arduino.INDENT = '\t';
 Blockly.Arduino.END = ';\n';
 Blockly.Arduino.Header = '#include <Arduino.h>\n';
+Blockly.Arduino.topblockList = ['arduino_arduinostart'];
 Blockly.Arduino.init = function (a) {
     Blockly.Arduino.definitions_ = Object.create(null);
     Blockly.Arduino.includes_ = Object.create(null);
+    Blockly.Arduino.functions_ = Object.create(null);
     Blockly.Arduino.variables_ = Object.create(null);
     Blockly.Arduino.setups_ = Object.create(null);
     Blockly.Arduino.loops_ = Object.create(null);
     Blockly.Arduino.codeStage = Blockly.Arduino.Setup;
     Blockly.Arduino.tabPos = 1;
+    Blockly.Arduino.setupLists_ = [];
+    Blockly.Arduino.loopLists_ = [];
+    Blockly.Arduino.configH_ = {};
     Blockly.Arduino.variableDB_ ? Blockly.Arduino.variableDB_.reset() : Blockly.Arduino.variableDB_ = new Blockly.Names(Blockly.Arduino.RESERVED_WORDS_);
     Blockly.Arduino.variableDB_.setVariableMap(a.getVariableMap());
 
 };
 Blockly.Arduino.finish = function (a) {
+    var b = [];
+    for (var x in Blockly.Arduino.definitions_) b.push(Blockly.Arduino.definitions_[x]);
+    var c = [];
+    for (var p in Blockly.Arduino.includes_) c.push(Blockly.Arduino.includes_[p]);
+    var f = [];
+    for (var l in Blockly.Arduino.functions_) f.push(Blockly.Arduino.functions_[l]);
+    var m = [];
+    for (var t in Blockly.Arduino.variables_) m.push(Blockly.Arduino.variables_[t]);
 
-    const b = [];
-    for (d in Blockly.Arduino.definitions_) b.push(Blockly.Arduino.definitions_[d]);
-    const c = [];
-    for (d in Blockly.Arduino.includes_) c.push(Blockly.Arduino.includes_[d]);
-    const m = [];
-    for (d in Blockly.Arduino.variables_) m.push(Blockly.Arduino.variables_[d]);
-
-    const k = [];
-    for (d in Blockly.Arduino.setups_) k.push(Blockly.Arduino.setups_[d]);
-
-    const j = [];
-    for (d in Blockly.Arduino.loops_) j.push(Blockly.Arduino.loops_[d]);
+    var s = [];
+    for (var r in Blockly.Arduino.setups_) s.push(Blockly.Arduino.INDENT + Blockly.Arduino.setups_[r]);
+    s = s.join('\n');
+    s = s + '\n';
+    s = s.concat(Blockly.Arduino.setupLists_);
+    var u = [];
+    for (var g in Blockly.Arduino.loops_) u.push(Blockly.Arduino.INDENT + Blockly.Arduino.loops_[g]);
+    u = u.join('\n');
+    u = u + '\n';
+    u = u.concat(Blockly.Arduino.loopLists_);
 
     var d = Blockly.Arduino.Header;
     d += c.join('\n');
     d = `${d}\n${m.join('\n')}`;
+    d = `${d}\n${f.join('\n')}`;
     d = `${d}\n${b.join('\n')}`;
     d = `${d}\nvoid setup(){\n`;
-    d = d + k.join('\n');
+    d = d + s;
     d = `${d}\n}\n`;
+    d += `\nvoid loop(){\n${u}\n}\n`;
 
-    a = j.join('\n') + a;
-
-    // Blockly.Arduino.codeStage == Blockly.Arduino.Setup && (d += `\nvoid loop(){\n${a}\n}\n`);
-    if (Blockly.Arduino.codeStage == Blockly.Arduino.Setup) {
-        d += `\nvoid loop(){\n${a}\n}\n`;
-    }
+    Blockly.Arduino.setupLists_ = [];
+    Blockly.Arduino.loopLists_ = [];
+    Blockly.Arduino.configH_ = {};
     delete Blockly.Arduino.definitions_;
     delete Blockly.Arduino.includes_;
     delete Blockly.Arduino.variables_;
     delete Blockly.Arduino.codeStage;
-    Blockly.Arduino.variableDB_.reset();
+    delete Blockly.Arduino.functions_;
+    delete Blockly.Arduino.setups_;
+    delete Blockly.Arduino.loops_;
+
+    console.log(`finish function`);
+
     return d;
 };
+
+Blockly.Arduino.workspaceToCode = function (e) {
+    Blockly.Arduino.blockInfo = Blockly.Arduino.name_, Blockly.Arduino.init(e);
+    console.log(`hello world`);
+
+    for (var block, blockArr = e.getTopBlocks(true), n = 0; block = blockArr[n]; n++) {
+        var containTopBlock = false, topBlock;
+        if (void 0 !== Blockly.Arduino.topblockList) {
+            for (var i in Blockly.Arduino.topblockList) {
+                if (-1 !== (topBlock = Blockly.Arduino.topblockList[i]).indexOf(block.type)) {
+                    containTopBlock = true;
+                    break;
+                }
+            }
+        }
+        if (containTopBlock) {
+            Blockly.Arduino.topblock = topBlock;
+            var code = Blockly.Arduino.blockToCode(block);
+            console.log(`n=${n}, block code=${code}`);
+        }
+    }
+
+    return Blockly.Arduino.finish();
+};
+
+Blockly.Arduino.statementToCode = function (block, name) {
+    var A = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : null,
+        n = Blockly.Arduino.codeStage;
+    Blockly.Arduino.codeStage = A || Blockly.Arduino.Branch;
+    var o = block.getInputTargetBlock(name),
+        r = Blockly.Arduino.blockToCode(o);
+    return r && (r = Blockly.Arduino.prefixLines(r, Blockly.Arduino.INDENT)), Blockly.Arduino.codeStage = n, r
+}
 
 Blockly.Arduino.scrub_ = function (block, code) {
     const nextBlock = block.nextConnection && block.nextConnection.targetBlock();
@@ -120,22 +168,13 @@ Blockly.Arduino.tab = function () {
 };
 Blockly.Arduino.arduino = {};
 Blockly.Arduino.event_arduinobegin = function (a) {
-    Blockly.Arduino.codeStage = Blockly.Arduino.Loop;
-    Blockly.Arduino.tabPos = 0;
-    let b = Blockly.Arduino.statementToCode(a, 'SUBSTACK');
-    b = Blockly.Arduino.addLoopTrap(b, a.id);
-    let c = Blockly.Arduino.statementToCode(a, 'SUBSTACK2');
-    c = Blockly.Arduino.addLoopTrap(c, a.id);
-    return a = `${b}\n}\n\nvoid loop(){\n${c}`;
 };
 Blockly.Arduino.arduino_arduinostart = function (a) {
-    let b = Blockly.Arduino.statementToCode(a, 'SUBSTACK');
-    b = Blockly.Arduino.addLoopTrap(b, a.id);
-    Blockly.Arduino.setups_.setup = b;
-    let c = Blockly.Arduino.statementToCode(a, 'SUBSTACK2');
-    c = Blockly.Arduino.addLoopTrap(c, a.id);
-    Blockly.Arduino.loops_.loop = c;
-    return '';
+    Blockly.Arduino.tabPos = 0;
+    const t = Blockly.Arduino.statementToCode(a, 'SUBSTACK');
+    Blockly.Arduino.setupLists_.push(t);
+    const b = Blockly.Arduino.statementToCode(a, 'SUBSTACK2');
+    Blockly.Arduino.loopLists_.push(b);
 };
 
 Blockly.Arduino.arduino_pin_mode = function (a) {
@@ -151,9 +190,17 @@ Blockly.Arduino.arduino_serial_print = function (a) {
     const b = Blockly.Arduino.valueToCode(a, 'NL', Blockly.Arduino.ORDER_ATOMIC);
     a = Blockly.Arduino.valueToCode(a, 'VALUE', Blockly.Arduino.ORDER_ATOMIC);
     if (a.indexOf('(') === 0 || (a.indexOf('()') !== -1) || (a.indexOf('(') > 0 && a.indexOf(')') > 0)) {
-        return `${b}(${a})${Blockly.Arduino.END}`;
+        if (b === 'nowarp') {
+            return `Serial.print(${a})${Blockly.Arduino.END}`;
+        }
+        return `Serial.println(${a})${Blockly.Arduino.END}`;
+
     }
-    return `${b}("${a}")${Blockly.Arduino.END}`;
+    if (b === 'nowarp') {
+        return `Serial.print("${a}")${Blockly.Arduino.END}`;
+    }
+    return `Serial.println("${a}")${Blockly.Arduino.END}`;
+
 };
 Blockly.Arduino.arduino_pwm_write = function (a) {
     const b = Blockly.Arduino.ORDER_NONE;
@@ -186,7 +233,7 @@ Blockly.Arduino.arduino_tone = function (a) {
     const b = Blockly.Arduino.ORDER_NONE; const c = Blockly.Arduino.valueToCode(a, 'PINNUM', b);
     const d = Blockly.Arduino.valueToCode(a, 'FREQUENCY', b);
     a = Blockly.Arduino.valueToCode(a, 'DURATION', b);
-    return `${Blockly.Arduino.tab()}tone(${c},${d},${a})${Blockly.Arduino.END}`;
+    return `${Blockly.Arduino.INDENT}tone(${c},${d},${a})${Blockly.Arduino.END}`;
 };
 Blockly.Arduino.arduino_servo_write = function (a) {
     const b = Blockly.Arduino.ORDER_NONE;
@@ -194,17 +241,16 @@ Blockly.Arduino.arduino_servo_write = function (a) {
     Blockly.Arduino.definitions_.servo = 'Servo servo;';
     let c = Blockly.Arduino.valueToCode(a, 'PIN', b);
     a = Blockly.Arduino.valueToCode(a, 'DEGREE', b);
-    c = `${Blockly.Arduino.tab()}servo.attach(${c})${Blockly.Arduino.END}`;
+    c = `${Blockly.Arduino.INDENT}servo.attach(${c})${Blockly.Arduino.END}`;
     Blockly.Arduino.setups_.servo = c;
     return `servo.write(${a})${Blockly.Arduino.END}`;
 };
 Blockly.Arduino.arduino_menu = function (a) {
-    console.info(`inputList=${a.inputList[1].name} ${a.inputList[1].getValue()} ${a.inputList[1].fieldRow[0].value_}`);
     return [a.inputList[1].fieldRow[0].value_, Blockly.Arduino.ORDER_ATOMIC];
 };
 Blockly.Arduino.arduino_println = function (a) {
     a = Blockly.Arduino.valueToCode(a, 'TEXT', Blockly.Arduino.ORDER_NONE);
-    return a.indexOf('(') > -1 ? `${Blockly.Arduino.tab()}Serial.println(${a})${Blockly.Arduino.END}` : `${Blockly.Arduino.tab()}Serial.println("${a}")${Blockly.Arduino.END}`;
+    return a.indexOf('(') > -1 ? `${Blockly.Arduino.INDENT}Serial.println(${a})${Blockly.Arduino.END}` : `${Blockly.Arduino.INDENT}Serial.println("${a}")${Blockly.Arduino.END}`;
 };
 Blockly.Arduino.arduino_pin_mode_option = Blockly.Arduino.arduino_menu;
 Blockly.Arduino.arduino_digital_write_option = Blockly.Arduino.arduino_menu;
@@ -281,7 +327,7 @@ Blockly.Arduino.control_wait_until = function (a) {
 };
 Blockly.Arduino.looks_say = function (a) {
     a = Blockly.Arduino.valueToCode(a, 'MESSAGE', Blockly.Arduino.ORDER_ATOMIC);
-    return `${Blockly.Arduino.tab()}Serial.println(String('${a}'));\n`;
+    return `${Blockly.Arduino.INDENT}Serial.println(String('${a}'));\n`;
 };
 Blockly.Arduino.event = {};
 Blockly.Arduino.event_whenflagclicked = function (a) {
@@ -565,9 +611,9 @@ Blockly.Arduino.arduino_menu_newLine = function (a) {
     const str = a.toString();
     let retValue = '';
     if (str === 'WARP' || str === '换行') {
-        retValue = 'Serial.println';
+        retValue = 'warp';
     } else if (str === 'NO WARP' || str === '不换行') {
-        retValue = 'Serial.print';
+        retValue = 'nowarp';
     }
     return [retValue, Blockly.Arduino.ORDER_ATOMIC];
 };
@@ -816,7 +862,7 @@ Blockly.Arduino.data_setvariableto = function (block) {
         }
         return `${varName} = 0;\n`;
     }
-    return `${Blockly.Arduino.tab()}  = 0;\n`;
+    return `${Blockly.Arduino.INDENT}  = 0;\n`;
 
 };
 Blockly.Arduino.data_changevariableby = function (block) {
@@ -827,11 +873,11 @@ Blockly.Arduino.data_changevariableby = function (block) {
         Blockly.Arduino.definitions_[`define_variable${varName}`] = `double ${varName} = 0;`;
         if (typeof argument0 !== 'undefined' && argument0) {
             // argument0 is defind and not null
-            return `${Blockly.Arduino.tab() + varName} = ${varName} + ${argument0};\n`;
+            return `${Blockly.Arduino.INDENT + varName} = ${varName} + ${argument0};\n`;
         }
-        return `${Blockly.Arduino.tab() + varName} = ${varName} + 1;\n`;
+        return `${Blockly.Arduino.INDENT + varName} = ${varName} + 1;\n`;
     }
-    return `${Blockly.Arduino.tab()}  = 0;\n`;
+    return `${Blockly.Arduino.INDENT}  = 0;\n`;
 
 };
 Blockly.Arduino.data_variable = function (block) {
@@ -848,7 +894,7 @@ Blockly.Arduino.arduino_variable_create = function (a) {
 Blockly.Arduino.sensor_ultrasonicDistance = function (a) {
     const PIN = Blockly.Arduino.valueToCode(a, 'PORT', Blockly.Arduino.ORDER_ATOMIC);
     Blockly.Arduino.includes_.ultra = '#include <Wire.h>';
-    Blockly.Arduino.setups_.setup_ultrasonic = `${Blockly.Arduino.tab()}pinMode(${PIN},OUTPUT);\n`;
+    Blockly.Arduino.setups_.setup_ultrasonic = `pinMode(${PIN},OUTPUT);\n`;
     Blockly.Arduino.definitions_.define_getDistance = `${'float getDistance()\n' +
         '{\n' +
         '  digitalWrite('}${PIN}, LOW); \n` +
@@ -866,7 +912,8 @@ Blockly.Arduino.sensor_ultrasonicDistance2W = function (a) {
     const trig_pin = Blockly.Arduino.valueToCode(a, 'TRIG', Blockly.Arduino.ORDER_ATOMIC);
     const echo_pin = Blockly.Arduino.valueToCode(a, 'ECHO', Blockly.Arduino.ORDER_ATOMIC);
     Blockly.Arduino.includes_.ultra = '#include <Wire.h>';
-    Blockly.Arduino.setups_.setup_ultrasonic = `${Blockly.Arduino.tab()}pinMode(${trig_pin},OUTPUT);\n  pinMode(${echo_pin},INPUT);\n`;
+    Blockly.Arduino.setups_.setup_ultrasonic_out = `pinMode(${trig_pin},OUTPUT);`;
+    Blockly.Arduino.setups_.setup_ultrasonic_in = `pinMode(${echo_pin},INPUT);`;
     Blockly.Arduino.definitions_.define_getDistance = `${'float getDistance()\n' +
         '{\n' +
         '  digitalWrite('}${trig_pin}, LOW); \n` +
@@ -884,7 +931,7 @@ Blockly.Arduino.sensor_dht11 = function (a) {
     const pin = Blockly.Arduino.valueToCode(a, 'PIN', Blockly.Arduino.ORDER_ATOMIC);
     const type = Blockly.Arduino.valueToCode(a, 'TYPE', Blockly.Arduino.ORDER_ATOMIC);
     Blockly.Arduino.includes_.ultra = `#include <DHT.h>\nDHT dht11(${pin}, DHT11);\n`;
-    Blockly.Arduino.setups_.setup_dht11 = '  dht11.begin();\n';
+    Blockly.Arduino.setups_.setup_dht11 = 'dht11.begin();\n';
     if (type === 'temperature') {
         return ['dht11.readTemperature()', Blockly.Arduino.ORDER_ATOMIC];
     }
@@ -905,62 +952,62 @@ Blockly.Arduino.sensor_DS1302_setup = function (a) {
     const datPin = Blockly.Arduino.valueToCode(a, 'DAT', Blockly.Arduino.ORDER_ATOMIC);
     const rstPin = Blockly.Arduino.valueToCode(a, 'RST', Blockly.Arduino.ORDER_ATOMIC);
     Blockly.Arduino.includes_.ds1302 = `#include <stdio.h>\n#include <DS1302.h>`;
-    Blockly.Arduino.definitions_.define_namespace = `namespace {\n${Blockly.Arduino.tab()}${'const int clkPin = '}${clkPin};\n` +
-        `${Blockly.Arduino.tab()}${'const int datPin = '}${datPin};\n${Blockly.Arduino.tab()}${'const int rstPin = '}${rstPin};\n` +
-        `${Blockly.Arduino.tab()}${'DS1302 rtc(rstPin, datPin, clkPin);'}\n\n` +
-        `${Blockly.Arduino.tab()}String dayAsString(const Time::Day day) {\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}switch (day) {\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}case Time::kSunday: return "Sunday";\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}case Time::kMonday: return "Monday";\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}case Time::kTuesday: return "Tuesday";\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}case Time::kWednesday: return "Wednesday";\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}case Time::kThursday: return "Thursday";\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}case Time::kFriday: return "Friday";\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}case Time::kSaturday: return "Saturday";\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}}\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}return "unknown day";\n` +
-        `${Blockly.Arduino.tab()}}\n` +
-        `${Blockly.Arduino.tab()}String getDay() {\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}Time t = rtc.time();\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}return dayAsString(t.day);\n` +
-        `${Blockly.Arduino.tab()}}\n` +
-        `${Blockly.Arduino.tab()}int getYear() {\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}Time t = rtc.time();\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}return t.yr;\n` +
-        `${Blockly.Arduino.tab()}}\n` +
-        `${Blockly.Arduino.tab()}int getMonth() {\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}Time t = rtc.time();\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}return t.mon;\n` +
-        `${Blockly.Arduino.tab()}}\n` +
-        `${Blockly.Arduino.tab()}int getDate() {\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}Time t = rtc.time();\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}return t.date;\n` +
-        `${Blockly.Arduino.tab()}}\n` +
-        `${Blockly.Arduino.tab()}int getHour() {\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}Time t = rtc.time();\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}return t.hr;\n` +
-        `${Blockly.Arduino.tab()}}\n` +
-        `${Blockly.Arduino.tab()}int getMinute() {\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}Time t = rtc.time();\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}return t.min;\n` +
-        `${Blockly.Arduino.tab()}}\n` +
-        `${Blockly.Arduino.tab()}int getSecond() {\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}Time t = rtc.time();\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}return t.sec;\n` +
-        `${Blockly.Arduino.tab()}}\n` +
-        `${Blockly.Arduino.tab()}Time::Day calWeekDay(int y, int m, int d) {\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}int day = (d += m < 3 ? y-- : y - 2, 23*m/9 + d + 4 + y/4- y/100 + y/400)%7;\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}switch (day) {\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}case 7: return Time::kSunday;\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}case 1: return Time::kMonday;\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}case 2: return Time::kTuesday;\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}case 3: return Time::kWednesday;\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}case 4: return Time::kThursday;\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}case 5: return Time::kFriday;\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}case 6: return Time::kSaturday;\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}}\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}return Time::kSunday;\n` +
-        `${Blockly.Arduino.tab()}}\n` +
+    Blockly.Arduino.definitions_.define_namespace = `namespace {\n${Blockly.Arduino.INDENT}${'const int clkPin = '}${clkPin};\n` +
+        `${Blockly.Arduino.INDENT}${'const int datPin = '}${datPin};\n${Blockly.Arduino.INDENT}${'const int rstPin = '}${rstPin};\n` +
+        `${Blockly.Arduino.INDENT}${'DS1302 rtc(rstPin, datPin, clkPin);'}\n\n` +
+        `${Blockly.Arduino.INDENT}String dayAsString(const Time::Day day) {\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}switch (day) {\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}case Time::kSunday: return "Sunday";\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}case Time::kMonday: return "Monday";\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}case Time::kTuesday: return "Tuesday";\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}case Time::kWednesday: return "Wednesday";\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}case Time::kThursday: return "Thursday";\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}case Time::kFriday: return "Friday";\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}case Time::kSaturday: return "Saturday";\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}}\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}return "unknown day";\n` +
+        `${Blockly.Arduino.INDENT}}\n` +
+        `${Blockly.Arduino.INDENT}String getDay() {\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}Time t = rtc.time();\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}return dayAsString(t.day);\n` +
+        `${Blockly.Arduino.INDENT}}\n` +
+        `${Blockly.Arduino.INDENT}int getYear() {\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}Time t = rtc.time();\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}return t.yr;\n` +
+        `${Blockly.Arduino.INDENT}}\n` +
+        `${Blockly.Arduino.INDENT}int getMonth() {\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}Time t = rtc.time();\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}return t.mon;\n` +
+        `${Blockly.Arduino.INDENT}}\n` +
+        `${Blockly.Arduino.INDENT}int getDate() {\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}Time t = rtc.time();\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}return t.date;\n` +
+        `${Blockly.Arduino.INDENT}}\n` +
+        `${Blockly.Arduino.INDENT}int getHour() {\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}Time t = rtc.time();\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}return t.hr;\n` +
+        `${Blockly.Arduino.INDENT}}\n` +
+        `${Blockly.Arduino.INDENT}int getMinute() {\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}Time t = rtc.time();\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}return t.min;\n` +
+        `${Blockly.Arduino.INDENT}}\n` +
+        `${Blockly.Arduino.INDENT}int getSecond() {\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}Time t = rtc.time();\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}return t.sec;\n` +
+        `${Blockly.Arduino.INDENT}}\n` +
+        `${Blockly.Arduino.INDENT}Time::Day calWeekDay(int y, int m, int d) {\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}int day = (d += m < 4 ? y-- : y - 2, 23*m/9 + d + 4 + y/4- y/100 + y/400)%7;\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}switch (day) {\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}case 7: return Time::kSunday;\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}case 1: return Time::kMonday;\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}case 2: return Time::kTuesday;\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}case 3: return Time::kWednesday;\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}case 4: return Time::kThursday;\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}case 5: return Time::kFriday;\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}case 6: return Time::kSaturday;\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}}\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}return Time::kSunday;\n` +
+        `${Blockly.Arduino.INDENT}}\n` +
         `}\n`;
     return '';
 };
@@ -971,10 +1018,10 @@ Blockly.Arduino.sensor_DS1302 = function (a) {
     const h = Blockly.Arduino.valueToCode(a, 'HOUR', Blockly.Arduino.ORDER_ATOMIC);
     const min = Blockly.Arduino.valueToCode(a, 'MINUTE', Blockly.Arduino.ORDER_ATOMIC);
     const s = Blockly.Arduino.valueToCode(a, 'SECOND', Blockly.Arduino.ORDER_ATOMIC);
-    Blockly.Arduino.setups_.setup_ds1302 = `${Blockly.Arduino.tab()}rtc.writeProtect(false);\n` +
-        `${Blockly.Arduino.tab()}rtc.halt(false);\n` +
-        `${Blockly.Arduino.tab()}Time t(${y},${m},${d},${h},${min},${s},calWeekDay(${y},${m},${d}));\n` +
-        `${Blockly.Arduino.tab()}rtc.time(t);`;
+    Blockly.Arduino.setups_.setup_ds1302 = `rtc.writeProtect(false);\n` +
+        `rtc.halt(false);\n` +
+        `Time t(${y},${m},${d},${h},${min},${s},calWeekDay(${y},${m},${d}));\n` +
+        `rtc.time(t);`;
 
     return '';
 };
@@ -1000,7 +1047,7 @@ Blockly.Arduino.sensor_getDS1302 = function (a) {
 Blockly.Arduino.sensor_infraredTrack = function (a) {
     const b = Blockly.Arduino.ORDER_NONE; const mode = Blockly.Arduino.valueToCode(a, 'MODE', b);
     const PORT = Blockly.Arduino.valueToCode(a, 'PORT', b);
-    Blockly.Arduino.setups_.setup_irTrack = `  pinMode(${PORT}, INPUT);\n`;
+    Blockly.Arduino.setups_.setup_irTrack = `pinMode(${PORT}, INPUT);\n`;
     Blockly.Arduino.definitions_.define_irTrack = `${'String ir_track()\n' +
         '{\n' +
         ' int data = '}${mode}Read(${PORT}); \n` +
@@ -1025,7 +1072,7 @@ Blockly.Arduino.sensor_humidity = function (a) {
     const PIN = Blockly.Arduino.valueToCode(a, 'PORT', Blockly.Arduino.ORDER_ATOMIC);
     Blockly.Arduino.includes_.humid = '#include <DHT.h>';
     Blockly.Arduino.variables_.var_dht = `DHT dht(${PIN}, DHT11);\n`;
-    Blockly.Arduino.setups_.setup_humid = '  dht.begin();\n';
+    Blockly.Arduino.setups_.setup_humid = 'dht.begin();\n';
     Blockly.Arduino.definitions_.define_humidity = 'String humidity()\n' +
         '{\n' +
         ' float h = dht.readHumidity(); \n' +
@@ -1042,7 +1089,7 @@ Blockly.Arduino.sensor_bmp180 = function (a) {
     Blockly.Arduino.includes_.wire = '#include <Wire.h>';
     Blockly.Arduino.variables_.var_bmp180 = '#define BMP180ADD 0xEE>>1;\n' + 'unsigned char OSS;\n' + 'int ac1, ac2, ac3;\n' +
         'unsigned int ac4, ac5, ac6;\n' + 'int b1, b2;\n' + 'int mb, mc, md;\n' + 'float temperature;\n' + 'double pressure, pressure2, altitude;\n' + 'long b5;\n';
-    Blockly.Arduino.setups_.setup_bmp180 = `${' Wire.begin();\n' + ' OSS = '}${oss};\n` + ` BMP180start();\n`;
+    Blockly.Arduino.setups_.setup_bmp180 = `${'Wire.begin();\n' + 'OSS = '}${oss};\n` + `BMP180start();\n`;
     Blockly.Arduino.definitions_.define_bmp180 = 'String calculate(int index)\n' +
         '{\n' +
         ' temperature = bmp180GetTemperature(bmp180ReadUT());\n' +
@@ -1170,7 +1217,7 @@ Blockly.Arduino.display_lcdDisplay = function (a) {
     } else row = '0';
     const value = Blockly.Arduino.valueToCode(a, 'VALUE', Blockly.Arduino.ORDER_ATOMIC).indexOf('(') > -1 ? Blockly.Arduino.valueToCode(a, 'VALUE', Blockly.Arduino.ORDER_NONE) : `"${Blockly.Arduino.valueToCode(a, 'VALUE', Blockly.Arduino.ORDER_NONE)}"`;
     Blockly.Arduino.includes_.lcd = '#include <LiquidCrystal_I2C.h>';
-    Blockly.Arduino.setups_.setup_lcd = '  lcd.begin();\n  lcd.backlight();\n';
+    Blockly.Arduino.setups_.setup_lcd = 'lcd.begin();\nlcd.backlight();\n';
     Blockly.Arduino.definitions_.define_lcd = 'void displayLCD(String disvalue, int row)\n' +
         '{\n' +
         '  char buff[17] = {0};\n' +
@@ -1249,15 +1296,15 @@ Blockly.Arduino.display_initOneBitSegment = function (a) {
     Blockly.Arduino.variables_.var_pinDP = `const int DP_PIN = ${pinDP};`;
     Blockly.Arduino.variables_.var_pinCOM = `const int COM_PIN = ${pinCOM};`;
 
-    Blockly.Arduino.setups_.setup_pinA = `${Blockly.Arduino.tab()}pinMode(A_PIN, OUTPUT);`;
-    Blockly.Arduino.setups_.setup_pinB = `${Blockly.Arduino.tab()}pinMode(B_PIN, OUTPUT);`;
-    Blockly.Arduino.setups_.setup_pinC = `${Blockly.Arduino.tab()}pinMode(C_PIN, OUTPUT);`;
-    Blockly.Arduino.setups_.setup_pinD = `${Blockly.Arduino.tab()}pinMode(D_PIN, OUTPUT);`;
-    Blockly.Arduino.setups_.setup_pinE = `${Blockly.Arduino.tab()}pinMode(E_PIN, OUTPUT);`;
-    Blockly.Arduino.setups_.setup_pinF = `${Blockly.Arduino.tab()}pinMode(F_PIN, OUTPUT);`;
-    Blockly.Arduino.setups_.setup_pinG = `${Blockly.Arduino.tab()}pinMode(G_PIN, OUTPUT);`;
-    Blockly.Arduino.setups_.setup_pinDP = `${Blockly.Arduino.tab()}pinMode(DP_PIN, OUTPUT);`;
-    Blockly.Arduino.setups_.setup_pinCOM = `${Blockly.Arduino.tab()}pinMode(COM_PIN, OUTPUT);`;
+    Blockly.Arduino.setups_.setup_pinA = `pinMode(A_PIN, OUTPUT);`;
+    Blockly.Arduino.setups_.setup_pinB = `pinMode(B_PIN, OUTPUT);`;
+    Blockly.Arduino.setups_.setup_pinC = `pinMode(C_PIN, OUTPUT);`;
+    Blockly.Arduino.setups_.setup_pinD = `pinMode(D_PIN, OUTPUT);`;
+    Blockly.Arduino.setups_.setup_pinE = `pinMode(E_PIN, OUTPUT);`;
+    Blockly.Arduino.setups_.setup_pinF = `pinMode(F_PIN, OUTPUT);`;
+    Blockly.Arduino.setups_.setup_pinG = `pinMode(G_PIN, OUTPUT);`;
+    Blockly.Arduino.setups_.setup_pinDP = `pinMode(DP_PIN, OUTPUT);`;
+    Blockly.Arduino.setups_.setup_pinCOM = `pinMode(COM_PIN, OUTPUT);`;
 
     return '';
 };
@@ -1283,16 +1330,16 @@ Blockly.Arduino.display_initTwoBitSegment = function (a) {
     Blockly.Arduino.variables_.var_pinCOM1 = `const int COM1_PIN = ${pinCOM1};`;
     Blockly.Arduino.variables_.var_pinCOM2 = `const int COM2_PIN = ${pinCOM2};`;
 
-    Blockly.Arduino.setups_.setup_pinA = `${Blockly.Arduino.tab()}pinMode(A_PIN, OUTPUT);`;
-    Blockly.Arduino.setups_.setup_pinB = `${Blockly.Arduino.tab()}pinMode(B_PIN, OUTPUT);`;
-    Blockly.Arduino.setups_.setup_pinC = `${Blockly.Arduino.tab()}pinMode(C_PIN, OUTPUT);`;
-    Blockly.Arduino.setups_.setup_pinD = `${Blockly.Arduino.tab()}pinMode(D_PIN, OUTPUT);`;
-    Blockly.Arduino.setups_.setup_pinE = `${Blockly.Arduino.tab()}pinMode(E_PIN, OUTPUT);`;
-    Blockly.Arduino.setups_.setup_pinF = `${Blockly.Arduino.tab()}pinMode(F_PIN, OUTPUT);`;
-    Blockly.Arduino.setups_.setup_pinG = `${Blockly.Arduino.tab()}pinMode(G_PIN, OUTPUT);`;
-    Blockly.Arduino.setups_.setup_pinDP = `${Blockly.Arduino.tab()}pinMode(DP_PIN, OUTPUT);`;
-    Blockly.Arduino.setups_.setup_pinCOM1 = `${Blockly.Arduino.tab()}pinMode(COM1_PIN, OUTPUT);`;
-    Blockly.Arduino.setups_.setup_pinCOM2 = `${Blockly.Arduino.tab()}pinMode(COM2_PIN, OUTPUT);`;
+    Blockly.Arduino.setups_.setup_pinA = `pinMode(A_PIN, OUTPUT);`;
+    Blockly.Arduino.setups_.setup_pinB = `pinMode(B_PIN, OUTPUT);`;
+    Blockly.Arduino.setups_.setup_pinC = `pinMode(C_PIN, OUTPUT);`;
+    Blockly.Arduino.setups_.setup_pinD = `pinMode(D_PIN, OUTPUT);`;
+    Blockly.Arduino.setups_.setup_pinE = `pinMode(E_PIN, OUTPUT);`;
+    Blockly.Arduino.setups_.setup_pinF = `pinMode(F_PIN, OUTPUT);`;
+    Blockly.Arduino.setups_.setup_pinG = `pinMode(G_PIN, OUTPUT);`;
+    Blockly.Arduino.setups_.setup_pinDP = `pinMode(DP_PIN, OUTPUT);`;
+    Blockly.Arduino.setups_.setup_pinCOM1 = `pinMode(COM1_PIN, OUTPUT);`;
+    Blockly.Arduino.setups_.setup_pinCOM2 = `pinMode(COM2_PIN, OUTPUT);`;
 
     return '';
 };
@@ -1319,33 +1366,33 @@ Blockly.Arduino.display_segmentDisplay = function (a) {
     if (blockstr.indexOf('?') === -1) {
         Blockly.Arduino.definitions_.define_variable_segment = '//根据共阴极数码管段码表定义0~9显示的各段开关状态\n' +
             `const int numTable[10][8] = {\n` +
-            `${Blockly.Arduino.tab()}//1为点亮，0为关闭\n` +
-            `${Blockly.Arduino.tab()}//a  b  c  d  e  f  g  dp\n` +
-            `${Blockly.Arduino.tab()}{1, 1, 1, 1, 1, 1, 0, 0},//0\n` +
-            `${Blockly.Arduino.tab()}{0, 1, 1, 0, 0, 0, 0, 0},//1\n` +
-            `${Blockly.Arduino.tab()}{1, 1, 0, 1, 1, 0, 1, 0},//2\n` +
-            `${Blockly.Arduino.tab()}{1, 1, 1, 1, 0, 0, 1, 0},//3\n` +
-            `${Blockly.Arduino.tab()}{0, 1, 1, 0, 0, 1, 1, 0},//4\n` +
-            `${Blockly.Arduino.tab()}{1, 0, 1, 1, 0, 1, 1, 0},//5\n` +
-            `${Blockly.Arduino.tab()}{1, 0, 1, 1, 1, 1, 1, 0},//6\n` +
-            `${Blockly.Arduino.tab()}{1, 1, 1, 0, 0, 0, 0, 0},//7\n` +
-            `${Blockly.Arduino.tab()}{1, 1, 1, 1, 1, 1, 1, 0},//8\n` +
-            `${Blockly.Arduino.tab()}{1, 1, 1, 1, 0, 1, 1, 0},//9\n` +
+            `${Blockly.Arduino.INDENT}//1为点亮，0为关闭\n` +
+            `${Blockly.Arduino.INDENT}//a  b  c  d  e  f  g  dp\n` +
+            `${Blockly.Arduino.INDENT}{1, 1, 1, 1, 1, 1, 0, 0},//0\n` +
+            `${Blockly.Arduino.INDENT}{0, 1, 1, 0, 0, 0, 0, 0},//1\n` +
+            `${Blockly.Arduino.INDENT}{1, 1, 0, 1, 1, 0, 1, 0},//2\n` +
+            `${Blockly.Arduino.INDENT}{1, 1, 1, 1, 0, 0, 1, 0},//3\n` +
+            `${Blockly.Arduino.INDENT}{0, 1, 1, 0, 0, 1, 1, 0},//4\n` +
+            `${Blockly.Arduino.INDENT}{1, 0, 1, 1, 0, 1, 1, 0},//5\n` +
+            `${Blockly.Arduino.INDENT}{1, 0, 1, 1, 1, 1, 1, 0},//6\n` +
+            `${Blockly.Arduino.INDENT}{1, 1, 1, 0, 0, 0, 0, 0},//7\n` +
+            `${Blockly.Arduino.INDENT}{1, 1, 1, 1, 1, 1, 1, 0},//8\n` +
+            `${Blockly.Arduino.INDENT}{1, 1, 1, 1, 0, 1, 1, 0},//9\n` +
             '};\n';
 
         Blockly.Arduino.definitions_.define_showNum = 'void showNum(int num) {\n' +
-            `${Blockly.Arduino.tab()}digitalWrite(A_PIN, numTable[num][0]);\n` +
-            `${Blockly.Arduino.tab()}digitalWrite(B_PIN, numTable[num][1]);\n` +
-            `${Blockly.Arduino.tab()}digitalWrite(C_PIN, numTable[num][2]);\n` +
-            `${Blockly.Arduino.tab()}digitalWrite(D_PIN, numTable[num][3]);\n` +
-            `${Blockly.Arduino.tab()}digitalWrite(E_PIN, numTable[num][4]);\n` +
-            `${Blockly.Arduino.tab()}digitalWrite(F_PIN, numTable[num][5]);\n` +
-            `${Blockly.Arduino.tab()}digitalWrite(G_PIN, numTable[num][6]);\n` +
-            `${Blockly.Arduino.tab()}digitalWrite(DP_PIN, numTable[num][7]);\n` +
+            `${Blockly.Arduino.INDENT}digitalWrite(A_PIN, numTable[num][0]);\n` +
+            `${Blockly.Arduino.INDENT}digitalWrite(B_PIN, numTable[num][1]);\n` +
+            `${Blockly.Arduino.INDENT}digitalWrite(C_PIN, numTable[num][2]);\n` +
+            `${Blockly.Arduino.INDENT}digitalWrite(D_PIN, numTable[num][3]);\n` +
+            `${Blockly.Arduino.INDENT}digitalWrite(E_PIN, numTable[num][4]);\n` +
+            `${Blockly.Arduino.INDENT}digitalWrite(F_PIN, numTable[num][5]);\n` +
+            `${Blockly.Arduino.INDENT}digitalWrite(G_PIN, numTable[num][6]);\n` +
+            `${Blockly.Arduino.INDENT}digitalWrite(DP_PIN, numTable[num][7]);\n` +
             '}\n';
 
         const num = Blockly.Arduino.valueToCode(a, 'NUM', Blockly.Arduino.ORDER_ATOMIC);
-        return `${Blockly.Arduino.tab()}showNum(${num})${Blockly.Arduino.END}`;
+        return `${Blockly.Arduino.INDENT}showNum(${num})${Blockly.Arduino.END}`;
     }
     return ``;
 };
@@ -1356,59 +1403,59 @@ Blockly.Arduino.display_segmentDisplayTwoDigits = function (a) {
         console.log('2');
         Blockly.Arduino.definitions_.define_variable_segment = '//根据共阴极数码管段码表定义0~99显示的各段开关状态\n' +
             `const int numTable[10][8] = {\n` +
-            `${Blockly.Arduino.tab()}//1为点亮，0为关闭\n` +
-            `${Blockly.Arduino.tab()}//a  b  c  d  e  f  g  dp\n` +
-            `${Blockly.Arduino.tab()}{1, 1, 1, 1, 1, 1, 0, 0},//0\n` +
-            `${Blockly.Arduino.tab()}{0, 1, 1, 0, 0, 0, 0, 0},//1\n` +
-            `${Blockly.Arduino.tab()}{1, 1, 0, 1, 1, 0, 1, 0},//2\n` +
-            `${Blockly.Arduino.tab()}{1, 1, 1, 1, 0, 0, 1, 0},//3\n` +
-            `${Blockly.Arduino.tab()}{0, 1, 1, 0, 0, 1, 1, 0},//4\n` +
-            `${Blockly.Arduino.tab()}{1, 0, 1, 1, 0, 1, 1, 0},//5\n` +
-            `${Blockly.Arduino.tab()}{1, 0, 1, 1, 1, 1, 1, 0},//6\n` +
-            `${Blockly.Arduino.tab()}{1, 1, 1, 0, 0, 0, 0, 0},//7\n` +
-            `${Blockly.Arduino.tab()}{1, 1, 1, 1, 1, 1, 1, 0},//8\n` +
-            `${Blockly.Arduino.tab()}{1, 1, 1, 1, 0, 1, 1, 0},//9\n` +
+            `${Blockly.Arduino.INDENT}//1为点亮，0为关闭\n` +
+            `${Blockly.Arduino.INDENT}//a  b  c  d  e  f  g  dp\n` +
+            `${Blockly.Arduino.INDENT}{1, 1, 1, 1, 1, 1, 0, 0},//0\n` +
+            `${Blockly.Arduino.INDENT}{0, 1, 1, 0, 0, 0, 0, 0},//1\n` +
+            `${Blockly.Arduino.INDENT}{1, 1, 0, 1, 1, 0, 1, 0},//2\n` +
+            `${Blockly.Arduino.INDENT}{1, 1, 1, 1, 0, 0, 1, 0},//3\n` +
+            `${Blockly.Arduino.INDENT}{0, 1, 1, 0, 0, 1, 1, 0},//4\n` +
+            `${Blockly.Arduino.INDENT}{1, 0, 1, 1, 0, 1, 1, 0},//5\n` +
+            `${Blockly.Arduino.INDENT}{1, 0, 1, 1, 1, 1, 1, 0},//6\n` +
+            `${Blockly.Arduino.INDENT}{1, 1, 1, 0, 0, 0, 0, 0},//7\n` +
+            `${Blockly.Arduino.INDENT}{1, 1, 1, 1, 1, 1, 1, 0},//8\n` +
+            `${Blockly.Arduino.INDENT}{1, 1, 1, 1, 0, 1, 1, 0},//9\n` +
             '};\n';
         console.log('3');
         Blockly.Arduino.definitions_.define_showNum = 'void showNum(int num) {\n' +
-            `${Blockly.Arduino.tab()}digitalWrite(A_PIN, numTable[num][0]);\n` +
-            `${Blockly.Arduino.tab()}digitalWrite(B_PIN, numTable[num][1]);\n` +
-            `${Blockly.Arduino.tab()}digitalWrite(C_PIN, numTable[num][2]);\n` +
-            `${Blockly.Arduino.tab()}digitalWrite(D_PIN, numTable[num][3]);\n` +
-            `${Blockly.Arduino.tab()}digitalWrite(E_PIN, numTable[num][4]);\n` +
-            `${Blockly.Arduino.tab()}digitalWrite(F_PIN, numTable[num][5]);\n` +
-            `${Blockly.Arduino.tab()}digitalWrite(G_PIN, numTable[num][6]);\n` +
-            `${Blockly.Arduino.tab()}digitalWrite(DP_PIN, numTable[num][7]);\n` +
+            `${Blockly.Arduino.INDENT}digitalWrite(A_PIN, numTable[num][0]);\n` +
+            `${Blockly.Arduino.INDENT}digitalWrite(B_PIN, numTable[num][1]);\n` +
+            `${Blockly.Arduino.INDENT}digitalWrite(C_PIN, numTable[num][2]);\n` +
+            `${Blockly.Arduino.INDENT}digitalWrite(D_PIN, numTable[num][3]);\n` +
+            `${Blockly.Arduino.INDENT}digitalWrite(E_PIN, numTable[num][4]);\n` +
+            `${Blockly.Arduino.INDENT}digitalWrite(F_PIN, numTable[num][5]);\n` +
+            `${Blockly.Arduino.INDENT}digitalWrite(G_PIN, numTable[num][6]);\n` +
+            `${Blockly.Arduino.INDENT}digitalWrite(DP_PIN, numTable[num][7]);\n` +
             '}\n';
         console.log('4');
         Blockly.Arduino.definitions_.define_displayTwoDigits = 'void showTwoDigits(int num) {\n' +
-            `${Blockly.Arduino.tab()}if (num < 10) {\n` +
-            `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}showNum(num - int(num/10)*10);\n` +
-            `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}digitalWrite(COM1_PIN,HIGH);\n` +
-            `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}digitalWrite(COM2_PIN,LOW);\n` +
-            `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}digitalWrite(DP_PIN,LOW);\n` +
-            `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}delay(0.01*1000);\n` +
-            `${Blockly.Arduino.tab()}} else {\n` +
-            `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}showNum(int(num/10));\n` +
-            `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}digitalWrite(COM1_PIN,LOW);\n` +
-            `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}digitalWrite(COM2_PIN,HIGH);\n` +
-            `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}digitalWrite(DP_PIN,LOW);\n` +
-            `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}delay(0.01*1000);\n` +
-            `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}showNum(num - int(num/10)*10);\n` +
-            `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}digitalWrite(COM1_PIN,HIGH);\n` +
-            `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}digitalWrite(COM2_PIN,LOW);\n` +
-            `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}digitalWrite(DP_PIN,LOW);\n` +
-            `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}delay(0.01*1000);\n` +
-            `${Blockly.Arduino.tab()}}\n` +
+            `${Blockly.Arduino.INDENT}if (num < 10) {\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}showNum(num - int(num/10)*10);\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}digitalWrite(COM1_PIN,HIGH);\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}digitalWrite(COM2_PIN,LOW);\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}digitalWrite(DP_PIN,LOW);\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}delay(0.01*1000);\n` +
+            `${Blockly.Arduino.INDENT}} else {\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}showNum(int(num/10));\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}digitalWrite(COM1_PIN,LOW);\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}digitalWrite(COM2_PIN,HIGH);\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}digitalWrite(DP_PIN,LOW);\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}delay(0.01*1000);\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}showNum(num - int(num/10)*10);\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}digitalWrite(COM1_PIN,HIGH);\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}digitalWrite(COM2_PIN,LOW);\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}digitalWrite(DP_PIN,LOW);\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}delay(0.01*1000);\n` +
+            `${Blockly.Arduino.INDENT}}\n` +
             '}\n';
         console.log('4');
         const num = Blockly.Arduino.valueToCode(a, 'NUM', Blockly.Arduino.ORDER_ATOMIC);
         console.log(`num: ${num}`);
         if (num < 0 || num > 99) {
             alert(`${e.message}. Input must be integer between 0 ~ 99.`);
-            return `${Blockly.Arduino.tab()}showTwoDigits(0)${Blockly.Arduino.END}`;
+            return `${Blockly.Arduino.INDENT}showTwoDigits(0)${Blockly.Arduino.END}`;
         }
-        return `${Blockly.Arduino.tab()}showTwoDigits(${num})${Blockly.Arduino.END}`;
+        return `${Blockly.Arduino.INDENT}showTwoDigits(${num})${Blockly.Arduino.END}`;
     }
     return ``;
 };
@@ -1501,13 +1548,15 @@ Blockly.Arduino.sensor_initPixy2 = function (a) {
         Blockly.Arduino.includes_.pidloop = '#include <PIDLoop.h>';
         Blockly.Arduino.variables_.pixy = `Pixy2 pixy;\n`;
         Blockly.Arduino.variables_.pidloop = `PIDLoop headingLoop(5000, 0, 0, false);\n`;
-        Blockly.Arduino.setups_.pixyinit = `${Blockly.Arduino.tab()}pixy.init();`;
-        Blockly.Arduino.setups_.pixysetlamp = `${Blockly.Arduino.tab()}pixy.setLamp(1, 1);`;
-        Blockly.Arduino.setups_.pixychangeprog = `${Blockly.Arduino.tab()}pixy.changeProg("line_tracking");`;
-        Blockly.Arduino.loops_.res = `${Blockly.Arduino.tab()}int8_t res;`;
-        Blockly.Arduino.loops_.error = `${Blockly.Arduino.tab()}int32_t error;`;
-        Blockly.Arduino.loops_.leftandright = `${Blockly.Arduino.tab()}int left, right;`;
-        Blockly.Arduino.loops_.buf = `${Blockly.Arduino.tab()}char buf[96];`;
+
+        Blockly.Arduino.setups_.pixyinit = `pixy.init();`;
+        Blockly.Arduino.setups_.pixysetlamp = `pixy.setLamp(1, 1);`;
+        Blockly.Arduino.setups_.pixychangeprog = `pixy.changeProg("line_tracking");`;
+
+        Blockly.Arduino.loops_.res = `int8_t res;`;
+        Blockly.Arduino.loops_.error = `int32_t error;`;
+        Blockly.Arduino.loops_.leftandright = `int left, right;`;
+        Blockly.Arduino.loops_.buf = `char buf[96];`;
         return ``;
     }
     return ``;
@@ -1574,10 +1623,10 @@ Blockly.Arduino.motor_motorControl = function (a) {
         var dirR = 'HIGH';
     } else var dirR = 'LOW';
     Blockly.Arduino.setups_.setup_motor =
-        '  pinMode(4,OUTPUT);\n' +
-        '  pinMode(7,OUTPUT);\n' +
-        '  pinMode(5,OUTPUT);\n' +
-        '  pinMode(6,OUTPUT);\n';
+        'pinMode(4,OUTPUT);\n' +
+        'pinMode(7,OUTPUT);\n' +
+        'pinMode(5,OUTPUT);\n' +
+        'pinMode(6,OUTPUT);\n';
     const code = `  digitalWrite(4,${dirL});\n` +
         `  digitalWrite(7,${dirR});\n` +
         `  analogWrite(5,${speedR});\n` +
@@ -1596,45 +1645,45 @@ Blockly.Arduino.sensor_getVectorLocation = function (a) {
 };
 Blockly.Arduino.sensor_mecanumWheelSpeed = function (a) {
     Blockly.Arduino.includes_.mecanumwheel = `#include "Adafruit_MotorShield.h"\n#include "Adafruit_MS_PWMServoDriver.h"\n`;
-    Blockly.Arduino.setups_.mecanumwheelinit = `${Blockly.Arduino.tab()}AFMS.begin();\n`;
+    Blockly.Arduino.setups_.mecanumwheelinit = `AFMS.begin();\n`;
     Blockly.Arduino.variables_.afms = `Adafruit_MotorShield AFMS = Adafruit_MotorShield();`;
     Blockly.Arduino.variables_.motor1 = `Adafruit_DCMotor *m1Motor = AFMS.getMotor(1);`;
     Blockly.Arduino.variables_.motor2 = `Adafruit_DCMotor *m2Motor = AFMS.getMotor(2);`;
     Blockly.Arduino.variables_.motor3 = `Adafruit_DCMotor *m3Motor = AFMS.getMotor(3);`;
     Blockly.Arduino.variables_.motor4 = `Adafruit_DCMotor *m4Motor = AFMS.getMotor(4);`;
     Blockly.Arduino.definitions_.define_motorControl = `void motorControl(String motorStr,int mdirection, int mspeed){\n` +
-        `${Blockly.Arduino.tab()}if (motorStr == "rf") {\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}if (mdirection == 1){\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}m2Motor->run(FORWARD);m2Motor->setSpeed(mspeed);\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}}\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}else if (mdirection == -1){\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}m2Motor->run(BACKWARD);m2Motor->setSpeed(mspeed);\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}}\n` +
-        `${Blockly.Arduino.tab()}}\n` +
-        `${Blockly.Arduino.tab()}else if (motorStr == "lf") {\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}if (mdirection == 1){\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}m1Motor->run(FORWARD);m1Motor->setSpeed(mspeed);\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}}\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}else if (mdirection == -1){\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}m1Motor->run(BACKWARD);m1Motor->setSpeed(mspeed);\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}}\n` +
-        `${Blockly.Arduino.tab()}}\n` +
-        `${Blockly.Arduino.tab()}else if (motorStr == "rr") {\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}if (mdirection == 1){\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}m4Motor->run(FORWARD);m4Motor->setSpeed(mspeed);\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}}\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}else if (mdirection == -1){\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}m4Motor->run(BACKWARD);m4Motor->setSpeed(mspeed);\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}}\n` +
-        `${Blockly.Arduino.tab()}}\n` +
-        `${Blockly.Arduino.tab()}else if (motorStr == "lr") {\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}if (mdirection == 1){\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}m3Motor->run(FORWARD);m3Motor->setSpeed(mspeed);\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}}\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}else if (mdirection == -1){\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}m3Motor->run(BACKWARD);m3Motor->setSpeed(mspeed);\n` +
-        `${Blockly.Arduino.tab()}${Blockly.Arduino.tab()}}\n` +
-        `${Blockly.Arduino.tab()}}\n` +
+        `${Blockly.Arduino.INDENT}if (motorStr == "rf") {\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}if (mdirection == 1){\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}m2Motor->run(FORWARD);m2Motor->setSpeed(mspeed);\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}}\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}else if (mdirection == -1){\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}m2Motor->run(BACKWARD);m2Motor->setSpeed(mspeed);\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}}\n` +
+        `${Blockly.Arduino.INDENT}}\n` +
+        `${Blockly.Arduino.INDENT}else if (motorStr == "lf") {\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}if (mdirection == 1){\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}m1Motor->run(FORWARD);m1Motor->setSpeed(mspeed);\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}}\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}else if (mdirection == -1){\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}m1Motor->run(BACKWARD);m1Motor->setSpeed(mspeed);\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}}\n` +
+        `${Blockly.Arduino.INDENT}}\n` +
+        `${Blockly.Arduino.INDENT}else if (motorStr == "rr") {\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}if (mdirection == 1){\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}m4Motor->run(FORWARD);m4Motor->setSpeed(mspeed);\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}}\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}else if (mdirection == -1){\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}m4Motor->run(BACKWARD);m4Motor->setSpeed(mspeed);\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}}\n` +
+        `${Blockly.Arduino.INDENT}}\n` +
+        `${Blockly.Arduino.INDENT}else if (motorStr == "lr") {\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}if (mdirection == 1){\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}m3Motor->run(FORWARD);m3Motor->setSpeed(mspeed);\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}}\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}else if (mdirection == -1){\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}m3Motor->run(BACKWARD);m3Motor->setSpeed(mspeed);\n` +
+        `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}}\n` +
+        `${Blockly.Arduino.INDENT}}\n` +
         `}\n`;
 
     const which = Blockly.Arduino.valueToCode(a, 'WHICH', Blockly.Arduino.ORDER_ATOMIC);
@@ -1662,7 +1711,7 @@ Blockly.Arduino.sensor_mecanumWheelSpeed = function (a) {
 
 Blockly.Arduino.sensor_mecanumWheelStatus = function (a) {
     Blockly.Arduino.includes_.mecanumwheel = `#include "Adafruit_MotorShield.h"\n#include "Adafruit_MS_PWMServoDriver.h"\n`;
-    Blockly.Arduino.setups_.mecanumwheelinit = `${Blockly.Arduino.tab()}AFMS.begin();\n`;
+    Blockly.Arduino.setups_.mecanumwheelinit = `AFMS.begin();\n`;
     Blockly.Arduino.variables_.afms = `Adafruit_MotorShield AFMS = Adafruit_MotorShield();`;
     Blockly.Arduino.variables_.motor1 = `Adafruit_DCMotor *m1Motor = AFMS.getMotor(1);`;
     Blockly.Arduino.variables_.motor2 = `Adafruit_DCMotor *m2Motor = AFMS.getMotor(2);`;
@@ -1673,26 +1722,26 @@ Blockly.Arduino.sensor_mecanumWheelStatus = function (a) {
     const speed = Blockly.Arduino.valueToCode(a, 'SPEED', Blockly.Arduino.ORDER_ATOMIC);
     if (status === 'forward') {
         Blockly.Arduino.definitions_.define_goforward = `void goForward(int mspeed){\n` +
-            `${Blockly.Arduino.tab()}m1Motor->run(FORWARD);m1Motor->setSpeed(mspeed);\n` +
-            `${Blockly.Arduino.tab()}m2Motor->run(FORWARD);m2Motor->setSpeed(mspeed);\n` +
-            `${Blockly.Arduino.tab()}m3Motor->run(FORWARD);m3Motor->setSpeed(mspeed);\n` +
-            `${Blockly.Arduino.tab()}m4Motor->run(FORWARD);m4Motor->setSpeed(mspeed);\n` +
+            `${Blockly.Arduino.INDENT}m1Motor->run(FORWARD);m1Motor->setSpeed(mspeed);\n` +
+            `${Blockly.Arduino.INDENT}m2Motor->run(FORWARD);m2Motor->setSpeed(mspeed);\n` +
+            `${Blockly.Arduino.INDENT}m3Motor->run(FORWARD);m3Motor->setSpeed(mspeed);\n` +
+            `${Blockly.Arduino.INDENT}m4Motor->run(FORWARD);m4Motor->setSpeed(mspeed);\n` +
             `}`;
         return `goForward(${speed})${Blockly.Arduino.END}`;
     } else if (status === 'back') {
         Blockly.Arduino.definitions_.define_gobackad = `void goBackwad(int mspeed){\n` +
-            `${Blockly.Arduino.tab()}m1Motor->run(BACKWARD);m1Motor->setSpeed(mspeed);\n` +
-            `${Blockly.Arduino.tab()}m2Motor->run(BACKWARD);m2Motor->setSpeed(mspeed);\n` +
-            `${Blockly.Arduino.tab()}m3Motor->run(BACKWARD);m3Motor->setSpeed(mspeed);\n` +
-            `${Blockly.Arduino.tab()}m4Motor->run(BACKWARD);m4Motor->setSpeed(mspeed);\n` +
+            `${Blockly.Arduino.INDENT}m1Motor->run(BACKWARD);m1Motor->setSpeed(mspeed);\n` +
+            `${Blockly.Arduino.INDENT}m2Motor->run(BACKWARD);m2Motor->setSpeed(mspeed);\n` +
+            `${Blockly.Arduino.INDENT}m3Motor->run(BACKWARD);m3Motor->setSpeed(mspeed);\n` +
+            `${Blockly.Arduino.INDENT}m4Motor->run(BACKWARD);m4Motor->setSpeed(mspeed);\n` +
             `}`;
         return `goBackwad(${speed})${Blockly.Arduino.END}`;
     } else if (status === 'stop') {
         Blockly.Arduino.definitions_.define_stopmotor = `void stopMotor(){\n` +
-            `${Blockly.Arduino.tab()}m1Motor->run(RELEASE);\n` +
-            `${Blockly.Arduino.tab()}m2Motor->run(RELEASE);\n` +
-            `${Blockly.Arduino.tab()}m3Motor->run(RELEASE);\n` +
-            `${Blockly.Arduino.tab()}m4Motor->run(RELEASE);\n` +
+            `${Blockly.Arduino.INDENT}m1Motor->run(RELEASE);\n` +
+            `${Blockly.Arduino.INDENT}m2Motor->run(RELEASE);\n` +
+            `${Blockly.Arduino.INDENT}m3Motor->run(RELEASE);\n` +
+            `${Blockly.Arduino.INDENT}m4Motor->run(RELEASE);\n` +
             `}`;
         return `stopMotor()${Blockly.Arduino.END}`;
     }
@@ -1751,6 +1800,7 @@ class Blocks extends React.Component {
             'onTargetsUpdate',
             'onVisualReport',
             'onWorkspaceUpdate',
+            'onWorkspaceCodeUpdate',
             'onWorkspaceMetricsChange',
             'setBlocks',
             'sb2cpp',
@@ -1942,7 +1992,8 @@ class Blocks extends React.Component {
         this.flyoutWorkspace = this.workspace
             .getFlyout()
             .getWorkspace();
-        this.workspace.addChangeListener(this.props.timeTranslate);
+        // this.workspace.addChangeListener(this.props.timeTranslate);
+        this.workspace.addChangeListener(this.onWorkspaceCodeUpdate);
         this.flyoutWorkspace.addChangeListener(this.props.vm.flyoutBlockListener);
         this.flyoutWorkspace.addChangeListener(this.props.vm.monitorBlockListener);
         this.props.vm.addListener('SCRIPT_GLOW_ON', this.onScriptGlowOn);
@@ -2112,10 +2163,25 @@ class Blocks extends React.Component {
             this.workspace.toolbox_.setSelectedCategoryById(categoryId);
         });
     }
+
+    onWorkspaceCodeUpdate(e) {
+        console.log(`onWorkspaceCodeUpdate = `);
+        console.log(e.type);
+        if ('endDrag' === e.type
+            || 'delete' === e.type
+            || 'create' === e.type
+            || 'change' === e.type
+            || 'var_rename' === e.type) {
+            this.props.timeTranslate();
+        }
+    }
+
     sb2cpp() {
+
         let code = '';
         try {
-            code = code + Blockly.Arduino.workspaceToCode(this.workspace);
+            code = Blockly.Arduino.workspaceToCode(this.workspace, false, 'arduino');
+            return code;
         } catch (e) {
             alert(`${e.message}. Translation failed. Exit auto-translate mode.`);
             console.log(e);
