@@ -1392,7 +1392,7 @@ Blockly.Arduino.display_segmentDisplay = function (a) {
             '}\n';
 
         const num = Blockly.Arduino.valueToCode(a, 'NUM', Blockly.Arduino.ORDER_ATOMIC);
-        return `${Blockly.Arduino.INDENT}showNum(${num})${Blockly.Arduino.END}`;
+        return `showNum(${num})${Blockly.Arduino.END}`;
     }
     return ``;
 };
@@ -1453,9 +1453,9 @@ Blockly.Arduino.display_segmentDisplayTwoDigits = function (a) {
         console.log(`num: ${num}`);
         if (num < 0 || num > 99) {
             alert(`${e.message}. Input must be integer between 0 ~ 99.`);
-            return `${Blockly.Arduino.INDENT}showTwoDigits(0)${Blockly.Arduino.END}`;
+            return `showTwoDigits(0)${Blockly.Arduino.END}`;
         }
-        return `${Blockly.Arduino.INDENT}showTwoDigits(${num})${Blockly.Arduino.END}`;
+        return `showTwoDigits(${num})${Blockly.Arduino.END}`;
     }
     return ``;
 };
