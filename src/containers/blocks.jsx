@@ -456,6 +456,16 @@ Blockly.Arduino.display_menu_boolVal = function (a) {
     }
     return [retValue, Blockly.Arduino.ORDER_ATOMIC];
 };
+Blockly.Arduino.display_menu_comType = function (a) {
+    const str = a.toString();
+    let retValue = 0;
+    if (str === 'cathode' || str === '共阴') {
+        retValue = 0;
+    } else if (str === 'anode' || str === '共阳') {
+        retValue = 1;
+    }
+    return [retValue, Blockly.Arduino.ORDER_ATOMIC];
+};
 Blockly.Arduino.sensor_menu_roboRaveTaskType = function (a) {
     const str = a.toString();
     let retValue = 0;
@@ -1286,6 +1296,7 @@ Blockly.Arduino.display_initOneBitSegment = function (a) {
     const pinG = Blockly.Arduino.valueToCode(a, 'PIN_G', Blockly.Arduino.ORDER_NONE);
     const pinDP = Blockly.Arduino.valueToCode(a, 'PIN_DP', Blockly.Arduino.ORDER_NONE);
     const pinCOM = Blockly.Arduino.valueToCode(a, 'PIN_COM', Blockly.Arduino.ORDER_NONE);
+    const comType = Blockly.Arduino.valueToCode(a, 'COM_TYPE', Blockly.Arduino.ORDER_NONE);
     Blockly.Arduino.variables_.var_pinA = `const int A_PIN = ${pinA};`;
     Blockly.Arduino.variables_.var_pinB = `const int B_PIN = ${pinB};`;
     Blockly.Arduino.variables_.var_pinC = `const int C_PIN = ${pinC};`;
@@ -1295,6 +1306,7 @@ Blockly.Arduino.display_initOneBitSegment = function (a) {
     Blockly.Arduino.variables_.var_pinG = `const int G_PIN = ${pinG};`;
     Blockly.Arduino.variables_.var_pinDP = `const int DP_PIN = ${pinDP};`;
     Blockly.Arduino.variables_.var_pinCOM = `const int COM_PIN = ${pinCOM};`;
+    Blockly.Arduino.variables_.var_comType = `const int COM_TYPE = ${comType};`;
 
     Blockly.Arduino.setups_.setup_pinA = `pinMode(A_PIN, OUTPUT);`;
     Blockly.Arduino.setups_.setup_pinB = `pinMode(B_PIN, OUTPUT);`;
@@ -1329,6 +1341,7 @@ Blockly.Arduino.display_initTwoBitSegment = function (a) {
     Blockly.Arduino.variables_.var_pinDP = `const int DP_PIN = ${pinDP};`;
     Blockly.Arduino.variables_.var_pinCOM1 = `const int COM1_PIN = ${pinCOM1};`;
     Blockly.Arduino.variables_.var_pinCOM2 = `const int COM2_PIN = ${pinCOM2};`;
+    Blockly.Arduino.variables_.var_comType = `const int COM_TYPE = 0;`;
 
     Blockly.Arduino.setups_.setup_pinA = `pinMode(A_PIN, OUTPUT);`;
     Blockly.Arduino.setups_.setup_pinB = `pinMode(B_PIN, OUTPUT);`;
@@ -1380,19 +1393,21 @@ Blockly.Arduino.display_segmentDisplay = function (a) {
             `${Blockly.Arduino.INDENT}{1, 1, 1, 1, 0, 1, 1, 0},//9\n` +
             '};\n';
 
-        Blockly.Arduino.definitions_.define_showNum = 'void showNum(int num) {\n' +
-            `${Blockly.Arduino.INDENT}digitalWrite(A_PIN, numTable[num][0]);\n` +
-            `${Blockly.Arduino.INDENT}digitalWrite(B_PIN, numTable[num][1]);\n` +
-            `${Blockly.Arduino.INDENT}digitalWrite(C_PIN, numTable[num][2]);\n` +
-            `${Blockly.Arduino.INDENT}digitalWrite(D_PIN, numTable[num][3]);\n` +
-            `${Blockly.Arduino.INDENT}digitalWrite(E_PIN, numTable[num][4]);\n` +
-            `${Blockly.Arduino.INDENT}digitalWrite(F_PIN, numTable[num][5]);\n` +
-            `${Blockly.Arduino.INDENT}digitalWrite(G_PIN, numTable[num][6]);\n` +
-            `${Blockly.Arduino.INDENT}digitalWrite(DP_PIN, numTable[num][7]);\n` +
+        Blockly.Arduino.definitions_.define_showNum = 'void showNum(int num, int comType) {\n' +
+            `${Blockly.Arduino.INDENT}digitalWrite(A_PIN, comType ^ numTable[num][0]);\n` +
+            `${Blockly.Arduino.INDENT}digitalWrite(B_PIN, comType ^ numTable[num][1]);\n` +
+            `${Blockly.Arduino.INDENT}digitalWrite(C_PIN, comType ^ numTable[num][2]);\n` +
+            `${Blockly.Arduino.INDENT}digitalWrite(D_PIN, comType ^ numTable[num][3]);\n` +
+            `${Blockly.Arduino.INDENT}digitalWrite(E_PIN, comType ^ numTable[num][4]);\n` +
+            `${Blockly.Arduino.INDENT}digitalWrite(F_PIN, comType ^ numTable[num][5]);\n` +
+            `${Blockly.Arduino.INDENT}digitalWrite(G_PIN, comType ^ numTable[num][6]);\n` +
+            `${Blockly.Arduino.INDENT}digitalWrite(DP_PIN, comType ^ numTable[num][7]);\n` +
+            `${Blockly.Arduino.INDENT}digitalWrite(COM_PIN, comType);\n` +
             '}\n';
 
+
         const num = Blockly.Arduino.valueToCode(a, 'NUM', Blockly.Arduino.ORDER_ATOMIC);
-        return `showNum(${num})${Blockly.Arduino.END}`;
+        return `showNum(${num}, COM_TYPE)${Blockly.Arduino.END}`;
     }
     return ``;
 };
