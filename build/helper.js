@@ -37,6 +37,7 @@ function createIno(code) {
 
 function uploadSketch(port) {
     console.log(`uploadSketch inopath ${inopath}`);
+    shell.rm("-rf", buildDir + "/*");
 
     const bat = childProcess.spawnSync('cmd.exe', ['/c', 'upload.bat ' + port + ' ' + arduinopath + ' ' + inopath + ' ' + buildDir], {
         stdio: ['ignore', 'ignore', 'pipe']

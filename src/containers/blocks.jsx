@@ -367,9 +367,9 @@ Blockly.Arduino.arduino_menu_analogPin = function (a) {
 Blockly.Arduino.arduino_menu_pinLevel = function (a) {
     const str = a.toString();
     let retValue = 0;
-    if (str === 'low' || str === '低电平') {
+    if (str === 'LOW' || str === '低电平') {
         retValue = 'LOW';
-    } else if (str === 'high' || str === '高电平') {
+    } else if (str === 'HIGH' || str === '高电平') {
         retValue = 'HIGH';
     }
     return [retValue, Blockly.Arduino.ORDER_ATOMIC];
@@ -1378,19 +1378,19 @@ Blockly.Arduino.display_segmentDisplay = function (a) {
     const blockstr = a.toString();
     if (blockstr.indexOf('?') === -1) {
         Blockly.Arduino.definitions_.define_variable_segment = '//根据共阴极数码管段码表定义0~9显示的各段开关状态\n' +
-            `const int numTable[10][8] = {\n` +
+            `const int numTable[10][7] = {\n` +
             `${Blockly.Arduino.INDENT}//1为点亮，0为关闭\n` +
-            `${Blockly.Arduino.INDENT}//a  b  c  d  e  f  g  dp\n` +
-            `${Blockly.Arduino.INDENT}{1, 1, 1, 1, 1, 1, 0, 0},//0\n` +
-            `${Blockly.Arduino.INDENT}{0, 1, 1, 0, 0, 0, 0, 0},//1\n` +
-            `${Blockly.Arduino.INDENT}{1, 1, 0, 1, 1, 0, 1, 0},//2\n` +
-            `${Blockly.Arduino.INDENT}{1, 1, 1, 1, 0, 0, 1, 0},//3\n` +
-            `${Blockly.Arduino.INDENT}{0, 1, 1, 0, 0, 1, 1, 0},//4\n` +
-            `${Blockly.Arduino.INDENT}{1, 0, 1, 1, 0, 1, 1, 0},//5\n` +
-            `${Blockly.Arduino.INDENT}{1, 0, 1, 1, 1, 1, 1, 0},//6\n` +
-            `${Blockly.Arduino.INDENT}{1, 1, 1, 0, 0, 0, 0, 0},//7\n` +
-            `${Blockly.Arduino.INDENT}{1, 1, 1, 1, 1, 1, 1, 0},//8\n` +
-            `${Blockly.Arduino.INDENT}{1, 1, 1, 1, 0, 1, 1, 0},//9\n` +
+            `${Blockly.Arduino.INDENT}//a  b  c  d  e  f  g \n` +
+            `${Blockly.Arduino.INDENT}{1, 1, 1, 1, 1, 1, 0},//0\n` +
+            `${Blockly.Arduino.INDENT}{0, 1, 1, 0, 0, 0, 0},//1\n` +
+            `${Blockly.Arduino.INDENT}{1, 1, 0, 1, 1, 0, 1},//2\n` +
+            `${Blockly.Arduino.INDENT}{1, 1, 1, 1, 0, 0, 1},//3\n` +
+            `${Blockly.Arduino.INDENT}{0, 1, 1, 0, 0, 1, 1},//4\n` +
+            `${Blockly.Arduino.INDENT}{1, 0, 1, 1, 0, 1, 1},//5\n` +
+            `${Blockly.Arduino.INDENT}{1, 0, 1, 1, 1, 1, 1},//6\n` +
+            `${Blockly.Arduino.INDENT}{1, 1, 1, 0, 0, 0, 0},//7\n` +
+            `${Blockly.Arduino.INDENT}{1, 1, 1, 1, 1, 1, 1},//8\n` +
+            `${Blockly.Arduino.INDENT}{1, 1, 1, 1, 0, 1, 1},//9\n` +
             '};\n';
 
         Blockly.Arduino.definitions_.define_showNum = 'void showNum(int num, int comType) {\n' +
@@ -1401,7 +1401,6 @@ Blockly.Arduino.display_segmentDisplay = function (a) {
             `${Blockly.Arduino.INDENT}digitalWrite(E_PIN, comType ^ numTable[num][4]);\n` +
             `${Blockly.Arduino.INDENT}digitalWrite(F_PIN, comType ^ numTable[num][5]);\n` +
             `${Blockly.Arduino.INDENT}digitalWrite(G_PIN, comType ^ numTable[num][6]);\n` +
-            `${Blockly.Arduino.INDENT}digitalWrite(DP_PIN, comType ^ numTable[num][7]);\n` +
             `${Blockly.Arduino.INDENT}digitalWrite(COM_PIN, comType);\n` +
             '}\n';
 
@@ -1417,19 +1416,19 @@ Blockly.Arduino.display_segmentDisplayTwoDigits = function (a) {
     if (blockstr.indexOf('?') === -1) {
         console.log('2');
         Blockly.Arduino.definitions_.define_variable_segment = '//根据共阴极数码管段码表定义0~99显示的各段开关状态\n' +
-            `const int numTable[10][8] = {\n` +
+            `const int numTable[10][7] = {\n` +
             `${Blockly.Arduino.INDENT}//1为点亮，0为关闭\n` +
-            `${Blockly.Arduino.INDENT}//a  b  c  d  e  f  g  dp\n` +
-            `${Blockly.Arduino.INDENT}{1, 1, 1, 1, 1, 1, 0, 0},//0\n` +
-            `${Blockly.Arduino.INDENT}{0, 1, 1, 0, 0, 0, 0, 0},//1\n` +
-            `${Blockly.Arduino.INDENT}{1, 1, 0, 1, 1, 0, 1, 0},//2\n` +
-            `${Blockly.Arduino.INDENT}{1, 1, 1, 1, 0, 0, 1, 0},//3\n` +
-            `${Blockly.Arduino.INDENT}{0, 1, 1, 0, 0, 1, 1, 0},//4\n` +
-            `${Blockly.Arduino.INDENT}{1, 0, 1, 1, 0, 1, 1, 0},//5\n` +
-            `${Blockly.Arduino.INDENT}{1, 0, 1, 1, 1, 1, 1, 0},//6\n` +
-            `${Blockly.Arduino.INDENT}{1, 1, 1, 0, 0, 0, 0, 0},//7\n` +
-            `${Blockly.Arduino.INDENT}{1, 1, 1, 1, 1, 1, 1, 0},//8\n` +
-            `${Blockly.Arduino.INDENT}{1, 1, 1, 1, 0, 1, 1, 0},//9\n` +
+            `${Blockly.Arduino.INDENT}//a  b  c  d  e  f  g \n` +
+            `${Blockly.Arduino.INDENT}{1, 1, 1, 1, 1, 1, 0},//0\n` +
+            `${Blockly.Arduino.INDENT}{0, 1, 1, 0, 0, 0, 0},//1\n` +
+            `${Blockly.Arduino.INDENT}{1, 1, 0, 1, 1, 0, 1},//2\n` +
+            `${Blockly.Arduino.INDENT}{1, 1, 1, 1, 0, 0, 1},//3\n` +
+            `${Blockly.Arduino.INDENT}{0, 1, 1, 0, 0, 1, 1},//4\n` +
+            `${Blockly.Arduino.INDENT}{1, 0, 1, 1, 0, 1, 1},//5\n` +
+            `${Blockly.Arduino.INDENT}{1, 0, 1, 1, 1, 1, 1},//6\n` +
+            `${Blockly.Arduino.INDENT}{1, 1, 1, 0, 0, 0, 0},//7\n` +
+            `${Blockly.Arduino.INDENT}{1, 1, 1, 1, 1, 1, 1},//8\n` +
+            `${Blockly.Arduino.INDENT}{1, 1, 1, 1, 0, 1, 1},//9\n` +
             '};\n';
         console.log('3');
         Blockly.Arduino.definitions_.define_showNum = 'void showNum(int num) {\n' +
@@ -1440,7 +1439,6 @@ Blockly.Arduino.display_segmentDisplayTwoDigits = function (a) {
             `${Blockly.Arduino.INDENT}digitalWrite(E_PIN, numTable[num][4]);\n` +
             `${Blockly.Arduino.INDENT}digitalWrite(F_PIN, numTable[num][5]);\n` +
             `${Blockly.Arduino.INDENT}digitalWrite(G_PIN, numTable[num][6]);\n` +
-            `${Blockly.Arduino.INDENT}digitalWrite(DP_PIN, numTable[num][7]);\n` +
             '}\n';
         console.log('4');
         Blockly.Arduino.definitions_.define_displayTwoDigits = 'void showTwoDigits(int num) {\n' +
