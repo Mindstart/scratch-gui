@@ -3,7 +3,7 @@ const http = require('http');
 const upload = function (com, cmd) {
     const options = {
         host: '127.0.0.1',
-        port: 12345,
+        port: 10802,
         path: `/${  com  }/${ encodeURIComponent(cmd)}`,
         method: 'get'
     };

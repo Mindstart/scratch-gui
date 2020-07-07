@@ -1,4 +1,4 @@
-const httpPort = 12345;
+const httpPort = 10802;
 const http = require('http');
 const childProcess = require('child_process');
 const fs = require('fs');

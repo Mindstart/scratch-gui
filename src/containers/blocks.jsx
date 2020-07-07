@@ -365,7 +365,8 @@ Blockly.Arduino.arduino_menu_analogPin = function (a) {
     return [str, Blockly.Arduino.ORDER_ATOMIC];
 };
 Blockly.Arduino.arduino_menu_pinLevel = function (a) {
-    const str = a.toString();
+    let str = a.toString();
+    str = str.toUpperCase();
     let retValue = 0;
     if (str === 'LOW' || str === '低电平') {
         retValue = 'LOW';
@@ -375,11 +376,12 @@ Blockly.Arduino.arduino_menu_pinLevel = function (a) {
     return [retValue, Blockly.Arduino.ORDER_ATOMIC];
 };
 Blockly.Arduino.sensor_menu_pinLevel = function (a) {
-    const str = a.toString();
+    let str = a.toString();
+    str = str.toUpperCase();
     let retValue = 0;
-    if (str === 'low' || str === '低电平') {
+    if (str === 'LOW' || str === '低电平') {
         retValue = 'LOW';
-    } else if (str === 'high' || str === '高电平') {
+    } else if (str === 'HIGH' || str === '高电平') {
         retValue = 'HIGH';
     }
     return [retValue, Blockly.Arduino.ORDER_ATOMIC];
@@ -437,11 +439,12 @@ Blockly.Arduino.sensor_menu_wheelStatus = function (a) {
     return [retValue, Blockly.Arduino.ORDER_ATOMIC];
 };
 Blockly.Arduino.display_menu_pinLevel = function (a) {
-    const str = a.toString();
+    let str = a.toString();
+    str = str.toUpperCase();
     let retValue = 0;
-    if (str === 'low' || str === '低电平') {
+    if (str === 'LOW' || str === '低电平') {
         retValue = 'LOW';
-    } else if (str === 'high' || str === '高电平') {
+    } else if (str === 'HIGH' || str === '高电平') {
         retValue = 'HIGH';
     }
     return [retValue, Blockly.Arduino.ORDER_ATOMIC];
