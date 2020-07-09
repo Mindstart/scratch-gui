@@ -459,6 +459,17 @@ Blockly.Arduino.display_menu_boolVal = function (a) {
     }
     return [retValue, Blockly.Arduino.ORDER_ATOMIC];
 };
+Blockly.Arduino.display_menu_commonBool = function (a) {
+    let str = a.toString();
+    str = str.toLowerCase();
+    let retValue = 0;
+    if (str === 'false' || str === '否' || str === 'disable') {
+        retValue = 0;
+    } else if (str === 'true' || str === '是' || str === 'enable') {
+        retValue = 1;
+    }
+    return [retValue, Blockly.Arduino.ORDER_ATOMIC];
+};
 Blockly.Arduino.display_menu_comType = function (a) {
     const str = a.toString();
     let retValue = 0;
@@ -1291,7 +1302,7 @@ Blockly.Arduino.arduino_systemUptime = function (a) {
 };
 Blockly.Arduino.display_initOneBitSegment = function (a) {
     const pinA = Blockly.Arduino.valueToCode(a, 'PIN_A', Blockly.Arduino.ORDER_NONE);
-    const pinB = Blockly.Arduino.valueToCode(a, 'PIN_B', Blockly.Arduino.ORDER_NONE);
+    const pinB = Blockly.Arduino.valueToCode(a, 'LATCH_PIN', Blockly.Arduino.ORDER_NONE);
     const pinC = Blockly.Arduino.valueToCode(a, 'PIN_C', Blockly.Arduino.ORDER_NONE);
     const pinD = Blockly.Arduino.valueToCode(a, 'PIN_D', Blockly.Arduino.ORDER_NONE);
     const pinE = Blockly.Arduino.valueToCode(a, 'PIN_E', Blockly.Arduino.ORDER_NONE);
@@ -1325,7 +1336,7 @@ Blockly.Arduino.display_initOneBitSegment = function (a) {
 };
 Blockly.Arduino.display_initTwoBitSegment = function (a) {
     const pinA = Blockly.Arduino.valueToCode(a, 'PIN_A', Blockly.Arduino.ORDER_NONE);
-    const pinB = Blockly.Arduino.valueToCode(a, 'PIN_B', Blockly.Arduino.ORDER_NONE);
+    const pinB = Blockly.Arduino.valueToCode(a, 'LATCH_PIN', Blockly.Arduino.ORDER_NONE);
     const pinC = Blockly.Arduino.valueToCode(a, 'PIN_C', Blockly.Arduino.ORDER_NONE);
     const pinD = Blockly.Arduino.valueToCode(a, 'PIN_D', Blockly.Arduino.ORDER_NONE);
     const pinE = Blockly.Arduino.valueToCode(a, 'PIN_E', Blockly.Arduino.ORDER_NONE);
@@ -1480,6 +1491,119 @@ Blockly.Arduino.display_segmentDisplayDot = function (a) {
     if (blockstr.indexOf('?') === -1) {
         const boolval = Blockly.Arduino.valueToCode(a, 'BOOLVAL', Blockly.Arduino.ORDER_ATOMIC);
         return `digitalWrite(DP_PIN,${boolval})${Blockly.Arduino.END}`;
+    }
+    return ``;
+};
+Blockly.Arduino.display_init2BitSegmentLatch = function (a) {
+    const blockstr = a.toString();
+    if (blockstr.indexOf('?') === -1) {
+        const dataPin = Blockly.Arduino.valueToCode(a, 'DATA_PIN', Blockly.Arduino.ORDER_NONE);
+        const latchPin = Blockly.Arduino.valueToCode(a, 'LATCH_PIN', Blockly.Arduino.ORDER_NONE);
+        const clockPin = Blockly.Arduino.valueToCode(a, 'CLOCK_PIN', Blockly.Arduino.ORDER_NONE);
+        Blockly.Arduino.definitions_.define_variable_dataPin = `const int dataPin = ${dataPin};`;
+        Blockly.Arduino.definitions_.define_variable_latchPin = `const int latchPin = ${latchPin};`;
+        Blockly.Arduino.definitions_.define_variable_clockPin = `const int clockPin = ${clockPin};`;
+        Blockly.Arduino.definitions_.define_variable_dat = 'const byte DAT[12] = {\n' +
+            `${Blockly.Arduino.INDENT}B11111100,\n` +
+            `${Blockly.Arduino.INDENT}B01100000,\n` +
+            `${Blockly.Arduino.INDENT}B11011010,\n` +
+            `${Blockly.Arduino.INDENT}B11110010,\n` +
+            `${Blockly.Arduino.INDENT}B01100110,\n` +
+            `${Blockly.Arduino.INDENT}B10110110,\n` +
+            `${Blockly.Arduino.INDENT}B10111110,\n` +
+            `${Blockly.Arduino.INDENT}B11100000,\n` +
+            `${Blockly.Arduino.INDENT}B11111110,\n` +
+            `${Blockly.Arduino.INDENT}B11100110,\n` +
+            `${Blockly.Arduino.INDENT}B00000001,\n` +
+            `${Blockly.Arduino.INDENT}B00000000\n` +
+            '};\n';
+        Blockly.Arduino.setups_.setup_dataPin = `pinMode(latchPin, OUTPUT);`;
+        Blockly.Arduino.setups_.setup_latchPin = `pinMode(clockPin, OUTPUT);`;
+        Blockly.Arduino.setups_.setup_clockPin = `pinMode(dataPin, OUTPUT);`;
+
+        Blockly.Arduino.definitions_.define_showNumLatch = 'void showNumLatch(int num) {\n' +
+            `${Blockly.Arduino.INDENT}if (num >= 0) {\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}if (num == 0) {\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}digitalWrite(latchPin, LOW);\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}shiftOut(dataPin, clockPin, LSBFIRST, DAT[0]);\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}shiftOut(dataPin, clockPin, LSBFIRST, DAT[0]);\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}digitalWrite(latchPin, HIGH);\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}} else {\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}digitalWrite(latchPin, LOW);\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}shiftOut(dataPin, clockPin, LSBFIRST, DAT[num % 10]);\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}shiftOut(dataPin, clockPin, LSBFIRST, DAT[num / 10]);\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}digitalWrite(latchPin, HIGH);\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}}\n` +
+            `${Blockly.Arduino.INDENT}}\n` +
+            '}\n';
+
+        Blockly.Arduino.definitions_.define_showNum = 'void offLatch() {\n' +
+            `${Blockly.Arduino.INDENT}digitalWrite(latchPin, LOW);\n` +
+            `${Blockly.Arduino.INDENT}shiftOut(dataPin, clockPin, LSBFIRST, DAT[11]);\n` +
+            `${Blockly.Arduino.INDENT}shiftOut(dataPin, clockPin, LSBFIRST, DAT[11]);\n` +
+            `${Blockly.Arduino.INDENT}digitalWrite(latchPin, HIGH);\n` +
+            '}\n';
+
+        return ``;
+    }
+    return ``;
+};
+Blockly.Arduino.display_segmentDisplayLatch = function (a) {
+    const blockstr = a.toString();
+    if (blockstr.indexOf('?') === -1) {
+        const num = Blockly.Arduino.valueToCode(a, 'NUM', Blockly.Arduino.ORDER_ATOMIC);
+        return `showNumLatch(${num})${Blockly.Arduino.END}`;
+    }
+    return ``;
+};
+Blockly.Arduino.display_reset2BitSegmentLatch = function (a) {
+    const blockstr = a.toString();
+    if (blockstr.indexOf('?') === -1) {
+        return `offLatch()${Blockly.Arduino.END}`;
+    }
+    return ``;
+};
+Blockly.Arduino.display_initTM16374DigitDisplay = function (a) {
+    const blockstr = a.toString();
+    if (blockstr.indexOf('?') === -1) {
+        const clkPin = Blockly.Arduino.valueToCode(a, 'CLK_PIN', Blockly.Arduino.ORDER_ATOMIC);
+        const dioPin = Blockly.Arduino.valueToCode(a, 'DIO_PIN', Blockly.Arduino.ORDER_ATOMIC);
+        Blockly.Arduino.includes_.lcd = '#include <TM1637Display.h>';
+        Blockly.Arduino.definitions_.define_variable_clkPin = `const int CLK = ${clkPin};`;
+        Blockly.Arduino.definitions_.define_variable_dioPin = `const int DIO = ${dioPin};`;
+        Blockly.Arduino.definitions_.define_variable_TM1637Display = `TM1637Display display(CLK, DIO);`;
+        Blockly.Arduino.setups_.setup_brightness = `display.setBrightness(0x0f);`;
+        return ``;
+    }
+    return ``;
+};
+Blockly.Arduino.display_TM1637Display = function (a) {
+    const blockstr = a.toString();
+    if (blockstr.indexOf('?') === -1) {
+        const num = Blockly.Arduino.valueToCode(a, 'NUM', Blockly.Arduino.ORDER_ATOMIC);
+        const dotStatus = Blockly.Arduino.valueToCode(a, 'DOT_STATUS', Blockly.Arduino.ORDER_ATOMIC);
+        const leadingZero = Blockly.Arduino.valueToCode(a, 'LEADING_ZERO', Blockly.Arduino.ORDER_ATOMIC);
+
+        let returnStr = ``;
+
+        if (dotStatus === '0' && leadingZero === '0') {
+            returnStr = `display.showNumberDec(${num})`;
+        } else if (dotStatus === '0' && leadingZero === '1') {
+            returnStr = `display.showNumberDec(${num}, true)`;
+        } else if (dotStatus === '1' && leadingZero === '0') {
+            returnStr = `display.showNumberDecEx(${num}, 0b01000000)`;
+        } else if (dotStatus === '1' && leadingZero === '1') {
+            returnStr = `display.showNumberDecEx(${num}, 0b01000000, true)`;
+        }
+
+        return `${returnStr}${Blockly.Arduino.END}`;
+    }
+    return ``;
+};
+Blockly.Arduino.display_resetTM1637Display = function (a) {
+    const blockstr = a.toString();
+    if (blockstr.indexOf('?') === -1) {
+        return `display.clear()${Blockly.Arduino.END}`;
     }
     return ``;
 };
