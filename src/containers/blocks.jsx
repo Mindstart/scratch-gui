@@ -1302,7 +1302,7 @@ Blockly.Arduino.arduino_systemUptime = function (a) {
 };
 Blockly.Arduino.display_initOneBitSegment = function (a) {
     const pinA = Blockly.Arduino.valueToCode(a, 'PIN_A', Blockly.Arduino.ORDER_NONE);
-    const pinB = Blockly.Arduino.valueToCode(a, 'LATCH_PIN', Blockly.Arduino.ORDER_NONE);
+    const pinB = Blockly.Arduino.valueToCode(a, 'PIN_B', Blockly.Arduino.ORDER_NONE);
     const pinC = Blockly.Arduino.valueToCode(a, 'PIN_C', Blockly.Arduino.ORDER_NONE);
     const pinD = Blockly.Arduino.valueToCode(a, 'PIN_D', Blockly.Arduino.ORDER_NONE);
     const pinE = Blockly.Arduino.valueToCode(a, 'PIN_E', Blockly.Arduino.ORDER_NONE);
@@ -1336,7 +1336,7 @@ Blockly.Arduino.display_initOneBitSegment = function (a) {
 };
 Blockly.Arduino.display_initTwoBitSegment = function (a) {
     const pinA = Blockly.Arduino.valueToCode(a, 'PIN_A', Blockly.Arduino.ORDER_NONE);
-    const pinB = Blockly.Arduino.valueToCode(a, 'LATCH_PIN', Blockly.Arduino.ORDER_NONE);
+    const pinB = Blockly.Arduino.valueToCode(a, 'PIN_B', Blockly.Arduino.ORDER_NONE);
     const pinC = Blockly.Arduino.valueToCode(a, 'PIN_C', Blockly.Arduino.ORDER_NONE);
     const pinD = Blockly.Arduino.valueToCode(a, 'PIN_D', Blockly.Arduino.ORDER_NONE);
     const pinE = Blockly.Arduino.valueToCode(a, 'PIN_E', Blockly.Arduino.ORDER_NONE);
