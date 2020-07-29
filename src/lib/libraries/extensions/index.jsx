@@ -1,5 +1,5 @@
 import React from 'react';
-import {FormattedMessage} from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
 import musicIconURL from './music/music.png';
 import musicInsetIconURL from './music/music-small.svg';
@@ -60,6 +60,8 @@ import displayInsetIconURL from './display/sensor-small.svg';
 import motorIconURL from './motor/sensor.png';
 import motorInsetIconURL from './motor/sensor-small.svg';
 
+import keypadIconURL from './keypad/keypad.png';
+import keypadInsetIconURL from './keypad/keypad-small.svg';
 
 export default [
     {
@@ -345,12 +347,12 @@ export default [
         ),
         helpLink: 'https://scratch.mit.edu/vernier'
     },
-	{
+    {
         name: 'AinoBot',
         extensionId: 'arduino',
-		collaborator: 'MindStart',
+        collaborator: 'MindStart',
         iconURL: ainobotIconURL,
-		insetIconURL: ainobotInsetIconURL,
+        insetIconURL: ainobotInsetIconURL,
         description: (
             <FormattedMessage
                 defaultMessage="Build robot and code."
@@ -360,7 +362,7 @@ export default [
         ),
         featured: true,
         disabled: false,
-		bluetoothRequired: true,
+        bluetoothRequired: true,
         launchPeripheralConnectionFlow: true,
         useAutoScan: false,
         connectionIconURL: ainobotConnectionIconURL,
@@ -373,12 +375,12 @@ export default [
             />
         )
     },
-	{
+    {
         name: 'Sensor',
         extensionId: 'sensor',
-		collaborator: 'MindStart',
+        collaborator: 'MindStart',
         iconURL: sensorIconURL,
-		insetIconURL: sensorInsetIconURL,
+        insetIconURL: sensorInsetIconURL,
         description: (
             <FormattedMessage
                 defaultMessage="Sensors for building robot."
@@ -392,9 +394,9 @@ export default [
     {
         name: 'Display',
         extensionId: 'display',
-		collaborator: 'MindStart',
+        collaborator: 'MindStart',
         iconURL: displayIconURL,
-		insetIconURL: displayInsetIconURL,
+        insetIconURL: displayInsetIconURL,
         description: (
             <FormattedMessage
                 defaultMessage="Visual presentation of data."
@@ -408,9 +410,9 @@ export default [
     {
         name: 'Motor',
         extensionId: 'motor',
-		collaborator: 'MindStart',
+        collaborator: 'MindStart',
         iconURL: motorIconURL,
-		insetIconURL: motorInsetIconURL,
+        insetIconURL: motorInsetIconURL,
         description: (
             <FormattedMessage
                 defaultMessage="Supplies motive power for robot."
@@ -420,5 +422,21 @@ export default [
         ),
         featured: true,
         disabled: false
-    }	
+    },
+    {
+        name: 'Keypad',
+        extensionId: 'keypad',
+        collaborator: 'MindStart',
+        iconURL: keypadIconURL,
+        insetIconURL: keypadInsetIconURL,
+        description: (
+            <FormattedMessage
+                defaultMessage="For typing numbers, and symbols."
+                description="Keypads are a great way to let users interact with your project."
+                id="gui.extension.keypad.description"
+            />
+        ),
+        featured: true,
+        disabled: false
+    }
 ];

@@ -540,6 +540,10 @@ Blockly.Arduino.display_menu_digitalPin = function (a) {
     const str = a.toString();
     return [str, Blockly.Arduino.ORDER_ATOMIC];
 };
+Blockly.Arduino.keypad_menu_digitalPin = function (a) {
+    const str = a.toString();
+    return [str, Blockly.Arduino.ORDER_ATOMIC];
+};
 Blockly.Arduino.display_menu_segment1Pin = function (a) {
     const str = a.toString();
     return [str, Blockly.Arduino.ORDER_ATOMIC];
@@ -1886,6 +1890,48 @@ Blockly.Arduino.sensor_mecanumWheelStatus = function (a) {
         return `stopMotor()${Blockly.Arduino.END}`;
     }
 
+    return ``;
+};
+
+Blockly.Arduino.keypad_initKeypad4X3 = function (a) {
+    const blockstr = a.toString();
+    if (blockstr.indexOf('?') === -1) {
+        Blockly.Arduino.includes_.keypad = `#include <Keypad.h>`;
+        Blockly.Arduino.variables_.rows = `const byte ROWS = 4;`;
+        Blockly.Arduino.variables_.cols = `const byte COLS = 3;`;
+        Blockly.Arduino.variables_.customKey = `char customKey;`;
+        Blockly.Arduino.variables_.hexaKeys = 'char hexaKeys[ROWS][COLS] = {\n' +
+            `${Blockly.Arduino.INDENT}{'1', '2', '3'},\n` +
+            `${Blockly.Arduino.INDENT}{'4', '5', '6'},\n` +
+            `${Blockly.Arduino.INDENT}{'7', '8', '9'},\n` +
+            `${Blockly.Arduino.INDENT}{'*', '0', '#'}\n` +
+            '};\n';
+
+        const row1 = Blockly.Arduino.valueToCode(a, 'ROW_1', Blockly.Arduino.ORDER_ATOMIC);
+        const row2 = Blockly.Arduino.valueToCode(a, 'ROW_2', Blockly.Arduino.ORDER_ATOMIC);
+        const row3 = Blockly.Arduino.valueToCode(a, 'ROW_3', Blockly.Arduino.ORDER_ATOMIC);
+        const row4 = Blockly.Arduino.valueToCode(a, 'ROW_4', Blockly.Arduino.ORDER_ATOMIC);
+        const column1 = Blockly.Arduino.valueToCode(a, 'COLUMN_1', Blockly.Arduino.ORDER_ATOMIC);
+        const column2 = Blockly.Arduino.valueToCode(a, 'COLUMN_2', Blockly.Arduino.ORDER_ATOMIC);
+        const column3 = Blockly.Arduino.valueToCode(a, 'COLUMN_3', Blockly.Arduino.ORDER_ATOMIC);
+
+        Blockly.Arduino.variables_.rowPins = `byte rowPins[ROWS] = {${row1}, ${row2}, ${row3}, ${row4}};`;
+        Blockly.Arduino.variables_.colPins = `byte colPins[COLS] = {${column1}, ${column2}, ${column3}};`;
+
+        Blockly.Arduino.variables_.customKeypad = `Keypad customKeypad = Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS);`;
+    }
+    return ``;
+};
+
+Blockly.Arduino.keypad_gotKeyValue = function (a) {
+    return ['customKey = customKeypad.getKey()', Blockly.Arduino.ORDER_ATOMIC];
+};
+
+Blockly.Arduino.keypad_keyValue = function (a) {
+    const blockstr = a.toString();
+    if (blockstr.indexOf('?') === -1) {
+        return [`customKey - '0'`, Blockly.Arduino.ORDER_ATOMIC];
+    }
     return ``;
 };
 
