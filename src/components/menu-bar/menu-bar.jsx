@@ -331,20 +331,21 @@ class MenuBar extends React.Component {
                                 onClick={this.props.onClickLogo}
                             />
                         </div>
-                        <div
+                        {/* <div
                             className={classNames(styles.menuBarItem, styles.hoverable, styles.languageMenu)}
-                        >
+                        > */}
+                        <div>
                             <div>
-                                <img
+                                {/* <img
                                     className={styles.languageIcon}
                                     src={languageIcon}
                                 />
                                 <img
                                     className={styles.languageCaret}
                                     src={dropdownCaret}
-                                />
+                                /> */}
                             </div>
-                            <LanguageSelector label={this.props.intl.formatMessage(ariaMessages.language)} />
+                            {/* <LanguageSelector label={this.props.intl.formatMessage(ariaMessages.language)} /> */}
                         </div>
                         <div
                             className={classNames(styles.menuBarItem, styles.hoverable, {
