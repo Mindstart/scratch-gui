@@ -70,7 +70,7 @@ import remixIcon from './icon--remix.svg';
 import dropdownCaret from './dropdown-caret.svg';
 import languageIcon from '../language-selector/language-icon.svg';
 
-import ainoviewLogo from './ainoview-logo.svg';
+import ainoviewLogo from './AinoView-logo.png';
 
 import sharedMessages from '../../lib/shared-messages';
 

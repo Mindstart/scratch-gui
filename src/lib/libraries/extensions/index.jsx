@@ -42,9 +42,9 @@ import boostConnectionSmallIconURL from './boost/boost-small.svg';
 import boostConnectionTipIconURL from './boost/boost-button-illustration.svg';
 
 import ainobotIconURL from './ainobot/ainobot.png';
-import ainobotInsetIconURL from './ainobot/ainobot-small.svg';
-import ainobotConnectionIconURL from './ainobot/ainobot-illustration.svg';
-import ainobotConnectionSmallIconURL from './ainobot/ainobot-small.svg';
+import ainobotInsetIconURL from './ainobot/ainobot-small.png';
+import ainobotConnectionIconURL from './ainobot/ainobot-illustration.png';
+import ainobotConnectionSmallIconURL from './ainobot/ainobot-small.png';
 
 import gdxforIconURL from './gdxfor/gdxfor.png';
 import gdxforInsetIconURL from './gdxfor/gdxfor-small.svg';
@@ -362,7 +362,7 @@ export default [
         ),
         featured: true,
         disabled: false,
-        bluetoothRequired: true,
+        bluetoothRequired: false,
         launchPeripheralConnectionFlow: true,
         useAutoScan: false,
         connectionIconURL: ainobotConnectionIconURL,
