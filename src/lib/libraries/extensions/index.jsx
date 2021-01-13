@@ -52,16 +52,16 @@ import gdxforConnectionIconURL from './gdxfor/gdxfor-illustration.svg';
 import gdxforConnectionSmallIconURL from './gdxfor/gdxfor-small.svg';
 
 import sensorIconURL from './sensor/sensor.png';
-import sensorInsetIconURL from './sensor/sensor-small.svg';
+import sensorInsetIconURL from './sensor/sensor-small.png';
 
 import displayIconURL from './display/sensor.png';
-import displayInsetIconURL from './display/sensor-small.svg';
+import displayInsetIconURL from './display/sensor-small.png';
 
 import motorIconURL from './motor/sensor.png';
-import motorInsetIconURL from './motor/sensor-small.svg';
+import motorInsetIconURL from './motor/sensor-small.png';
 
 import keypadIconURL from './keypad/keypad.png';
-import keypadInsetIconURL from './keypad/keypad-small.svg';
+import keypadInsetIconURL from './keypad/keypad-small.png';
 
 export default [
     {
@@ -355,7 +355,7 @@ export default [
         insetIconURL: ainobotInsetIconURL,
         description: (
             <FormattedMessage
-                defaultMessage="Build robot and code."
+                defaultMessage="Graphically Programmable Robot"
                 description="Description for the 'Arduino UNO' extension"
                 id="gui.extension.arduino.description"
             />
@@ -376,15 +376,15 @@ export default [
         )
     },
     {
-        name: 'Sensor',
+        name: 'Sensors',
         extensionId: 'sensor',
         collaborator: 'MindStart',
         iconURL: sensorIconURL,
         insetIconURL: sensorInsetIconURL,
         description: (
             <FormattedMessage
-                defaultMessage="Sensors for building robot."
-                description="Description for the sensor extension"
+                defaultMessage="Foundation of Robots"
+                description="Foundation of Robots"
                 id="gui.extension.sensor.description"
             />
         ),
@@ -392,15 +392,15 @@ export default [
         disabled: false
     },
     {
-        name: 'Display',
+        name: 'Displays',
         extensionId: 'display',
         collaborator: 'MindStart',
         iconURL: displayIconURL,
         insetIconURL: displayInsetIconURL,
         description: (
             <FormattedMessage
-                defaultMessage="Visual presentation of data."
-                description="Description for the display device extension"
+                defaultMessage="Visual output of Robots"
+                description="Visual output of Robots"
                 id="gui.extension.display.description"
             />
         ),
@@ -408,15 +408,15 @@ export default [
         disabled: false
     },
     {
-        name: 'Motor',
+        name: 'Motors',
         extensionId: 'motor',
         collaborator: 'MindStart',
         iconURL: motorIconURL,
         insetIconURL: motorInsetIconURL,
         description: (
             <FormattedMessage
-                defaultMessage="Supplies motive power for robot."
-                description="Description for the motor device extension"
+                defaultMessage="Motions of Robots"
+                description="Motions of Robots"
                 id="gui.extension.motor.description"
             />
         ),
@@ -424,15 +424,15 @@ export default [
         disabled: false
     },
     {
-        name: 'Keypad',
+        name: 'Keypads',
         extensionId: 'keypad',
         collaborator: 'MindStart',
         iconURL: keypadIconURL,
         insetIconURL: keypadInsetIconURL,
         description: (
             <FormattedMessage
-                defaultMessage="For typing numbers, and symbols."
-                description="Keypads are a great way to let users interact with your project."
+                defaultMessage="Human commands to Robots"
+                description="Human commands to Robots"
                 id="gui.extension.keypad.description"
             />
         ),

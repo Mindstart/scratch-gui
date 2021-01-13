@@ -450,7 +450,8 @@ Blockly.Arduino.display_menu_pinLevel = function (a) {
     return [retValue, Blockly.Arduino.ORDER_ATOMIC];
 };
 Blockly.Arduino.display_menu_boolVal = function (a) {
-    const str = a.toString();
+    let str = a.toString();
+    str = str.toLowerCase();
     let retValue = 0;
     if (str === 'false' || str === '否') {
         retValue = 'LOW';
@@ -471,7 +472,8 @@ Blockly.Arduino.display_menu_commonBool = function (a) {
     return [retValue, Blockly.Arduino.ORDER_ATOMIC];
 };
 Blockly.Arduino.display_menu_comType = function (a) {
-    const str = a.toString();
+    let str = a.toString();
+    str = str.toLowerCase();
     let retValue = 0;
     if (str === 'cathode' || str === '共阴') {
         retValue = 0;
@@ -636,11 +638,12 @@ Blockly.Arduino.arduino_menu_baudrate = function (a) {
     return [a.toString(), Blockly.Arduino.ORDER_ATOMIC];
 };
 Blockly.Arduino.arduino_menu_newLine = function (a) {
-    const str = a.toString();
+    let str = a.toString();
+    str = str.toUpperCase();
     let retValue = '';
-    if (str === 'WARP' || str === '换行') {
+    if (str === 'WRAP' || str === 'WARP' || str === '换行') {
         retValue = 'warp';
-    } else if (str === 'NO WARP' || str === '不换行') {
+    } else if (str === 'NO WRAP' || str === 'NO WARP' || str === '不换行') {
         retValue = 'nowarp';
     }
     return [retValue, Blockly.Arduino.ORDER_ATOMIC];
@@ -1349,6 +1352,7 @@ Blockly.Arduino.display_initTwoBitSegment = function (a) {
     const pinDP = Blockly.Arduino.valueToCode(a, 'PIN_DP', Blockly.Arduino.ORDER_NONE);
     const pinCOM1 = Blockly.Arduino.valueToCode(a, 'PIN_COM1', Blockly.Arduino.ORDER_NONE);
     const pinCOM2 = Blockly.Arduino.valueToCode(a, 'PIN_COM2', Blockly.Arduino.ORDER_NONE);
+    const comType = Blockly.Arduino.valueToCode(a, 'COM_TYPE', Blockly.Arduino.ORDER_NONE);
     Blockly.Arduino.variables_.var_pinA = `const int A_PIN = ${pinA};`;
     Blockly.Arduino.variables_.var_pinB = `const int B_PIN = ${pinB};`;
     Blockly.Arduino.variables_.var_pinC = `const int C_PIN = ${pinC};`;
@@ -1359,7 +1363,7 @@ Blockly.Arduino.display_initTwoBitSegment = function (a) {
     Blockly.Arduino.variables_.var_pinDP = `const int DP_PIN = ${pinDP};`;
     Blockly.Arduino.variables_.var_pinCOM1 = `const int COM1_PIN = ${pinCOM1};`;
     Blockly.Arduino.variables_.var_pinCOM2 = `const int COM2_PIN = ${pinCOM2};`;
-    Blockly.Arduino.variables_.var_comType = `const int COM_TYPE = 0;`;
+    Blockly.Arduino.variables_.var_comType = `const int COM_TYPE = ${comType};`;
 
     Blockly.Arduino.setups_.setup_pinA = `pinMode(A_PIN, OUTPUT);`;
     Blockly.Arduino.setups_.setup_pinB = `pinMode(B_PIN, OUTPUT);`;
@@ -1388,7 +1392,14 @@ Blockly.Arduino.display_twoBitSegment = function (a) {
     if (blockstr.indexOf('?') === -1) {
         const pin = Blockly.Arduino.valueToCode(a, 'PIN', Blockly.Arduino.ORDER_ATOMIC);
         const value = Blockly.Arduino.valueToCode(a, 'VALUE', Blockly.Arduino.ORDER_ATOMIC);
-        return `digitalWrite(${pin}_PIN,${value})${Blockly.Arduino.END}`;
+        Blockly.Arduino.variables_.var_pins = `const int pins[8] = {A_PIN, B_PIN, C_PIN, D_PIN, E_PIN, F_PIN, G_PIN, DP_PIN};`;
+        Blockly.Arduino.setups_.setup_pinCOM1Val = `digitalWrite(COM1_PIN, COM_TYPE ^ LOW);`;
+        Blockly.Arduino.setups_.setup_pinCOM2Val = `digitalWrite(COM2_PIN, COM_TYPE ^ LOW);`;
+        Blockly.Arduino.setups_.setup_forStart = `for(int i=0; i<8; i++) {`;
+        Blockly.Arduino.setups_.setup_forPins = `${Blockly.Arduino.INDENT}digitalWrite(pins[i], COM_TYPE ^ LOW);`;
+        Blockly.Arduino.setups_.setup_forEnd = `}`;
+
+        return `digitalWrite(${pin}_PIN, COM_TYPE ^ (COM_TYPE ^ ${value}))${Blockly.Arduino.END}`;
     }
     return ``;
 };
@@ -1419,6 +1430,7 @@ Blockly.Arduino.display_segmentDisplay = function (a) {
             `${Blockly.Arduino.INDENT}digitalWrite(E_PIN, comType ^ numTable[num][4]);\n` +
             `${Blockly.Arduino.INDENT}digitalWrite(F_PIN, comType ^ numTable[num][5]);\n` +
             `${Blockly.Arduino.INDENT}digitalWrite(G_PIN, comType ^ numTable[num][6]);\n` +
+            `${Blockly.Arduino.INDENT}digitalWrite(DP_PIN, comType);\n` +
             `${Blockly.Arduino.INDENT}digitalWrite(COM_PIN, comType);\n` +
             '}\n';
 
@@ -1433,8 +1445,11 @@ Blockly.Arduino.display_segmentDisplayTwoDigits = function (a) {
     console.log('1');
     if (blockstr.indexOf('?') === -1) {
         console.log('2');
+        const leadingZero = Blockly.Arduino.valueToCode(a, 'LEADING_ZERO', Blockly.Arduino.ORDER_ATOMIC);
+        const leftDP = Blockly.Arduino.valueToCode(a, 'LEFT_DP', Blockly.Arduino.ORDER_ATOMIC);
+        const rightDP = Blockly.Arduino.valueToCode(a, 'RIGHT_DP', Blockly.Arduino.ORDER_ATOMIC);
         Blockly.Arduino.definitions_.define_variable_segment = '//根据共阴极数码管段码表定义0~99显示的各段开关状态\n' +
-            `const int numTable[10][7] = {\n` +
+            `const int numTable[11][7] = {\n` +
             `${Blockly.Arduino.INDENT}//1为点亮，0为关闭\n` +
             `${Blockly.Arduino.INDENT}//a  b  c  d  e  f  g \n` +
             `${Blockly.Arduino.INDENT}{1, 1, 1, 1, 1, 1, 0},//0\n` +
@@ -1447,35 +1462,42 @@ Blockly.Arduino.display_segmentDisplayTwoDigits = function (a) {
             `${Blockly.Arduino.INDENT}{1, 1, 1, 0, 0, 0, 0},//7\n` +
             `${Blockly.Arduino.INDENT}{1, 1, 1, 1, 1, 1, 1},//8\n` +
             `${Blockly.Arduino.INDENT}{1, 1, 1, 1, 0, 1, 1},//9\n` +
+            `${Blockly.Arduino.INDENT}{0, 0, 0, 0, 0, 0, 0},//blank\n` +
             '};\n';
         console.log('3');
-        Blockly.Arduino.definitions_.define_showNum = 'void showNum(int num) {\n' +
-            `${Blockly.Arduino.INDENT}digitalWrite(A_PIN, numTable[num][0]);\n` +
-            `${Blockly.Arduino.INDENT}digitalWrite(B_PIN, numTable[num][1]);\n` +
-            `${Blockly.Arduino.INDENT}digitalWrite(C_PIN, numTable[num][2]);\n` +
-            `${Blockly.Arduino.INDENT}digitalWrite(D_PIN, numTable[num][3]);\n` +
-            `${Blockly.Arduino.INDENT}digitalWrite(E_PIN, numTable[num][4]);\n` +
-            `${Blockly.Arduino.INDENT}digitalWrite(F_PIN, numTable[num][5]);\n` +
-            `${Blockly.Arduino.INDENT}digitalWrite(G_PIN, numTable[num][6]);\n` +
+        Blockly.Arduino.definitions_.define_showNum = 'void showNum(int num, int dp) {\n' +
+            `${Blockly.Arduino.INDENT}digitalWrite(A_PIN, COM_TYPE ^ numTable[num][0]);\n` +
+            `${Blockly.Arduino.INDENT}digitalWrite(B_PIN, COM_TYPE ^ numTable[num][1]);\n` +
+            `${Blockly.Arduino.INDENT}digitalWrite(C_PIN, COM_TYPE ^ numTable[num][2]);\n` +
+            `${Blockly.Arduino.INDENT}digitalWrite(D_PIN, COM_TYPE ^ numTable[num][3]);\n` +
+            `${Blockly.Arduino.INDENT}digitalWrite(E_PIN, COM_TYPE ^ numTable[num][4]);\n` +
+            `${Blockly.Arduino.INDENT}digitalWrite(F_PIN, COM_TYPE ^ numTable[num][5]);\n` +
+            `${Blockly.Arduino.INDENT}digitalWrite(G_PIN, COM_TYPE ^ numTable[num][6]);\n` +
+            `${Blockly.Arduino.INDENT}digitalWrite(DP_PIN, COM_TYPE ^ dp);\n` +
             '}\n';
         console.log('4');
-        Blockly.Arduino.definitions_.define_displayTwoDigits = 'void showTwoDigits(int num) {\n' +
+        Blockly.Arduino.definitions_.define_displayTwoDigits = 'void showTwoDigits(int num, int leadingZero) {\n' +
             `${Blockly.Arduino.INDENT}if (num < 10) {\n` +
-            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}showNum(num - int(num/10)*10);\n` +
-            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}digitalWrite(COM1_PIN,HIGH);\n` +
-            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}digitalWrite(COM2_PIN,LOW);\n` +
-            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}digitalWrite(DP_PIN,LOW);\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}if (leadingZero) {\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}showNum(int(num/10), ${leftDP});\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}} else {\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}showNum(10, ${leftDP});\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}}\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}digitalWrite(COM1_PIN, COM_TYPE ^ LOW);\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}digitalWrite(COM2_PIN, COM_TYPE ^ HIGH);\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}delay(0.01*1000);\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}showNum(num - int(num/10)*10, ${rightDP});\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}digitalWrite(COM1_PIN, COM_TYPE ^ HIGH);\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}digitalWrite(COM2_PIN, COM_TYPE ^ LOW);\n` +
             `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}delay(0.01*1000);\n` +
             `${Blockly.Arduino.INDENT}} else {\n` +
-            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}showNum(int(num/10));\n` +
-            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}digitalWrite(COM1_PIN,LOW);\n` +
-            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}digitalWrite(COM2_PIN,HIGH);\n` +
-            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}digitalWrite(DP_PIN,LOW);\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}showNum(int(num/10), ${leftDP});\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}digitalWrite(COM1_PIN, COM_TYPE ^ LOW);\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}digitalWrite(COM2_PIN, COM_TYPE ^ HIGH);\n` +
             `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}delay(0.01*1000);\n` +
-            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}showNum(num - int(num/10)*10);\n` +
-            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}digitalWrite(COM1_PIN,HIGH);\n` +
-            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}digitalWrite(COM2_PIN,LOW);\n` +
-            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}digitalWrite(DP_PIN,LOW);\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}showNum(num - int(num/10)*10, ${rightDP});\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}digitalWrite(COM1_PIN, COM_TYPE ^ HIGH);\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}digitalWrite(COM2_PIN, COM_TYPE ^ LOW);\n` +
             `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}delay(0.01*1000);\n` +
             `${Blockly.Arduino.INDENT}}\n` +
             '}\n';
@@ -1484,17 +1506,41 @@ Blockly.Arduino.display_segmentDisplayTwoDigits = function (a) {
         console.log(`num: ${num}`);
         if (num < 0 || num > 99) {
             alert(`${e.message}. Input must be integer between 0 ~ 99.`);
-            return `showTwoDigits(0)${Blockly.Arduino.END}`;
+            return `showTwoDigits(0, ${leadingZero})${Blockly.Arduino.END}`;
         }
-        return `showTwoDigits(${num})${Blockly.Arduino.END}`;
+        return `showTwoDigits(${num}, ${leadingZero})${Blockly.Arduino.END}`;
     }
     return ``;
+};
+Blockly.Arduino.display_reset2BitSSDMux = function (a) {
+    const blockstr = a.toString();
+    if (blockstr.indexOf('?') === -1) {
+        Blockly.Arduino.definitions_.define_off2BitSSDMux = 'void off2BitSSDMux() {\n' +
+            `${Blockly.Arduino.INDENT}digitalWrite(A_PIN, COM_TYPE ^ 0);\n` +
+            `${Blockly.Arduino.INDENT}digitalWrite(B_PIN, COM_TYPE ^ 0);\n` +
+            `${Blockly.Arduino.INDENT}digitalWrite(C_PIN, COM_TYPE ^ 0);\n` +
+            `${Blockly.Arduino.INDENT}digitalWrite(D_PIN, COM_TYPE ^ 0);\n` +
+            `${Blockly.Arduino.INDENT}digitalWrite(E_PIN, COM_TYPE ^ 0);\n` +
+            `${Blockly.Arduino.INDENT}digitalWrite(F_PIN, COM_TYPE ^ 0);\n` +
+            `${Blockly.Arduino.INDENT}digitalWrite(G_PIN, COM_TYPE ^ 0);\n` +
+            `${Blockly.Arduino.INDENT}digitalWrite(DP_PIN, COM_TYPE ^ 0);\n` +
+            '}\n';
+
+        return `off2BitSSDMux()${Blockly.Arduino.END}`;
+    }
+    return ``;
+
 };
 Blockly.Arduino.display_segmentDisplayDot = function (a) {
     const blockstr = a.toString();
     if (blockstr.indexOf('?') === -1) {
+        Blockly.Arduino.variables_.var_pins = `const int pins[8] = {A_PIN, B_PIN, C_PIN, D_PIN, E_PIN, F_PIN, G_PIN, DP_PIN};`;
+        Blockly.Arduino.setups_.setup_comPin = `digitalWrite(COM_PIN, COM_TYPE);`;
+        Blockly.Arduino.setups_.setup_forStart = `for(int i=0; i<8; i++) {`;
+        Blockly.Arduino.setups_.setup_forPins = `${Blockly.Arduino.INDENT}digitalWrite(pins[i], COM_TYPE ^ LOW);`;
+        Blockly.Arduino.setups_.setup_forEnd = `}`;
         const boolval = Blockly.Arduino.valueToCode(a, 'BOOLVAL', Blockly.Arduino.ORDER_ATOMIC);
-        return `digitalWrite(DP_PIN,${boolval})${Blockly.Arduino.END}`;
+        return `digitalWrite(DP_PIN,COM_TYPE ^ ${boolval})${Blockly.Arduino.END}`;
     }
     return ``;
 };
@@ -1556,6 +1602,7 @@ Blockly.Arduino.display_segmentDisplayLatch = function (a) {
     const blockstr = a.toString();
     if (blockstr.indexOf('?') === -1) {
         const num = Blockly.Arduino.valueToCode(a, 'NUM', Blockly.Arduino.ORDER_ATOMIC);
+        const leadingZero = Blockly.Arduino.valueToCode(a, 'LEADING_ZERO', Blockly.Arduino.ORDER_ATOMIC);
         return `showNumLatch(${num})${Blockly.Arduino.END}`;
     }
     return ``;

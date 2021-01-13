@@ -87,7 +87,7 @@ class LibraryItemComponent extends React.PureComponent {
                                 <div>
                                     <div>
                                         <FormattedMessage
-                                            defaultMessage="Collaboration with"
+                                            defaultMessage="Developed by"
                                             description="Label for extension collaboration"
                                             id="gui.extensionLibrary.collaboration"
                                         />
