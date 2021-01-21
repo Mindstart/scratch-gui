@@ -788,7 +788,31 @@ const operators = function () {
                 </shadow>
             </value>
         </block>
+        <block type="operator_ge">
+            <value name="OPERAND1">
+                <shadow type="text">
+                    <field name="TEXT"/>
+                </shadow>
+            </value>
+            <value name="OPERAND2">
+                <shadow type="text">
+                    <field name="TEXT">50</field>
+                </shadow>
+            </value>
+        </block>
         <block type="operator_lt">
+            <value name="OPERAND1">
+                <shadow type="text">
+                    <field name="TEXT"/>
+                </shadow>
+            </value>
+            <value name="OPERAND2">
+                <shadow type="text">
+                    <field name="TEXT">50</field>
+                </shadow>
+            </value>
+        </block>
+        <block type="operator_le">
             <value name="OPERAND1">
                 <shadow type="text">
                     <field name="TEXT"/>

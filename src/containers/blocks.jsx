@@ -691,8 +691,10 @@ Blockly.Arduino.operator_compare = function (a) {
     const c = Blockly.Arduino.valueToCode(a, 'OPERAND2', Blockly.Arduino.ORDER_HIGH) || '0';
     return [b + {
         operator_gt: '>',
+        operator_ge: '>=',
         operator_equals: '==',
-        operator_lt: '<'
+        operator_lt: '<',
+        operator_le: '<='
     }[a.type] + c, Blockly.Arduino.ORDER_RELATIONAL];
 };
 Blockly.Arduino.operator_arithmetic = function (a) {
@@ -1987,8 +1989,10 @@ Blockly.Arduino.operator_subtract = Blockly.Arduino.operator_arithmetic;
 Blockly.Arduino.operator_multiply = Blockly.Arduino.operator_arithmetic;
 Blockly.Arduino.operator_divide = Blockly.Arduino.operator_arithmetic;
 Blockly.Arduino.operator_gt = Blockly.Arduino.operator_compare;
+Blockly.Arduino.operator_ge = Blockly.Arduino.operator_compare;
 Blockly.Arduino.operator_equals = Blockly.Arduino.operator_compare;
 Blockly.Arduino.operator_lt = Blockly.Arduino.operator_compare;
+Blockly.Arduino.operator_le = Blockly.Arduino.operator_compare;
 Blockly.Arduino.math_angle = Blockly.Arduino.math_number;
 Blockly.Arduino.math_positive_number = Blockly.Arduino.math_number;
 Blockly.Arduino.math_whole_number = Blockly.Arduino.math_number;
