@@ -1552,38 +1552,64 @@ Blockly.Arduino.display_init2BitSegmentLatch = function (a) {
         const dataPin = Blockly.Arduino.valueToCode(a, 'DATA_PIN', Blockly.Arduino.ORDER_NONE);
         const latchPin = Blockly.Arduino.valueToCode(a, 'LATCH_PIN', Blockly.Arduino.ORDER_NONE);
         const clockPin = Blockly.Arduino.valueToCode(a, 'CLOCK_PIN', Blockly.Arduino.ORDER_NONE);
+        const comType = Blockly.Arduino.valueToCode(a, 'COM_TYPE', Blockly.Arduino.ORDER_NONE);
         Blockly.Arduino.definitions_.define_variable_dataPin = `const int dataPin = ${dataPin};`;
         Blockly.Arduino.definitions_.define_variable_latchPin = `const int latchPin = ${latchPin};`;
         Blockly.Arduino.definitions_.define_variable_clockPin = `const int clockPin = ${clockPin};`;
+        Blockly.Arduino.definitions_.define_variable_comType = `const int COM_TYPE = ${comType};`;
         Blockly.Arduino.definitions_.define_variable_dat = 'const byte DAT[12] = {\n' +
-            `${Blockly.Arduino.INDENT}B11111100,\n` +
-            `${Blockly.Arduino.INDENT}B01100000,\n` +
-            `${Blockly.Arduino.INDENT}B11011010,\n` +
-            `${Blockly.Arduino.INDENT}B11110010,\n` +
-            `${Blockly.Arduino.INDENT}B01100110,\n` +
-            `${Blockly.Arduino.INDENT}B10110110,\n` +
-            `${Blockly.Arduino.INDENT}B10111110,\n` +
-            `${Blockly.Arduino.INDENT}B11100000,\n` +
-            `${Blockly.Arduino.INDENT}B11111110,\n` +
-            `${Blockly.Arduino.INDENT}B11100110,\n` +
-            `${Blockly.Arduino.INDENT}B00000001,\n` +
-            `${Blockly.Arduino.INDENT}B00000000\n` +
+            `${Blockly.Arduino.INDENT}B11111100,//0\n` +
+            `${Blockly.Arduino.INDENT}B01100000,//1\n` +
+            `${Blockly.Arduino.INDENT}B11011010,//2\n` +
+            `${Blockly.Arduino.INDENT}B11110010,//3\n` +
+            `${Blockly.Arduino.INDENT}B01100110,//4\n` +
+            `${Blockly.Arduino.INDENT}B10110110,//5\n` +
+            `${Blockly.Arduino.INDENT}B10111110,//6\n` +
+            `${Blockly.Arduino.INDENT}B11100000,//7\n` +
+            `${Blockly.Arduino.INDENT}B11111110,//8\n` +
+            `${Blockly.Arduino.INDENT}B11100110,//9\n` +
+            `${Blockly.Arduino.INDENT}B00000001,//.\n` +
+            `${Blockly.Arduino.INDENT}B00000000//null\n` +
+            '};\n';
+        Blockly.Arduino.definitions_.define_variable_dat_dp = 'const byte DAT_DP[10] = {\n' +
+            `${Blockly.Arduino.INDENT}B11111101,//0.\n` +
+            `${Blockly.Arduino.INDENT}B01100001,//1.\n` +
+            `${Blockly.Arduino.INDENT}B11011011,//2.\n` +
+            `${Blockly.Arduino.INDENT}B11110011,//3.\n` +
+            `${Blockly.Arduino.INDENT}B01100111,//4.\n` +
+            `${Blockly.Arduino.INDENT}B10110111,//5.\n` +
+            `${Blockly.Arduino.INDENT}B10111111,//6.\n` +
+            `${Blockly.Arduino.INDENT}B11100001,//7.\n` +
+            `${Blockly.Arduino.INDENT}B11111111,//8.\n` +
+            `${Blockly.Arduino.INDENT}B11100111//9.\n` +
             '};\n';
         Blockly.Arduino.setups_.setup_dataPin = `pinMode(latchPin, OUTPUT);`;
         Blockly.Arduino.setups_.setup_latchPin = `pinMode(clockPin, OUTPUT);`;
         Blockly.Arduino.setups_.setup_clockPin = `pinMode(dataPin, OUTPUT);`;
 
-        Blockly.Arduino.definitions_.define_showNumLatch = 'void showNumLatch(int num) {\n' +
+        Blockly.Arduino.definitions_.define_showNumLatch = 'void showNumLatch(int num, int leftMostZero, int leftMostDP, int rightMostDP) {\n' +
             `${Blockly.Arduino.INDENT}if (num >= 0) {\n` +
             `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}if (num == 0) {\n` +
             `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}digitalWrite(latchPin, LOW);\n` +
-            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}shiftOut(dataPin, clockPin, LSBFIRST, DAT[0]);\n` +
-            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}shiftOut(dataPin, clockPin, LSBFIRST, DAT[0]);\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}shiftOut(dataPin, clockPin, LSBFIRST, COM_TYPE?(rightMostDP?~DAT_DP[0]:~DAT[0]):(rightMostDP?DAT_DP[0]:DAT[0]));\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}if(leftMostZero) {\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}shiftOut(dataPin, clockPin, LSBFIRST, COM_TYPE?(leftMostDP?~DAT_DP[0]:~DAT[0]):(leftMostDP?DAT_DP[0]:DAT[0]));\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}}else {\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}shiftOut(dataPin, clockPin, LSBFIRST, COM_TYPE?~DAT[11]:DAT[11]);\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}}\n` +
             `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}digitalWrite(latchPin, HIGH);\n` +
             `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}} else {\n` +
             `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}digitalWrite(latchPin, LOW);\n` +
-            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}shiftOut(dataPin, clockPin, LSBFIRST, DAT[num % 10]);\n` +
-            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}shiftOut(dataPin, clockPin, LSBFIRST, DAT[num / 10]);\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}shiftOut(dataPin, clockPin, LSBFIRST, COM_TYPE?(rightMostDP?~DAT_DP[num % 10]:~DAT[num % 10]):(rightMostDP?DAT_DP[num % 10]:DAT[num % 10]));\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}if(num<10) {\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}if(!leftMostZero) {\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}shiftOut(dataPin, clockPin, LSBFIRST, COM_TYPE?~DAT[11]:DAT[11]);\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}}else {\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}shiftOut(dataPin, clockPin, LSBFIRST, COM_TYPE?(leftMostDP?~DAT_DP[num / 10]:~DAT[num / 10]):(leftMostDP?DAT_DP[num / 10]:DAT[num / 10]));\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}}\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}}else {\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}shiftOut(dataPin, clockPin, LSBFIRST, COM_TYPE?(leftMostDP?~DAT_DP[num / 10]:~DAT[num / 10]):(leftMostDP?DAT_DP[num / 10]:DAT[num / 10]));\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}}\n` +
             `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}digitalWrite(latchPin, HIGH);\n` +
             `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}}\n` +
             `${Blockly.Arduino.INDENT}}\n` +
@@ -1591,8 +1617,8 @@ Blockly.Arduino.display_init2BitSegmentLatch = function (a) {
 
         Blockly.Arduino.definitions_.define_showNum = 'void offLatch() {\n' +
             `${Blockly.Arduino.INDENT}digitalWrite(latchPin, LOW);\n` +
-            `${Blockly.Arduino.INDENT}shiftOut(dataPin, clockPin, LSBFIRST, DAT[11]);\n` +
-            `${Blockly.Arduino.INDENT}shiftOut(dataPin, clockPin, LSBFIRST, DAT[11]);\n` +
+            `${Blockly.Arduino.INDENT}shiftOut(dataPin, clockPin, LSBFIRST, COM_TYPE?~DAT[11]:DAT[11]);\n` +
+            `${Blockly.Arduino.INDENT}shiftOut(dataPin, clockPin, LSBFIRST, COM_TYPE?~DAT[11]:DAT[11]);\n` +
             `${Blockly.Arduino.INDENT}digitalWrite(latchPin, HIGH);\n` +
             '}\n';
 
@@ -1605,7 +1631,9 @@ Blockly.Arduino.display_segmentDisplayLatch = function (a) {
     if (blockstr.indexOf('?') === -1) {
         const num = Blockly.Arduino.valueToCode(a, 'NUM', Blockly.Arduino.ORDER_ATOMIC);
         const leadingZero = Blockly.Arduino.valueToCode(a, 'LEADING_ZERO', Blockly.Arduino.ORDER_ATOMIC);
-        return `showNumLatch(${num})${Blockly.Arduino.END}`;
+        const leftDP = Blockly.Arduino.valueToCode(a, 'LEFT_DP', Blockly.Arduino.ORDER_ATOMIC);
+        const rightDP = Blockly.Arduino.valueToCode(a, 'RIGHT_DP', Blockly.Arduino.ORDER_ATOMIC);
+        return `showNumLatch(${num}, ${leadingZero}, ${leftDP}, ${rightDP})${Blockly.Arduino.END}`;
     }
     return ``;
 };
