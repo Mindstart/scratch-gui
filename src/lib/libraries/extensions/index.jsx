@@ -399,8 +399,8 @@ export default [
         insetIconURL: displayInsetIconURL,
         description: (
             <FormattedMessage
-                defaultMessage="Visual output of Robots"
-                description="Visual output of Robots"
+                defaultMessage="Visual Output of Robots"
+                description="Visual Output of Robots"
                 id="gui.extension.display.description"
             />
         ),
@@ -431,8 +431,8 @@ export default [
         insetIconURL: keypadInsetIconURL,
         description: (
             <FormattedMessage
-                defaultMessage="Human commands to Robots"
-                description="Human commands to Robots"
+                defaultMessage="Human Commands to Robots"
+                description="Human Commands to Robots"
                 id="gui.extension.keypad.description"
             />
         ),

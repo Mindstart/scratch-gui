@@ -39,12 +39,12 @@ const Controls = function (props) {
         >
             <GreenFlag
                 active={active}
-                title={intl.formatMessage(messages.goTitle)}
+                title="Go"
                 onClick={onGreenFlagClick}
             />
             <StopAll
                 active={active}
-                title={intl.formatMessage(messages.stopTitle)}
+                title="Stop"
                 onClick={onStopAllClick}
             />
             {turbo ? (
