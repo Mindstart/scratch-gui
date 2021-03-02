@@ -678,6 +678,28 @@ Blockly.Arduino.sensor_menu_oss = function (a) {
     }
     return ['1', Blockly.Arduino.ORDER_ATOMIC];
 };
+Blockly.Arduino.keypad_menu_addrSwitch = function (a) {
+    if (a.toString() === 'A0=Off A1=Off A2=Off 0x20') {
+        return ['0x20', Blockly.Arduino.ORDER_ATOMIC];
+    } else if (a.toString() === 'A0=On A1=Off A2=Off 0x21'){
+        return ['0x21', Blockly.Arduino.ORDER_ATOMIC];
+    } else if (a.toString() === 'A0=Off A1=On A2=Off 0x22'){
+        return ['0x22', Blockly.Arduino.ORDER_ATOMIC];
+    } else if (a.toString() === 'A0=On A1=On A2=Off 0x23'){
+        return ['0x23', Blockly.Arduino.ORDER_ATOMIC];
+    } else if (a.toString() === 'A0=Off A1=Off A2=On 0x24'){
+        return ['0x24', Blockly.Arduino.ORDER_ATOMIC];
+    } else if (a.toString() === 'A0=On A1=Off A2=On 0x25'){
+        return ['0x25', Blockly.Arduino.ORDER_ATOMIC];
+    } else if (a.toString() === 'A0=Off A1=On A2=on 0x26'){
+        return ['0x26', Blockly.Arduino.ORDER_ATOMIC];
+    } else if (a.toString() === 'A0=On A1=On A2=On 0x27'){
+        return ['0x27', Blockly.Arduino.ORDER_ATOMIC];
+    } else if (a.toString() === 'A0=Off A1=Off A2=Off 0x37'){
+        return ['0x37', Blockly.Arduino.ORDER_ATOMIC];
+    }
+    return ['0x20', Blockly.Arduino.ORDER_ATOMIC];
+};
 Blockly.Arduino.text = function (a) {
     return [Blockly.Arduino.quote_(a.getFieldValue('TEXT')), Blockly.Arduino.ORDER_ATOMIC];
 };
@@ -1996,6 +2018,35 @@ Blockly.Arduino.keypad_initKeypad4X3 = function (a) {
         Blockly.Arduino.variables_.colPins = `byte colPins[COLS] = {${column1}, ${column2}, ${column3}};`;
 
         Blockly.Arduino.variables_.customKeypad = `Keypad customKeypad = Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS);`;
+    }
+    return ``;
+};
+
+Blockly.Arduino.keypad_initKeypad4X3I2C = function (a) {
+    const blockstr = a.toString();
+    if (blockstr.indexOf('?') === -1) {
+        const addr = Blockly.Arduino.valueToCode(a, 'A0_A1_A2_STATUS', Blockly.Arduino.ORDER_ATOMIC);
+
+        Blockly.Arduino.includes_.wire = `#include <Wire.h>`;
+        Blockly.Arduino.includes_.keypadI2C = `#include <Keypad_I2C.h>`;
+        Blockly.Arduino.includes_.keypad = `#include <Keypad.h>`;
+        Blockly.Arduino.includes_.keypad_addr = `#define I2CADDR ${addr}`;
+        Blockly.Arduino.setups_.wire_begin = 'Wire.begin();';
+        Blockly.Arduino.setups_.keypad_begin = 'customKeypad.begin(makeKeymap(hexaKeys));';
+        Blockly.Arduino.variables_.rows = `const byte ROWS = 4;`;
+        Blockly.Arduino.variables_.cols = `const byte COLS = 3;`;
+        Blockly.Arduino.variables_.customKey = `char customKey;`;
+        Blockly.Arduino.variables_.hexaKeys = 'char hexaKeys[ROWS][COLS] = {\n' +
+            `${Blockly.Arduino.INDENT}{'1', '2', '3'},\n` +
+            `${Blockly.Arduino.INDENT}{'4', '5', '6'},\n` +
+            `${Blockly.Arduino.INDENT}{'7', '8', '9'},\n` +
+            `${Blockly.Arduino.INDENT}{'*', '0', '#'}\n` +
+            '};\n';
+
+        Blockly.Arduino.variables_.rowPins = `byte rowPins[ROWS] = {0, 1, 2, 3};`;
+        Blockly.Arduino.variables_.colPins = `byte colPins[COLS] = {4, 5, 6};`;
+
+        Blockly.Arduino.variables_.customKeypad = `Keypad_I2C customKeypad (makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS, I2CADDR, PCF8574);`;
     }
     return ``;
 };
