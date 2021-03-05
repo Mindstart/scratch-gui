@@ -700,6 +700,17 @@ Blockly.Arduino.keypad_menu_addrSwitch = function (a) {
     }
     return ['0x20', Blockly.Arduino.ORDER_ATOMIC];
 };
+Blockly.Arduino.display_menu_brightness = function (a) {
+    return [a.toString(), Blockly.Arduino.ORDER_ATOMIC];
+};
+Blockly.Arduino.display_menu_effect = function (a) {
+    const effect = a.toString();
+    return [`PA_${effect}`, Blockly.Arduino.ORDER_ATOMIC];
+};
+Blockly.Arduino.display_menu_csPin = function (a) {
+    const str = a.toString();
+    return [str, Blockly.Arduino.ORDER_ATOMIC];
+};
 Blockly.Arduino.text = function (a) {
     return [Blockly.Arduino.quote_(a.getFieldValue('TEXT')), Blockly.Arduino.ORDER_ATOMIC];
 };
@@ -1707,6 +1718,63 @@ Blockly.Arduino.display_resetTM1637Display = function (a) {
     const blockstr = a.toString();
     if (blockstr.indexOf('?') === -1) {
         return `display.clear()${Blockly.Arduino.END}`;
+    }
+    return ``;
+};
+Blockly.Arduino.display_initDMD = function (a) {
+    const blockstr = a.toString();
+    if (blockstr.indexOf('?') === -1) {
+        const csPin = Blockly.Arduino.valueToCode(a, 'CS_PIN', Blockly.Arduino.ORDER_ATOMIC);
+
+        Blockly.Arduino.includes_.md_parola = '#include <MD_Parola.h>';
+        Blockly.Arduino.includes_.md_max72xx = '#include <MD_MAX72xx.h>';
+        Blockly.Arduino.includes_.spi = '#include <SPI.h>';
+
+        Blockly.Arduino.includes_.define_hardware_type = '#define HARDWARE_TYPE MD_MAX72XX::FC16_HW';
+        Blockly.Arduino.includes_.define_max_devices = '#define MAX_DEVICES 4';
+        Blockly.Arduino.includes_.define_speed_time = '#define SPEED_TIME  25';
+        Blockly.Arduino.includes_.define_pause_time = '#define PAUSE_TIME  1000';
+        Blockly.Arduino.includes_.define_clk_pin = '#define CLK_PIN   13';
+        Blockly.Arduino.includes_.define_data_pin = '#define DATA_PIN  11';
+        Blockly.Arduino.includes_.define_cs_pin = `#define CS_PIN    ${csPin}`;
+
+        Blockly.Arduino.definitions_.define_md_parola = `MD_Parola P = MD_Parola(HARDWARE_TYPE, CS_PIN, MAX_DEVICES);`;
+
+        Blockly.Arduino.definitions_.define_showNumLatch = 'void displayText(const char *text, int brightness, textEffect_t effect) {\n' +
+            `${Blockly.Arduino.INDENT}if (effect == PA_NO_EFFECT) {\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}P.setIntensity(brightness);\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}P.setTextAlignment(PA_CENTER);\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}P.print(text);\n` +
+            `${Blockly.Arduino.INDENT}} else {\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}if (P.displayAnimate()) {\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}P.setIntensity(brightness);\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}P.displayText(text, PA_CENTER, SPEED_TIME, PAUSE_TIME, effect, effect);\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}P.displayReset();\n` +
+            `${Blockly.Arduino.INDENT}${Blockly.Arduino.INDENT}}\n` +
+            `${Blockly.Arduino.INDENT}}\n` +
+            '}\n';
+
+        Blockly.Arduino.setups_.setup_p_begin = 'P.begin();';
+        Blockly.Arduino.setups_.setup_p_setInvert = 'P.setInvert(false);';
+
+        return ``;
+    }
+    return ``;
+};
+Blockly.Arduino.display_setDMD = function (a) {
+    const blockstr = a.toString();
+    if (blockstr.indexOf('?') === -1) {
+        const text = Blockly.Arduino.valueToCode(a, 'DISPLAY_TEXT', Blockly.Arduino.ORDER_ATOMIC);
+        const brightness = Blockly.Arduino.valueToCode(a, 'BRIGHTNESS', Blockly.Arduino.ORDER_ATOMIC);
+        const effect = Blockly.Arduino.valueToCode(a, 'EFFECT', Blockly.Arduino.ORDER_ATOMIC);
+        return `displayText("${text}", ${brightness}, ${effect})${Blockly.Arduino.END}`;
+    }
+    return ``;
+};
+Blockly.Arduino.display_resetDMD = function (a) {
+    const blockstr = a.toString();
+    if (blockstr.indexOf('?') === -1) {
+        return `P.displayClear()${Blockly.Arduino.END}`;
     }
     return ``;
 };
