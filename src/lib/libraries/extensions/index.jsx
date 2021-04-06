@@ -348,7 +348,7 @@ export default [
         helpLink: 'https://scratch.mit.edu/vernier'
     },
     {
-        name: 'AinoBot',
+        name: 'AinoBot (Arduino UNO)',
         extensionId: 'arduino',
         collaborator: 'MindStart',
         iconURL: ainobotIconURL,
