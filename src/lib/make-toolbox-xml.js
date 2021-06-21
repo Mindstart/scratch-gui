@@ -381,7 +381,7 @@ const events = function (isStage) {
     `;
 };
 
-const control = function (isStage) {
+const control = function (isStage, targetId) {
     // modify by Huang Weiwang. Email: huwewa@gmail.com 2019.08.08
     // return `
     // <category name="%{BKY_CATEGORY_CONTROL}" id="control" colour="#FFAB19" secondaryColour="#CF8B17">
@@ -429,7 +429,7 @@ const control = function (isStage) {
     // `;
     return `
     <category name="%{BKY_CATEGORY_CONTROL}" id="control" colour="#FFAB19" secondaryColour="#CF8B17">
-        <block type="control_wait">
+        <block id="${targetId}_wait" type="control_wait">
             <value name="DURATION">
                 <shadow type="math_positive_number">
                     <field name="NUM">1</field>
