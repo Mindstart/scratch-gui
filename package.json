@@ -1,5 +1,5 @@
 {
-  "name": "Ainoview",
+  "name": "AinoView",
   "version": "0.1.47",
   "description": "Ainobot Programming Interface Using Scratch 3.0",
   "window": {
@@ -111,9 +111,9 @@
     "rimraf": "^2.6.1",
     "scratch-audio": "0.1.0-prerelease.20190114210212",
     "scratch-paint": "0.2.0-prerelease.20190430175441",
-    "scratch-render": "0.1.0-prerelease.20190419202157",
+    "scratch-render": "0.1.0-prerelease.20210329152519",
     "scratch-storage": "1.2.2",
-    "scratch-svg-renderer": "0.2.0-prerelease.20190419183947",
+    "scratch-svg-renderer": "^0.2.0-prerelease.20210511195415",
     "selenium-webdriver": "3.6.0",
     "startaudiocontext": "1.2.1",
     "style-loader": "^0.23.0",
@@ -146,13 +146,16 @@
     "babel-plugin-react-intl": "^3.0.1",
     "browser-process-hrtime": "^1.0.0",
     "canvas-toBlob": "^1.0.0",
-    "firmata": "^2.0.0",
+    "chrome-apps-serialport": "^1.0.8",
+    "firmata": "^2.3.0",
+    "firmata-io": "^2.3.0",
     "johnny-five": "^1.0.0",
     "nw": "^0.40.0",
     "react-ace": "^6.4.0",
     "react-bootstrap": "^1.0.0-beta.5",
     "repl": "^0.1.3",
     "scratch-parser": "^4.3.5",
+    "serialport": "^9.2.0",
     "shelljs": "^0.8.3",
     "web-fs": "^2.1.0"
   }

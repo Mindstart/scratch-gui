@@ -29,8 +29,8 @@ const base = {
     externals: {
         React: 'react',
         ReactDOM: 'react-dom',
-		bindings: 'bindings',
-        serialport: 'serialport'									   
+        bindings: 'bindings',
+        serialport: 'serialport'
     },
     resolve: {
         symlinks: false
@@ -118,8 +118,8 @@ module.exports = [
         externals: {
             React: 'react',
             ReactDOM: 'react-dom',
-			bindings: 'bindings',
-            serialport: 'serialport'	
+            bindings: 'bindings',
+            serialport: 'serialport'
         },
         module: {
             rules: base.module.rules.concat([
@@ -206,8 +206,8 @@ module.exports = [
             externals: {
                 React: 'react',
                 ReactDOM: 'react-dom',
-				bindings: 'bindings',
-                serialport: 'serialport'		  
+                bindings: 'bindings',
+                serialport: 'serialport'
             },
             module: {
                 rules: base.module.rules.concat([
